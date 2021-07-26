@@ -26,7 +26,7 @@ class SignControllerTest {
 
     @Autowired
     SignService signService;
-    
+
     
     @Test
     public void sendEmail()throws Exception{
