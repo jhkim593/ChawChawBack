@@ -5,7 +5,7 @@ spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     password: 8834
-    url: jdbc:mysql://localhost:3308/chawchaw?useSSL=false&characterEncoding=UTF-8&serverTimezone=UTC
+    url: jdbc:mysql://localhost:3308/test?useSSL=false&characterEncoding=UTF-8&serverTimezone=UTC
     username: root
 
   jpa:
@@ -45,7 +45,7 @@ spring:
     secret: govlepel@$&
 
 file:
-  path: C:\chawchaw\
+  path: C:\chawchaw
 
 
   mvc:

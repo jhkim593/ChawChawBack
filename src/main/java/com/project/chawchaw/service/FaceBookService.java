@@ -5,11 +5,8 @@ package com.project.chawchaw.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
-import com.project.chawchaw.dto.FaceBookProfile;
-import com.project.chawchaw.dto.KakaoProfile;
-import com.project.chawchaw.dto.RetKakaoAuth;
+import com.project.chawchaw.dto.social.FaceBookProfile;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -37,7 +34,9 @@ public class FaceBookService {
 
 
 
-        UriComponents uri = UriComponentsBuilder.fromHttpUrl("https://graph.facebook.com/"+userId).queryParam("fields", "id,name,email").queryParam("access_token", accessToken).build();
+        UriComponents uri = UriComponentsBuilder.fromHttpUrl("https://graph.facebook.com/"+userId).
+                queryParam("fields", "id,name,email").
+                queryParam("access_token", accessToken).build();
 
         // Set http entity
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params);

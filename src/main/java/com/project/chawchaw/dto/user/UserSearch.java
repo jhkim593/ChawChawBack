@@ -1,4 +1,4 @@
-package com.project.chawchaw.dto;
+package com.project.chawchaw.dto.user;
 
 
 import lombok.Getter;
@@ -10,6 +10,5 @@ public class UserSearch {
     private String name;
     private String country;
     private String language;
-    private String hopeLanguage;
-    private SortOrders order;
+    private String order;
 }

@@ -3,16 +3,16 @@ package com.project.chawchaw.service;
 
 
 import com.project.chawchaw.config.JwtTokenProvider;
-import com.project.chawchaw.dto.UserLoginRequestDto;
-import com.project.chawchaw.dto.UserSignUpByProviderRequestDto;
-import com.project.chawchaw.dto.UserSignUpRequestDto;
+import com.project.chawchaw.dto.user.UserLoginRequestDto;
+import com.project.chawchaw.dto.user.UserSignUpByProviderRequestDto;
+import com.project.chawchaw.dto.user.UserSignUpRequestDto;
 import com.project.chawchaw.entity.*;
 import com.project.chawchaw.exception.*;
 import com.project.chawchaw.repository.CountryRepository;
 import com.project.chawchaw.repository.FollowRepository;
 import com.project.chawchaw.repository.LanguageRepository;
 import com.project.chawchaw.repository.user.UserRepository;
-import com.project.chawchaw.dto.UserLoginResponseDto;
+import com.project.chawchaw.dto.user.UserLoginResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +23,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.mail.Message;
 import javax.mail.internet.InternetAddress;
@@ -107,23 +108,18 @@ public class SignService {
     }
 
 
-
-
-
-
-
     @Transactional
-    public void signup(UserSignUpRequestDto requestDto){
+    public void signup(UserSignUpRequestDto requestDto, MultipartFile file){
 
-//        UUID uuid = UUID.randomUUID();
-//        String uuidFilename = uuid + "_" + requestDto.getFile().getOriginalFilename();
-//
-//        Path filePath = Paths.get(fileRealPath + uuidFilename);
-//        try {
-//            Files.write(filePath, requestDto.getFile().getBytes());
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
+        UUID uuid = UUID.randomUUID();
+        String uuidFilename = uuid + "_" + file.getOriginalFilename();
+        System.out.println("-=--------------------=======================");
+        Path filePath = Paths.get(fileRealPath + uuidFilename);
+        try {
+            Files.write(filePath, file.getBytes());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         List<UserHopeLanguage> hopeLanguageList=new ArrayList<>();
         for(int i=0;i<requestDto.getHopeLanguage().size();i++){
             String hopeLanguageName=requestDto.getHopeLanguage().get(i);
@@ -154,16 +150,19 @@ public class SignService {
 
         validUser(requestDto.getEmail());
         userRepository.save(User.createUser(requestDto.getEmail(),requestDto.getName(),null,passwordEncoder.encode(requestDto.getPassword()),
-                requestDto.getWeb_email(),requestDto.getSchool(),null,requestDto.getContent(),
+                requestDto.getWeb_email(),requestDto.getSchool(),uuidFilename,requestDto.getContent(),
                 countryList,
                 languageList,hopeLanguageList,requestDto.getFacebookUrl(),requestDto.getInstagramUrl()));
 
     }
 
+
+
+
     @Transactional
     public UserLoginResponseDto login(UserLoginRequestDto requestDto){
 
-        User user = userRepository.findByEmail(requestDto.getEmail()).orElseThrow(UserNotFoundException::new);
+        User user = userRepository.findByEmail(requestDto.getEmail()).orElseThrow(LoginFailureException::new);
         if(!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())){
             throw new LoginFailureException();
         }
@@ -173,38 +172,74 @@ public class SignService {
 
 
     @Transactional
-    public UserLoginResponseDto loginByProvider(String accessToken, String provider) {
+    public UserLoginResponseDto loginByProvider(String email, String provider) {
 
-        String email = getEmailByProvider(accessToken, provider);
+
         User user = userRepository.findUserByEmailAndProvider(email, provider).orElseThrow(UserNotFoundException::new);
+
+//
         user.changeRefreshToken(jwtTokenProvider.createRefreshToken());
         return new UserLoginResponseDto(user.getId(), jwtTokenProvider.createToken(String.valueOf(user.getId())), user.getRefreshToken() );
-
-
-    }
-
-    private String getEmailByProvider(String accessToken, String provider) {
-        if(provider.equals("kakao")) {
-            return kakaoService.getKakaoProfile(accessToken).getId();
-        }
-        throw new InvalidateProviderException();
-    }
-
-//    @Transactional
-//    public void signUpByProvider(UserSignUpByProviderRequestDto requestDto, String accessToken, String provider) {
-//        String email=getEmailByProvider(accessToken,provider);
-//        validUserWithProvider(email,provider);
-//        userRepository.save(User.createUser(email,requestDto.getName(),provider,null,
-//                requestDto.getWeb_email(),requestDto.getSchool(),requestDto.getImageUrl(),requestDto.getContent(),requestDto.getCountry(),
-//                requestDto.getLanguage(),requestDto.getHopeLanguage(),requestDto.getSocialUrl()));
 //
+
+    }
+
+//    private String getEmailByProvider(String accessToken, String provider) {
+//        if(provider.equals("kakao")) {
+//            return kakaoService.getKakaoProfile(accessToken).getId();
+//        }
+//        throw new InvalidateProviderException();
 //    }
-//
 
-    private void validUserWithProvider(String email, String provider) {
-        if(userRepository.findUserByEmailAndProvider(email, provider).isPresent())
-           throw new UserAlreadyExistException();
+    @Transactional
+    public void signUpByProvider(UserSignUpByProviderRequestDto requestDto,String provider) {
+
+        List<UserHopeLanguage> hopeLanguageList=new ArrayList<>();
+        for(int i=0;i<requestDto.getHopeLanguage().size();i++){
+            String hopeLanguageName=requestDto.getHopeLanguage().get(i);
+            Language language = languageRepository.findByName(hopeLanguageName).orElseThrow(LanguageNotFoundException::new);
+            UserHopeLanguage userHopeLanguage = UserHopeLanguage.createUserHopeLanguage(language);
+            hopeLanguageList.add(userHopeLanguage);
+
+        }
+        List<UserLanguage>languageList=new ArrayList<>();
+        for(int i=0;i<requestDto.getLanguage().size();i++){
+            String LanguageName=requestDto.getLanguage().get(i);
+            Language language = languageRepository.findByName(LanguageName).orElseThrow(LanguageNotFoundException::new);
+            UserLanguage userLanguage = UserLanguage.createUserLanguage(language);
+            languageList.add(userLanguage);
+
+        }
+
+        List<UserCountry>countryList=new ArrayList<>();
+        for(int i=0;i<requestDto.getCountry().size();i++){
+            String countryName=requestDto.getCountry().get(i);
+            Country country = countryRepository.findByName(countryName).orElseThrow(CountryNotFoundException::new);
+            UserCountry userCountry = UserCountry.createUserCountry(country);
+            countryList.add(userCountry);
+
+        }
+
+
+        if(validUserWithProvider(requestDto.getEmail(),provider)){
+            throw new UserAlreadyExistException();
+        }
+        userRepository.save(User.createUser(requestDto.getEmail(),requestDto.getName(),provider,null,
+                requestDto.getWeb_email(),requestDto.getSchool(),requestDto.getImageUrl(),requestDto.getContent(),countryList,languageList,
+                hopeLanguageList,requestDto.getFacebookUrl(),requestDto.getInstagramUrl()));
+
     }
+
+
+    public Boolean validUserWithProvider(String email, String provider) {
+        if(userRepository.findUserByEmailAndProvider(email, provider).isPresent())
+
+        {
+            return true;
+        }
+        return false;
+    }
+
     private void validUser(String email) {
         if(userRepository.findByEmail(email).isPresent())
             throw new UserAlreadyExistException();
@@ -234,4 +269,6 @@ public class SignService {
         userRepository.delete(user);
 
     }
+
+
 }

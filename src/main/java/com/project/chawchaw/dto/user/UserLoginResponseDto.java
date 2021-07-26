@@ -1,4 +1,4 @@
-package com.project.chawchaw.dto;
+package com.project.chawchaw.dto.user;
 
 import lombok.*;
 

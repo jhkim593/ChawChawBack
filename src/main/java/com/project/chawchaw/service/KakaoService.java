@@ -5,9 +5,8 @@ package com.project.chawchaw.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
-import com.project.chawchaw.dto.KakaoProfile;
-import com.project.chawchaw.dto.RetKakaoAuth;
-import com.project.chawchaw.exception.CommunicationException;
+import com.project.chawchaw.dto.social.KakaoProfile;
+import com.project.chawchaw.dto.social.RetKakaoAuth;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
@@ -37,6 +36,8 @@ public class KakaoService {
     private String kakaoRedirect;
 
     public KakaoProfile getKakaoProfile(String accessToken) {
+        System.out.println("=============================================");
+        System.out.println(accessToken);
         // Set header : Content-type: application/x-www-form-urlencoded
         HttpHeaders headers = new HttpHeaders();
 //        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);

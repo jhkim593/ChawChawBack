@@ -1,12 +1,16 @@
 package com.project.chawchaw.controller;
 
 import com.project.chawchaw.config.JwtTokenProvider;
+import com.project.chawchaw.config.response.DefaultResponseVo;
+import com.project.chawchaw.config.response.ResponseMessage;
 import com.project.chawchaw.repository.FollowRepository;
 import com.project.chawchaw.response.CommonResult;
 import com.project.chawchaw.service.FollowService;
 import com.project.chawchaw.service.ResponseService;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
@@ -19,15 +23,16 @@ public class FollowController {
 
 
     @PostMapping("/follow/{userId}")
-    public CommonResult follow(@PathVariable("userId")Long toUserId,Long id){
+    public ResponseEntity follow(@PathVariable("userId")Long toUserId, @RequestHeader(value ="X-AUTH-TOKEN")String token){
 
-        followService.follow(toUserId,id);
-        return responseService.getSuccessResult();
+        followService.follow(toUserId,token);
+        return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.FOLLOW,true),HttpStatus.CREATED);
 
     }
     @DeleteMapping("follow/{userId}")
-    public CommonResult unFollow(@PathVariable("userId")Long toUserId,@RequestHeader(value="X-AUTH-TOKEN")String token){
+    public ResponseEntity unFollow(@PathVariable("userId")Long toUserId,@RequestHeader(value="X-AUTH-TOKEN")String token){
         followService.unFollow(toUserId,token);
-        return responseService.getSuccessResult();
+        return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.UNFOLLOW,true),HttpStatus.CREATED);
+
     }
 }

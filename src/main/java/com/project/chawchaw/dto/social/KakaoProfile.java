@@ -1,4 +1,4 @@
-package com.project.chawchaw.dto;
+package com.project.chawchaw.dto.social;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -24,8 +24,21 @@ public class KakaoProfile {
         public Boolean is_email_valid;
         public Boolean is_email_verified;
         public String email;
+//        public Profile profile;
+//
+//
+//        @Getter
+//        @Setter
+//        @ToString
+//        public static class Profile {
+//
+//            private String profile_image;
+//
+//        }
 
     }
+
+
 
 
 

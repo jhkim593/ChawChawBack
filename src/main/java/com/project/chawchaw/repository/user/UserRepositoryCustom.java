@@ -1,7 +1,7 @@
 package com.project.chawchaw.repository.user;
 
-import com.project.chawchaw.dto.UserSearch;
-import com.project.chawchaw.dto.UsersDto;
+import com.project.chawchaw.dto.user.UserSearch;
+import com.project.chawchaw.dto.user.UsersDto;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Repository;

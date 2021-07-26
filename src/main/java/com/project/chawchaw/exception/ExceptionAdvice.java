@@ -1,5 +1,7 @@
 package com.project.chawchaw.exception;
 
+import com.project.chawchaw.config.response.DefaultResponseVo;
+import com.project.chawchaw.config.response.ResponseMessage;
 import com.project.chawchaw.response.CommonResult;
 import com.project.chawchaw.service.ResponseService;
 
@@ -32,11 +34,12 @@ public class ExceptionAdvice {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     protected CommonResult loginFailureException(){
         return responseService.getFailResult(Integer.valueOf(getMessage("loginFail.code")),getMessage("loginFail.msg"));
+
     }
     @ExceptionHandler(UserAlreadyExistException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    protected CommonResult userAlreadyExistException(){
-        return responseService.getFailResult(Integer.valueOf(getMessage("alreadyUserExist.code")),getMessage("alreadyUserExist.msg"));
+    protected DefaultResponseVo userAlreadyExistException(){
+        return DefaultResponseVo.res(ResponseMessage.DUPLICATE_USER,false);
     }
     @ExceptionHandler(FollowAlreadyException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)

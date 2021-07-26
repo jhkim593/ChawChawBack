@@ -1,10 +1,9 @@
 package com.project.chawchaw.service;
 
-import com.project.chawchaw.dto.*;
+import com.project.chawchaw.dto.user.*;
 import com.project.chawchaw.entity.*;
 import com.project.chawchaw.exception.CountryNotFoundException;
 import com.project.chawchaw.exception.LanguageNotFoundException;
-import com.project.chawchaw.exception.ResourceNotFoundException;
 import com.project.chawchaw.exception.UserNotFoundException;
 import com.project.chawchaw.repository.*;
 import com.project.chawchaw.repository.user.UserRepository;
@@ -43,7 +42,7 @@ public class UserService {
 
 
     }
-    public List<UsersDto> users(UserSearch userSearch,String school){
+    public List<UsersDto> users(UserSearch userSearch, String school){
         return userRepository.usersList(userSearch,school);
     }
 
@@ -55,7 +54,7 @@ public class UserService {
     }
 
     @Transactional
-    public void userProfileUpdate(UserUpdateDto updateDto,Long id) {
+    public void userProfileUpdate(UserUpdateDto updateDto, Long id) {
 
         User user = userRepository.findById(id).orElseThrow(UserNotFoundException::new);
         if (!updateDto.getCountry().isEmpty()) {

@@ -22,12 +22,12 @@ public class FollowService {
     private final JwtTokenProvider jwtTokenProvider;
 
 
-    public void follow(Long toUserId, Long id) {
-//        Long fromUserId = Long.valueOf(jwtTokenProvider.getUserPk(token));
-        if(followRepository.findByFollow(id,toUserId).isPresent()){
+    public void follow(Long toUserId, String token) {
+        Long fromUserId = Long.valueOf(jwtTokenProvider.getUserPk(token));
+        if(followRepository.findByFollow(fromUserId,toUserId).isPresent()){
             throw new FollowAlreadyException();
         }
-        User fromUser = userRepository.findById(id).orElseThrow(UserNotFoundException::new);
+        User fromUser = userRepository.findById(fromUserId).orElseThrow(UserNotFoundException::new);
         User toUser = userRepository.findById(toUserId).orElseThrow(UserNotFoundException::new);
         System.out.println();
         followRepository.save(Follow.createFollow(fromUser, toUser));

@@ -1,11 +1,13 @@
-package com.project.chawchaw.dto;
+package com.project.chawchaw.dto.social;
 
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
+@ToString
 public class RetKakaoAuth {
     private String access_token;
     private String token_type;

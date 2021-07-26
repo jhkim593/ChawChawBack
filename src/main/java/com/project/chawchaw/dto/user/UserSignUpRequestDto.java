@@ -1,4 +1,4 @@
-package com.project.chawchaw.dto;
+package com.project.chawchaw.dto.user;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -14,8 +14,9 @@ public class UserSignUpRequestDto {
     private String password;
     private String name;
     private String web_email;
+
     private String school;
-    private String file;
+
     private String content;
     private List<String> country=new ArrayList<>();
     private List<String> language=new ArrayList<>();
