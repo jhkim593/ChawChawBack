@@ -26,14 +26,7 @@ class SignControllerTest {
 
     @Autowired
     SignService signService;
-    @Test
-    public void dd()throws Exception{
-       //given
-       
-       //when
-       
-       //then
-    }
+    
     
     @Test
     public void sendEmail()throws Exception{
