@@ -9,7 +9,7 @@ spring:
 #    username: root
     password: admin
     url: jdbc:mysql://chawchawdb.cjek1elpmvy4.ap-northeast-2.rds.amazonaws.com:3306/board?serverTimezone=UTC&characterEncoding=UTF-8
-    username: rla8834ok!
+    username: rla8834ok
 
   jpa:
     database: mysql
