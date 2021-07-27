@@ -8,7 +8,7 @@ import lombok.Setter;
 @Setter
 public class UserSearch {
     private String name;
-    private String country;
+    private String hopeLanguage;
     private String language;
     private String order;
 }

@@ -24,6 +24,7 @@ spring:
 
 
 
+
   social:
     kakao:
       client_id: 32c46f0143a5d5d8314cbf8fd33572e1 # 앱생성시 받은 REST API 키

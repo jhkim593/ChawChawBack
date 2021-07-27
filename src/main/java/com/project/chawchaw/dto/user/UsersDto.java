@@ -14,9 +14,7 @@ public class UsersDto {
     private Long id;
     private String imageUrl;
     private String content;
-    private String country;
-    private String language;
-    private String hopeLanguage;
+
     private LocalDateTime createDate;
     private Long view;
     private int follows;

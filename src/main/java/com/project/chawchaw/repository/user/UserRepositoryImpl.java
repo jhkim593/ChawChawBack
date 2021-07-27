@@ -45,8 +45,8 @@ public class UserRepositoryImpl implements  UserRepositoryCustom{
 
                                 .join(userLanguage.user, user)
                                 .join(userCountry.user, user).where(
-                                        countryEq(userSearch.getCountry())
-                                        , languageEq(userSearch.getLanguage())
+//                                        countryEq(userSearch.getCountry())
+                                         languageEq(userSearch.getLanguage())
                         , nameEq(userSearch.getName())
                         , user.school.eq(school)).fetch();
 
@@ -59,21 +59,22 @@ public class UserRepositoryImpl implements  UserRepositoryCustom{
 
     }
     QUser user2=new QUser("user2");
+    QLanguage language2=new QLanguage("language2");
 
     @Override
     public List<UsersDto> usersList(UserSearch userSearch, String school) {
 
         List<UsersDto> usersList = queryFactory.select(Projections.constructor(UsersDto.class, user.id, user.imageUrl, user.content,
-                user.country.get(0),user.language.get(0),user.hopeLanguage.get(0),
+
                 user.regDate, user.views,user.toFollows.size())).distinct().from( userLanguage, userHopeLanguage)
 
                 .join(userLanguage.language,language)
                 .join(userLanguage.user,user)
                 .join(userHopeLanguage.user,user2)
-                .join(userHopeLanguage.hopeLanguage,language)
+                .join(userHopeLanguage.hopeLanguage,language2)
 
                 .where(
-                        countryEq(userSearch.getCountry())
+                        hopeLanguageEq(userSearch.getHopeLanguage())
                         , languageEq(userSearch.getLanguage())
                         , nameEq(userSearch.getName())
                         , schoolEq(school)
@@ -93,8 +94,8 @@ public class UserRepositoryImpl implements  UserRepositoryCustom{
 
     }
 
-    private BooleanExpression countryEq(String coun) {
-        return hasText(coun) ? country.name.eq(coun) : null;
+    private BooleanExpression hopeLanguageEq(String hope) {
+        return hasText(hope) ? language2.name.eq(hope) : null;
     }
     private BooleanExpression schoolEq(String school) {
         return hasText(school) ? user.school.eq(school) : null;

@@ -8,10 +8,9 @@ plugins {
 }
 bootJar{
 	archiveBaseName='springboot'
-	archiveFileName='-.jar'
+	archiveFileName='snapshot-.jar'
 	archiveVersion="0.0.0"
 }
-
 group = 'com.project'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '11'
