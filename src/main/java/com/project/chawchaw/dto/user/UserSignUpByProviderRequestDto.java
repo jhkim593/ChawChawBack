@@ -22,5 +22,8 @@ public class UserSignUpByProviderRequestDto {
     private List<String> hopeLanguage;
     private String facebookUrl;
     private String instagramUrl;
+    private String repCountry;
+    private String repLanguage;
+    private String repHopeLanguage;
 
 }

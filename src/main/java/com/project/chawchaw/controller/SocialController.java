@@ -66,21 +66,28 @@ public class SocialController {
 
     @ResponseBody
     @GetMapping(value = "/login/kakao")
-    public String loginKakao( @RequestParam String code) {
-        KakaoProfile kakaoProfile = kakaoService.getKakaoProfile(kakaoService.getKakaoTokenInfo(code).getAccess_token());
-        System.out.println(kakaoProfile.getKakao_account());
-        return kakaoProfile.getId();
+    public String loginKakao( @RequestParam String code) throws Exception {
+//        KakaoProfile kakaoProfile = kakaoService.getKakaoProfile(kakaoService.getKakaoTokenInfo(code).getAccess_token());
+//        System.out.println(kakaoProfile.getKakao_account());
+        String token = kakaoService.getKakaoTokenInfo(code).getAccess_token();
+        KakaoProfile kakaoProfile=kakaoService.getKakaoProfile(token);
+        System.out.println(kakaoProfile.getEmail());
+        System.out.println(kakaoProfile.getName());
+        System.out.println(kakaoProfile.getImageUrl());
+
+        return "ok";
     }
 
 
     @ResponseBody
     @GetMapping("/login/facebook")
     public String facebook(String accessToken,String userId){
-        System.out.println(accessToken);
-        System.out.println(userId);
 
         FaceBookProfile faceBookProfile = faceBookService.getFaceBookProfile(accessToken, userId);
-       return faceBookProfile.getId()+faceBookProfile.getEmail()+faceBookProfile.getName()+"      "+faceBookProfile.getPicture().getData().getUrl();
+        System.out.println(faceBookProfile.getEmail());
+        System.out.println(faceBookProfile.getImageUrl());
+        System.out.println(faceBookProfile.getName());
+    return "ok";
 
     }
 

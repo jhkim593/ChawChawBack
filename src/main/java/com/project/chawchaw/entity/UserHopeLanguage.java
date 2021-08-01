@@ -21,9 +21,13 @@ public class UserHopeLanguage {
     @JoinColumn(name="user_id")
     private User user;
 
+
+    private Boolean rep;
+
     public static UserHopeLanguage createUserHopeLanguage(Language language){
         UserHopeLanguage userHopeLanguage=new UserHopeLanguage();
         userHopeLanguage.hopeLanguage=language;
+        userHopeLanguage.rep=false;
         return userHopeLanguage;
 
     }
@@ -31,5 +35,8 @@ public class UserHopeLanguage {
     public void addUser(User user) {
         this.user=user;
         user.getHopeLanguage().add(this);
+    }
+    public void changeRep(){
+        this.rep=true;
     }
 }

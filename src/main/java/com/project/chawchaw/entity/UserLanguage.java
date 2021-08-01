@@ -21,14 +21,21 @@ public class UserLanguage {
     @JoinColumn(name="user_id")
     private User user;
 
+
+    private Boolean rep;
+
     public static UserLanguage createUserLanguage(Language language) {
         UserLanguage userLanguage=new UserLanguage();
         userLanguage.language=language;
+        userLanguage.rep=false;
         return userLanguage;
     }
 
     public void addUser(User user) {
         this.user=user;
         user.getLanguage().add(this);
+    }
+    public void changeRep(){
+        this.rep=true;
     }
 }

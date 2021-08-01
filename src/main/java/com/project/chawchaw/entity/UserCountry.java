@@ -21,13 +21,21 @@ public class UserCountry {
     @JoinColumn(name="user_id")
     private User user;
 
+
+    private Boolean rep;
+
     public static UserCountry createUserCountry(Country country) {
         UserCountry userCountry=new UserCountry();
         userCountry.country=country;
+        userCountry.rep=false;
         return userCountry;
     }
     public void addUser(User user){
         this.user=user;
         user.getCountry().add(this);
+    }
+
+    public void changeRep(){
+        this.rep=true;
     }
 }

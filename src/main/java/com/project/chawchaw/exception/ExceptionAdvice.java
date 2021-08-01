@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -32,14 +33,13 @@ public class ExceptionAdvice {
 
     @ExceptionHandler(LoginFailureException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    protected CommonResult loginFailureException(){
-        return responseService.getFailResult(Integer.valueOf(getMessage("loginFail.code")),getMessage("loginFail.msg"));
-
+    protected ResponseEntity loginFailureException(){
+       return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.LOGIN_FAIL,false),HttpStatus.OK);
     }
     @ExceptionHandler(UserAlreadyExistException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    protected DefaultResponseVo userAlreadyExistException(){
-        return DefaultResponseVo.res(ResponseMessage.DUPLICATE_USER,false);
+    protected ResponseEntity userAlreadyExistException(){
+        return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.DUPLICATE_USER,false),HttpStatus.OK);
     }
     @ExceptionHandler(FollowAlreadyException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -56,8 +56,8 @@ public class ExceptionAdvice {
 
     @ExceptionHandler(UserNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    protected CommonResult userNotFoundException(HttpServletRequest request, UserNotFoundException e){
-        return responseService.getFailResult(Integer.valueOf(getMessage("userNotFound.code")),getMessage("userNotFound.msg"));
+    protected ResponseEntity userNotFoundException(HttpServletRequest request, UserNotFoundException e){
+        return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.NOT_FOUND_USER,false),HttpStatus.OK);
 
     }
     @ExceptionHandler(ResourceNotFoundException.class)
@@ -69,20 +69,18 @@ public class ExceptionAdvice {
 
     @ExceptionHandler(CountryNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    protected CommonResult countryNotFoundException(HttpServletRequest request, UserNotFoundException e){
-        return responseService.getFailResult(Integer.valueOf(getMessage("countryNotFound.code")),getMessage("countryFound.msg"));
-
+    protected ResponseEntity countryNotFoundException(HttpServletRequest request, CountryNotFoundException e){
+        return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.NOT_FOUND_COUNTRY,false),HttpStatus.OK);
     }
     @ExceptionHandler(LanguageNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    protected CommonResult languageFoundException(HttpServletRequest request, UserNotFoundException e){
-        return responseService.getFailResult(Integer.valueOf(getMessage("languageNotFound.code")),getMessage("languageNotFound.msg"));
-
+    protected ResponseEntity languageFoundException(HttpServletRequest request, LanguageNotFoundException e){
+        return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.NOT_FOUND_LANGUAGE,false),HttpStatus.OK);
     }
 
     @ExceptionHandler(FollwNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    protected CommonResult followNotFoundException(HttpServletRequest request, UserNotFoundException e){
+    protected CommonResult followNotFoundException(HttpServletRequest request, FollwNotFoundException e){
         return responseService.getFailResult(Integer.valueOf(getMessage("followNotFound.code")),getMessage("followNotFound.msg"));
 
     }

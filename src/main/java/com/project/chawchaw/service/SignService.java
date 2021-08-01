@@ -16,26 +16,19 @@ import com.project.chawchaw.dto.user.UserLoginResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.mail.Message;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -55,8 +48,7 @@ public class SignService {
     private final LanguageRepository languageRepository;
     private final FollowRepository followRepository;
 
-    @Value("${file.path}")
-    private String fileRealPath;
+
 
     private MimeMessage createMessage(String to,String code)throws Exception{
         logger.info("보내는 대상 : "+ to);
@@ -68,7 +60,6 @@ public class SignService {
         message.setSubject("chawchaw 확인 코드: " + code); //제목
 
         String msg="";
-        msg += "<img width=\"120\" height=\"36\" style=\"margin-top: 0; margin-right: 0; margin-bottom: 32px; margin-left: 0px; padding-right: 30px; padding-left: 30px;\" src=\"\" alt=\"\" loading=\"lazy\">";
         msg += "<h1 style=\"font-size: 30px; padding-right: 30px; padding-left: 30px;\">이메일 주소 확인</h1>";
         msg += "<p style=\"font-size: 17px; padding-right: 30px; padding-left: 30px;\">아래 확인 코드를 가입 창이 있는 브라우저 창에 입력하세요.</p>";
         msg += "<div style=\"padding-right: 30px; padding-left: 30px; margin: 32px 0 40px;\"><table style=\"border-collapse: collapse; border: 0; background-color: #F4F4F4; height: 70px; table-layout: fixed; word-wrap: break-word; border-radius: 6px;\"><tbody><tr><td style=\"text-align: center; vertical-align: middle; font-size: 30px;\">";
@@ -109,21 +100,37 @@ public class SignService {
 
 
     @Transactional
-    public void signup(UserSignUpRequestDto requestDto, MultipartFile file){
+    public void signup(UserSignUpRequestDto requestDto){
 
-        UUID uuid = UUID.randomUUID();
-        String uuidFilename = uuid + "_" + file.getOriginalFilename();
-        System.out.println("-=--------------------=======================");
-        Path filePath = Paths.get(fileRealPath + uuidFilename);
-        try {
-            Files.write(filePath, file.getBytes());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        validUser(requestDto.getEmail());
+
+//        UUID uuid = UUID.randomUUID();
+//        String uuidFilename = uuid + "_" + file.getOriginalFilename();
+//        System.out.println("-=--------------------=======================");
+//        Path filePath = Paths.get(fileRealPath + uuidFilename);
+//        try {
+//            Files.write(filePath, file.getBytes());
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+        Country repCountry = countryRepository.findByName(requestDto.getRepCountry()).orElseThrow(CountryNotFoundException::new);
+        Language repLanguage = languageRepository.findByAbbr(requestDto.getRepLanguage()).orElseThrow(LanguageNotFoundException::new);
+        Language repHopeLanguage = languageRepository.findByAbbr(requestDto.getRepHopeLanguage()).orElseThrow(LanguageNotFoundException::new);
+
+        UserHopeLanguage userRepHopeLanguage = UserHopeLanguage.createUserHopeLanguage(repHopeLanguage);
+        userRepHopeLanguage.changeRep();
+        UserLanguage userRepLanguage = UserLanguage.createUserLanguage(repLanguage);
+        userRepLanguage.changeRep();
+        UserCountry userRepCountry = UserCountry.createUserCountry(repCountry);
+        userRepCountry.changeRep();
+
+
+
+
         List<UserHopeLanguage> hopeLanguageList=new ArrayList<>();
         for(int i=0;i<requestDto.getHopeLanguage().size();i++){
             String hopeLanguageName=requestDto.getHopeLanguage().get(i);
-            Language language = languageRepository.findByName(hopeLanguageName).orElseThrow(LanguageNotFoundException::new);
+            Language language = languageRepository.findByAbbr(hopeLanguageName).orElseThrow(LanguageNotFoundException::new);
             UserHopeLanguage userHopeLanguage = UserHopeLanguage.createUserHopeLanguage(language);
             hopeLanguageList.add(userHopeLanguage);
 
@@ -131,7 +138,7 @@ public class SignService {
        List<UserLanguage>languageList=new ArrayList<>();
         for(int i=0;i<requestDto.getLanguage().size();i++){
             String LanguageName=requestDto.getLanguage().get(i);
-            Language language = languageRepository.findByName(LanguageName).orElseThrow(LanguageNotFoundException::new);
+            Language language = languageRepository.findByAbbr(LanguageName).orElseThrow(LanguageNotFoundException::new);
             UserLanguage userLanguage = UserLanguage.createUserLanguage(language);
             languageList.add(userLanguage);
 
@@ -148,11 +155,11 @@ public class SignService {
 
 
 
-        validUser(requestDto.getEmail());
+
         userRepository.save(User.createUser(requestDto.getEmail(),requestDto.getName(),null,passwordEncoder.encode(requestDto.getPassword()),
-                requestDto.getWeb_email(),requestDto.getSchool(),uuidFilename,requestDto.getContent(),
+                requestDto.getWeb_email(),requestDto.getSchool(),requestDto.getImageUrl(),requestDto.getContent(),
                 countryList,
-                languageList,hopeLanguageList,requestDto.getFacebookUrl(),requestDto.getInstagramUrl()));
+                languageList,hopeLanguageList,requestDto.getFacebookUrl(),requestDto.getInstagramUrl(),userRepCountry,userRepLanguage,userRepHopeLanguage));
 
     }
 
@@ -194,10 +201,25 @@ public class SignService {
     @Transactional
     public void signUpByProvider(UserSignUpByProviderRequestDto requestDto,String provider) {
 
+        if(validUserWithProvider(requestDto.getEmail(),provider)){
+            throw new UserAlreadyExistException();
+        }
+
+        Country repCountry = countryRepository.findByName(requestDto.getRepCountry()).orElseThrow(CountryNotFoundException::new);
+        Language repLanguage = languageRepository.findByAbbr(requestDto.getRepLanguage()).orElseThrow(LanguageNotFoundException::new);
+        Language repHopeLanguage = languageRepository.findByAbbr(requestDto.getRepHopeLanguage()).orElseThrow(LanguageNotFoundException::new);
+
+        UserHopeLanguage userRepHopeLanguage = UserHopeLanguage.createUserHopeLanguage(repHopeLanguage);
+        userRepHopeLanguage.changeRep();
+        UserLanguage userRepLanguage = UserLanguage.createUserLanguage(repLanguage);
+        userRepLanguage.changeRep();
+        UserCountry userRepCountry = UserCountry.createUserCountry(repCountry);
+        userRepCountry.changeRep();
+
         List<UserHopeLanguage> hopeLanguageList=new ArrayList<>();
         for(int i=0;i<requestDto.getHopeLanguage().size();i++){
             String hopeLanguageName=requestDto.getHopeLanguage().get(i);
-            Language language = languageRepository.findByName(hopeLanguageName).orElseThrow(LanguageNotFoundException::new);
+            Language language = languageRepository.findByAbbr(hopeLanguageName).orElseThrow(LanguageNotFoundException::new);
             UserHopeLanguage userHopeLanguage = UserHopeLanguage.createUserHopeLanguage(language);
             hopeLanguageList.add(userHopeLanguage);
 
@@ -205,7 +227,7 @@ public class SignService {
         List<UserLanguage>languageList=new ArrayList<>();
         for(int i=0;i<requestDto.getLanguage().size();i++){
             String LanguageName=requestDto.getLanguage().get(i);
-            Language language = languageRepository.findByName(LanguageName).orElseThrow(LanguageNotFoundException::new);
+            Language language = languageRepository.findByAbbr(LanguageName).orElseThrow(LanguageNotFoundException::new);
             UserLanguage userLanguage = UserLanguage.createUserLanguage(language);
             languageList.add(userLanguage);
 
@@ -221,12 +243,10 @@ public class SignService {
         }
 
 
-        if(validUserWithProvider(requestDto.getEmail(),provider)){
-            throw new UserAlreadyExistException();
-        }
+
         userRepository.save(User.createUser(requestDto.getEmail(),requestDto.getName(),provider,null,
                 requestDto.getWeb_email(),requestDto.getSchool(),requestDto.getImageUrl(),requestDto.getContent(),countryList,languageList,
-                hopeLanguageList,requestDto.getFacebookUrl(),requestDto.getInstagramUrl()));
+                hopeLanguageList,requestDto.getFacebookUrl(),requestDto.getInstagramUrl(),userRepCountry,userRepLanguage,userRepHopeLanguage));
 
     }
 
@@ -249,6 +269,11 @@ public class SignService {
         if(userRepository.findByEmail(email).isPresent())
            return true;
         else return false;
+    }
+    public String getImageUrl(String token){
+        Long id=Long.valueOf(jwtTokenProvider.getUserPk(token));
+        User user = userRepository.findById(id).orElseThrow(UserNotFoundException::new);
+        return user.getImageUrl();
     }
 
 

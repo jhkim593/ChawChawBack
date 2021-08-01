@@ -20,9 +20,12 @@ public class Language {
 
     private String name;
 
-    public static Language createLanguage(String name){
+    private String abbr;
+
+    public static Language createLanguage(String name,String abbr){
         Language language=new Language();
         language.name=name ;
+        language.abbr=abbr;
     return language;
 
     }

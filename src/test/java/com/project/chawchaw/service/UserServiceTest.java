@@ -110,7 +110,7 @@ class UserServiceTest {
     public void detail()throws Exception{
        //given
 
-        Language language1=Language.createLanguage("한국어");
+        Language language1=Language.createLanguage("한국어","kor");
         Country country1=Country.createCountry("한국");
        countryRepository.save(country1);
        languageRepository.save(language1);

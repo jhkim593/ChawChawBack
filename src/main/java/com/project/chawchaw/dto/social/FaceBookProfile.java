@@ -8,10 +8,11 @@ import lombok.ToString;
 @Setter
 @ToString
 public class FaceBookProfile {
-    private String id;
+
     private String name;
     private String email;
-    private Picture picture;
+    private String imageUrl;
+    private String provider;
 
 
     @Getter

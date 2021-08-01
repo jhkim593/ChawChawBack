@@ -55,6 +55,12 @@ public class User{
     @OneToMany(mappedBy = "toUser")
     private List<Follow>toFollows=new ArrayList<>();
 
+    private String repCountry;
+
+    private String repLanguage;
+
+    private String repHopeLanguage;
+
 
 
 //    @OneToMany(mappedBy = "user",cascade = CascadeType.ALL)
@@ -70,7 +76,7 @@ public class User{
     public static User createUser(String email,String name,String provider,String password,
                                   String web_email,String school,String imageUrl,String content,
                                   List<UserCountry>country,List<UserLanguage> language,List<UserHopeLanguage> hopeLanguage,
-                                  String facebookUrl,String instagramUrl){
+                                  String facebookUrl,String instagramUrl,UserCountry repCountry,UserLanguage repLanguage,UserHopeLanguage repHopeLanguage){
 
 
         User user=new User();
@@ -95,6 +101,12 @@ public class User{
         user.school=school;
         user.facebookUrl=facebookUrl;
         user.instagramUrl =instagramUrl;
+        repCountry.addUser(user);
+        repHopeLanguage.addUser(user);
+        repLanguage.addUser(user);
+        user.repCountry=repCountry.getCountry().getName();
+        user.repLanguage=repLanguage.getLanguage().getAbbr();
+        user.repHopeLanguage=repHopeLanguage.getHopeLanguage().getAbbr();
 
         return user;
 
@@ -122,4 +134,10 @@ public class User{
     public void changeImageUrl(String url){
         this.imageUrl=url;
     }
+    public void changeRep(String repCountry,String repLanguage,String repHopeLanguage){
+        this.repLanguage=repLanguage;
+        this.repCountry=repCountry;
+        this.repHopeLanguage=repHopeLanguage;
+    }
+
 }

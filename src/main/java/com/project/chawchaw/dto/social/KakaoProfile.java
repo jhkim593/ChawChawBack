@@ -9,32 +9,13 @@ import org.springframework.context.annotation.Profile;
 @Setter
 @ToString
 public class KakaoProfile {
-    public String id;
-    public KakaoAccount kakao_account;
-    public String connected_at;
+    private String email;
+    private String name;
+    private String provider;
+    private String imageUrl;
 
 
-    @Getter
-    @Setter
-    @ToString
-    public static class KakaoAccount {
 
-        public Boolean has_email;
-        public Boolean email_needs_agreement;
-        public Boolean is_email_valid;
-        public Boolean is_email_verified;
-        public String email;
-//        public Profile profile;
-//
-//
-//        @Getter
-//        @Setter
-//        @ToString
-//        public static class Profile {
-//
-//            private String profile_image;
-//
-//        }
 
     }
 
@@ -42,4 +23,3 @@ public class KakaoProfile {
 
 
 
-}

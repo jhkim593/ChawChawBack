@@ -12,4 +12,5 @@ public class SocialLoginResponseDto {
     private String email;
     private String name;
     private String imageUrl;
+    private String provider;
 }

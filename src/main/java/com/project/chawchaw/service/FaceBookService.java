@@ -3,6 +3,7 @@ package com.project.chawchaw.service;
 
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.project.chawchaw.dto.social.FaceBookProfile;
@@ -35,23 +36,26 @@ public class FaceBookService {
 
 
         UriComponents uri = UriComponentsBuilder.fromHttpUrl("https://graph.facebook.com/"+userId).
-                queryParam("fields", "id,name,email").
+                queryParam("fields", "id,name,email,picture").
                 queryParam("access_token", accessToken).build();
 
         // Set http entity
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params);
-        ResponseEntity<String> response = restTemplate.getForEntity(
+        String response = restTemplate.getForObject(
                 uri.toUri(),
 
                 String.class
         );
         ObjectMapper objectMapper = new ObjectMapper();
-        FaceBookProfile profile  =null;
-
+        FaceBookProfile profile  =new FaceBookProfile();
         try {
-            profile = objectMapper.readValue(response.getBody(), FaceBookProfile.class);
-
-
+            JsonNode jsonNode = objectMapper.readTree(response);
+            profile.setEmail(String.valueOf(userId));
+            String name = String.valueOf(jsonNode.get("name"));
+            profile.setName(name.substring(1, name.length() - 1));
+            String imageUrl = String.valueOf(jsonNode.get("picture").get("data").get("url"));
+            profile.setImageUrl(imageUrl.substring(1, imageUrl.length() - 1));
+            profile.setProvider("facebook");
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }

@@ -7,6 +7,7 @@ import com.project.chawchaw.repository.UserLanguageRepository;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -58,7 +59,7 @@ public class UserRepositoryImpl implements  UserRepositoryCustom{
 
 
     }
-    QUser user2=new QUser("user2");
+
     QLanguage language2=new QLanguage("language2");
 
     @Override
@@ -66,21 +67,27 @@ public class UserRepositoryImpl implements  UserRepositoryCustom{
 
         List<UsersDto> usersList = queryFactory.select(Projections.constructor(UsersDto.class, user.id, user.imageUrl, user.content,
 
-                user.regDate, user.views,user.toFollows.size())).distinct().from( userLanguage, userHopeLanguage)
+                user.regDate, user.views,user.toFollows.size(),user.repCountry,user.repLanguage,user.repHopeLanguage)).distinct().from(userLanguage)
 
                 .join(userLanguage.language,language)
                 .join(userLanguage.user,user)
-                .join(userHopeLanguage.user,user2)
+                .join(user.hopeLanguage,userHopeLanguage)
                 .join(userHopeLanguage.hopeLanguage,language2)
 
                 .where(
                         hopeLanguageEq(userSearch.getHopeLanguage())
                         , languageEq(userSearch.getLanguage())
                         , nameEq(userSearch.getName())
-                        , schoolEq(school)
-                        ,user.id.eq(user2.id)
-                ).orderBy(searchOrder(userSearch.getOrder()))
+                        , user.school.eq(school)
+
+                ).orderBy(
+                        searchOrder(userSearch.getOrder())
+
+                )
+
                 .fetch();
+
+
         return usersList;
     }
     public OrderSpecifier<?>searchOrder(String order) {
@@ -90,7 +97,7 @@ public class UserRepositoryImpl implements  UserRepositoryCustom{
 
             else return user.regDate.desc();
         }
-        else return user.regDate.desc();
+        else  return NumberExpression.random().desc();
 
     }
 
@@ -107,7 +114,6 @@ public class UserRepositoryImpl implements  UserRepositoryCustom{
         return hasText(name) ? user.name.eq(name) : null;
     }
 
-//
 //    private BooleanExpression hopeLanguageEq(String hopeLanguage) {
 //        return  hasText(hopeLanguage)?user.hopeLanguage.eq(hopeLanguage):null;
 //    }

@@ -7,6 +7,6 @@ import lombok.Setter;
 @Setter
 public class SocialLoginRequestDto {
     private String accessToken;
-    private String userId;
+    private String email;
     private String code;
 }

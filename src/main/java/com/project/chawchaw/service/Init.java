@@ -3,6 +3,7 @@ package com.project.chawchaw.service;
 import com.project.chawchaw.entity.*;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,29 +30,45 @@ public class Init {
     @Transactional
     static class InitService{
         private final EntityManager em;
+        private final PasswordEncoder passwordEncoder;
 
         public void Init(){
 
+             //대표언어 공통 중국 중국어
             //user1 한국 한국어  일본 일본어
             //user2 미국 영어    프랑스 불어
             //user3 한국 한국어 미국 영어
+            Language rlanguage=Language.createLanguage("중국어","chi");
+            Country rcountry=Country.createCountry("중국");
+            em.persist(rlanguage);
+            em.persist(rcountry);
 
-            Language language1=Language.createLanguage("한국어");
+            UserLanguage ruserLanguage = UserLanguage.createUserLanguage(rlanguage);
+            ruserLanguage.changeRep();
+            UserHopeLanguage ruserHopeLanguage = UserHopeLanguage.createUserHopeLanguage(rlanguage);
+            ruserHopeLanguage.changeRep();
+            UserCountry ruserCountry = UserCountry.createUserCountry(rcountry);
+            ruserCountry.changeRep();
+
+
+            Language language1=Language.createLanguage("한국어","kor");
             Country country1=Country.createCountry("한국");
             em.persist(language1);
             em.persist(country1);
-            Language language2=Language.createLanguage("일본어");
+            Language language2=Language.createLanguage("일본어","jap");
             Country country2=Country.createCountry("일본");
             em.persist(language2);
             em.persist(country2);
-            Language language3=Language.createLanguage("영어");
+            Language language3=Language.createLanguage("영어","eng");
             Country country3=Country.createCountry("미국");
             em.persist(country3);
             em.persist(language3);
-            Language language4=Language.createLanguage("불어");
+            Language language4=Language.createLanguage("불어","fr");
             Country country4=Country.createCountry("프랑스");
             em.persist(country4);
             em.persist(language4);
+
+
 
             List<UserCountry>user1c=new ArrayList<>();
             List<UserLanguage>user1l=new ArrayList<>();
@@ -68,7 +85,7 @@ public class Init {
 
 
 
-            em.persist(User.createUser(null,null,null,null,null,"단국대",null,"ggggggg",user1c,user1l,user1h,null,null));
+            em.persist(User.createUser("1",null,null,passwordEncoder.encode("1"),null,"단국대",null,"ggggggg",user1c,user1l,user1h,null,null,ruserCountry,ruserLanguage,ruserHopeLanguage));
 
 
             List<UserCountry>user2c=new ArrayList<>();
@@ -79,7 +96,7 @@ public class Init {
             user2l.add(UserLanguage.createUserLanguage(language3));
             user2c.add(UserCountry.createUserCountry(country4));
             user2l.add(UserLanguage.createUserLanguage(language4));
-            em.persist(User.createUser(null,null,null,null,null,"단국대",null,"ggggggg",user2c,user2l,user2h,null,null));
+            em.persist(User.createUser("2",null,null,passwordEncoder.encode("2"),null,"단국대",null,"ggggggg",user2c,user2l,user2h,null,null,ruserCountry,ruserLanguage,ruserHopeLanguage));
 
 
             List<UserCountry>user3c=new ArrayList<>();
@@ -90,7 +107,7 @@ public class Init {
             user3l.add(UserLanguage.createUserLanguage(language1));
             user3c.add(UserCountry.createUserCountry(country3));
             user3l.add(UserLanguage.createUserLanguage(language3));
-            em.persist(User.createUser(null,null,null,null,null,"단국대",null,"ggggggg",user3c,user3l,user3h,null,null));
+            em.persist(User.createUser("3",null,null,passwordEncoder.encode("3"),null,"단국대",null,"ggggggg",user3c,user3l,user3h,null,null,ruserCountry,ruserLanguage,ruserHopeLanguage));
 
 
         }
