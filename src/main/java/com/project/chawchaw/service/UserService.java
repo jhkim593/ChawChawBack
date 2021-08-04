@@ -115,10 +115,12 @@ public class UserService {
             uploadPathFolder.mkdirs();
         }
         try {
-        String saveName = fileRealPath + File.separator + /*folderPath + File.separator + */uuidFilename;
+        String saveName = fileRealPath + File.separator + folderPath + File.separator + uuidFilename;
+
         Path savePath = Paths.get(saveName);
+            System.out.println(savePath.toString());
         file.transferTo(savePath);
-        String encodeUrl = URLEncoder.encode(/*folderPath + File.separator +*/  uuidFilename, "UTF-8");
+        String encodeUrl = URLEncoder.encode(folderPath + File.separator +  uuidFilename, "UTF-8");
         if (!URLDecoder.decode(user.getImageUrl(), "UTF-8").equals("defaultImage")) {
             new File(fileRealPath + URLDecoder.decode(user.getImageUrl(), "UTF-8")).delete();
         }

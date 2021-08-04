@@ -102,8 +102,8 @@ public class ExceptionAdvice {
 //
     @ExceptionHandler(AuthenticationEntryPointException.class)
     protected ResponseEntity authenticationEntryPointException(HttpServletRequest request,AuthenticationEntryPointException e){
-        System.out.println("exceptiin 터짐");
-        return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.ENTRYPOINT_EXCEPTION,false),HttpStatus.OK);
+
+        return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.ENTRYPOINT_EXCEPTION,false),HttpStatus.FORBIDDEN);
     }
     @ExceptionHandler(AccessDeniedException.class)
     protected CommonResult accessDeniedException(HttpServletRequest request,AccessDeniedException e){
