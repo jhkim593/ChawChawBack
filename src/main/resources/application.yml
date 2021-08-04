@@ -52,7 +52,10 @@ spring:
     secret: govlepel@$&
 
 file:
-  path: C:\chawchaw\
+#  path: C:\chawchaw\
+  path: /home/ubuntu/chawchaw
+
+
 
 
   mvc:

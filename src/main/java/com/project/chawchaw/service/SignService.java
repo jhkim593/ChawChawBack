@@ -102,7 +102,7 @@ public class SignService {
     @Transactional
     public void signup(UserSignUpRequestDto requestDto){
 
-        validUser(requestDto.getEmail());
+
 
 //        UUID uuid = UUID.randomUUID();
 //        String uuidFilename = uuid + "_" + file.getOriginalFilename();
@@ -113,53 +113,61 @@ public class SignService {
 //        } catch (IOException e) {
 //            e.printStackTrace();
 //        }
-        Country repCountry = countryRepository.findByName(requestDto.getRepCountry()).orElseThrow(CountryNotFoundException::new);
-        Language repLanguage = languageRepository.findByAbbr(requestDto.getRepLanguage()).orElseThrow(LanguageNotFoundException::new);
-        Language repHopeLanguage = languageRepository.findByAbbr(requestDto.getRepHopeLanguage()).orElseThrow(LanguageNotFoundException::new);
+//        Country repCountry = countryRepository.findByName(requestDto.getRepCountry()).orElseThrow(CountryNotFoundException::new);
+//        Language repLanguage = languageRepository.findByAbbr(requestDto.getRepLanguage()).orElseThrow(LanguageNotFoundException::new);
+//        Language repHopeLanguage = languageRepository.findByAbbr(requestDto.getRepHopeLanguage()).orElseThrow(LanguageNotFoundException::new);
+//
+//        UserHopeLanguage userRepHopeLanguage = UserHopeLanguage.createUserHopeLanguage(repHopeLanguage);
+//        userRepHopeLanguage.changeRep();
+//        UserLanguage userRepLanguage = UserLanguage.createUserLanguage(repLanguage);
+//        userRepLanguage.changeRep();
+//        UserCountry userRepCountry = UserCountry.createUserCountry(repCountry);
+//        userRepCountry.changeRep();
+//
+//
+//
+//
+//        List<UserHopeLanguage> hopeLanguageList=new ArrayList<>();
+//        for(int i=0;i<requestDto.getHopeLanguage().size();i++){
+//            String hopeLanguageName=requestDto.getHopeLanguage().get(i);
+//            Language language = languageRepository.findByAbbr(hopeLanguageName).orElseThrow(LanguageNotFoundException::new);
+//            UserHopeLanguage userHopeLanguage = UserHopeLanguage.createUserHopeLanguage(language);
+//            hopeLanguageList.add(userHopeLanguage);
+//
+//        }
+//       List<UserLanguage>languageList=new ArrayList<>();
+//        for(int i=0;i<requestDto.getLanguage().size();i++){
+//            String LanguageName=requestDto.getLanguage().get(i);
+//            Language language = languageRepository.findByAbbr(LanguageName).orElseThrow(LanguageNotFoundException::new);
+//            UserLanguage userLanguage = UserLanguage.createUserLanguage(language);
+//            languageList.add(userLanguage);
+//
+//        }
+//
+//        List<UserCountry>countryList=new ArrayList<>();
+//        for(int i=0;i<requestDto.getCountry().size();i++){
+//            String countryName=requestDto.getCountry().get(i);
+//            Country country = countryRepository.findByName(countryName).orElseThrow(CountryNotFoundException::new);
+//            UserCountry userCountry = UserCountry.createUserCountry(country);
+//            countryList.add(userCountry);
+//
+//        }
 
-        UserHopeLanguage userRepHopeLanguage = UserHopeLanguage.createUserHopeLanguage(repHopeLanguage);
-        userRepHopeLanguage.changeRep();
-        UserLanguage userRepLanguage = UserLanguage.createUserLanguage(repLanguage);
-        userRepLanguage.changeRep();
-        UserCountry userRepCountry = UserCountry.createUserCountry(repCountry);
-        userRepCountry.changeRep();
 
 
+//        validUser(requestDto.getEmail());
 
 
-        List<UserHopeLanguage> hopeLanguageList=new ArrayList<>();
-        for(int i=0;i<requestDto.getHopeLanguage().size();i++){
-            String hopeLanguageName=requestDto.getHopeLanguage().get(i);
-            Language language = languageRepository.findByAbbr(hopeLanguageName).orElseThrow(LanguageNotFoundException::new);
-            UserHopeLanguage userHopeLanguage = UserHopeLanguage.createUserHopeLanguage(language);
-            hopeLanguageList.add(userHopeLanguage);
+        if(validUserWithProvider(requestDto.getEmail(),requestDto.getProvider())){
+
+            throw new UserAlreadyExistException();
 
         }
-       List<UserLanguage>languageList=new ArrayList<>();
-        for(int i=0;i<requestDto.getLanguage().size();i++){
-            String LanguageName=requestDto.getLanguage().get(i);
-            Language language = languageRepository.findByAbbr(LanguageName).orElseThrow(LanguageNotFoundException::new);
-            UserLanguage userLanguage = UserLanguage.createUserLanguage(language);
-            languageList.add(userLanguage);
 
-        }
-
-        List<UserCountry>countryList=new ArrayList<>();
-        for(int i=0;i<requestDto.getCountry().size();i++){
-            String countryName=requestDto.getCountry().get(i);
-            Country country = countryRepository.findByName(countryName).orElseThrow(CountryNotFoundException::new);
-            UserCountry userCountry = UserCountry.createUserCountry(country);
-            countryList.add(userCountry);
-
-        }
-
-
-
-
-        userRepository.save(User.createUser(requestDto.getEmail(),requestDto.getName(),null,passwordEncoder.encode(requestDto.getPassword()),
-                requestDto.getWeb_email(),requestDto.getSchool(),requestDto.getImageUrl(),requestDto.getContent(),
-                countryList,
-                languageList,hopeLanguageList,requestDto.getFacebookUrl(),requestDto.getInstagramUrl(),userRepCountry,userRepLanguage,userRepHopeLanguage));
+        userRepository.save(User.createUser(requestDto.getEmail(),requestDto.getName(),requestDto.getProvider(),passwordEncoder.encode(requestDto.getPassword()),
+                requestDto.getWeb_email(),requestDto.getSchool(),requestDto.getImageUrl()
+//                ,requestDto.getContent(), countryList, languageList,hopeLanguageList,requestDto.getFacebookUrl(),requestDto.getInstagramUrl(),userRepCountry,userRepLanguage,userRepHopeLanguage
+        ));
 
     }
 
@@ -198,57 +206,57 @@ public class SignService {
 //        throw new InvalidateProviderException();
 //    }
 
-    @Transactional
-    public void signUpByProvider(UserSignUpByProviderRequestDto requestDto,String provider) {
-
-        if(validUserWithProvider(requestDto.getEmail(),provider)){
-            throw new UserAlreadyExistException();
-        }
-
-        Country repCountry = countryRepository.findByName(requestDto.getRepCountry()).orElseThrow(CountryNotFoundException::new);
-        Language repLanguage = languageRepository.findByAbbr(requestDto.getRepLanguage()).orElseThrow(LanguageNotFoundException::new);
-        Language repHopeLanguage = languageRepository.findByAbbr(requestDto.getRepHopeLanguage()).orElseThrow(LanguageNotFoundException::new);
-
-        UserHopeLanguage userRepHopeLanguage = UserHopeLanguage.createUserHopeLanguage(repHopeLanguage);
-        userRepHopeLanguage.changeRep();
-        UserLanguage userRepLanguage = UserLanguage.createUserLanguage(repLanguage);
-        userRepLanguage.changeRep();
-        UserCountry userRepCountry = UserCountry.createUserCountry(repCountry);
-        userRepCountry.changeRep();
-
-        List<UserHopeLanguage> hopeLanguageList=new ArrayList<>();
-        for(int i=0;i<requestDto.getHopeLanguage().size();i++){
-            String hopeLanguageName=requestDto.getHopeLanguage().get(i);
-            Language language = languageRepository.findByAbbr(hopeLanguageName).orElseThrow(LanguageNotFoundException::new);
-            UserHopeLanguage userHopeLanguage = UserHopeLanguage.createUserHopeLanguage(language);
-            hopeLanguageList.add(userHopeLanguage);
-
-        }
-        List<UserLanguage>languageList=new ArrayList<>();
-        for(int i=0;i<requestDto.getLanguage().size();i++){
-            String LanguageName=requestDto.getLanguage().get(i);
-            Language language = languageRepository.findByAbbr(LanguageName).orElseThrow(LanguageNotFoundException::new);
-            UserLanguage userLanguage = UserLanguage.createUserLanguage(language);
-            languageList.add(userLanguage);
-
-        }
-
-        List<UserCountry>countryList=new ArrayList<>();
-        for(int i=0;i<requestDto.getCountry().size();i++){
-            String countryName=requestDto.getCountry().get(i);
-            Country country = countryRepository.findByName(countryName).orElseThrow(CountryNotFoundException::new);
-            UserCountry userCountry = UserCountry.createUserCountry(country);
-            countryList.add(userCountry);
-
-        }
-
-
-
-        userRepository.save(User.createUser(requestDto.getEmail(),requestDto.getName(),provider,null,
-                requestDto.getWeb_email(),requestDto.getSchool(),requestDto.getImageUrl(),requestDto.getContent(),countryList,languageList,
-                hopeLanguageList,requestDto.getFacebookUrl(),requestDto.getInstagramUrl(),userRepCountry,userRepLanguage,userRepHopeLanguage));
-
-    }
+//    @Transactional
+//    public void signUpByProvider(UserSignUpByProviderRequestDto requestDto,String provider) {
+//
+//        if(validUserWithProvider(requestDto.getEmail(),provider)){
+//            throw new UserAlreadyExistException();
+//        }
+//
+//        Country repCountry = countryRepository.findByName(requestDto.getRepCountry()).orElseThrow(CountryNotFoundException::new);
+//        Language repLanguage = languageRepository.findByAbbr(requestDto.getRepLanguage()).orElseThrow(LanguageNotFoundException::new);
+//        Language repHopeLanguage = languageRepository.findByAbbr(requestDto.getRepHopeLanguage()).orElseThrow(LanguageNotFoundException::new);
+//
+//        UserHopeLanguage userRepHopeLanguage = UserHopeLanguage.createUserHopeLanguage(repHopeLanguage);
+//        userRepHopeLanguage.changeRep();
+//        UserLanguage userRepLanguage = UserLanguage.createUserLanguage(repLanguage);
+//        userRepLanguage.changeRep();
+//        UserCountry userRepCountry = UserCountry.createUserCountry(repCountry);
+//        userRepCountry.changeRep();
+//
+//        List<UserHopeLanguage> hopeLanguageList=new ArrayList<>();
+//        for(int i=0;i<requestDto.getHopeLanguage().size();i++){
+//            String hopeLanguageName=requestDto.getHopeLanguage().get(i);
+//            Language language = languageRepository.findByAbbr(hopeLanguageName).orElseThrow(LanguageNotFoundException::new);
+//            UserHopeLanguage userHopeLanguage = UserHopeLanguage.createUserHopeLanguage(language);
+//            hopeLanguageList.add(userHopeLanguage);
+//
+//        }
+//        List<UserLanguage>languageList=new ArrayList<>();
+//        for(int i=0;i<requestDto.getLanguage().size();i++){
+//            String LanguageName=requestDto.getLanguage().get(i);
+//            Language language = languageRepository.findByAbbr(LanguageName).orElseThrow(LanguageNotFoundException::new);
+//            UserLanguage userLanguage = UserLanguage.createUserLanguage(language);
+//            languageList.add(userLanguage);
+//
+//        }
+//
+//        List<UserCountry>countryList=new ArrayList<>();
+//        for(int i=0;i<requestDto.getCountry().size();i++){
+//            String countryName=requestDto.getCountry().get(i);
+//            Country country = countryRepository.findByName(countryName).orElseThrow(CountryNotFoundException::new);
+//            UserCountry userCountry = UserCountry.createUserCountry(country);
+//            countryList.add(userCountry);
+//
+//        }
+//
+//
+//
+//        userRepository.save(User.createUser(requestDto.getEmail(),requestDto.getName(),provider,null,
+//                requestDto.getWeb_email(),requestDto.getSchool(),requestDto.getImageUrl(),requestDto.getContent(),countryList,languageList,
+//                hopeLanguageList,requestDto.getFacebookUrl(),requestDto.getInstagramUrl(),userRepCountry,userRepLanguage,userRepHopeLanguage));
+//
+//    }
 
 
     public Boolean validUserWithProvider(String email, String provider) {
@@ -270,11 +278,11 @@ public class SignService {
            return true;
         else return false;
     }
-    public String getImageUrl(String token){
-        Long id=Long.valueOf(jwtTokenProvider.getUserPk(token));
-        User user = userRepository.findById(id).orElseThrow(UserNotFoundException::new);
-        return user.getImageUrl();
-    }
+//    public String getImageUrl(String token){
+//        Long id=Long.valueOf(jwtTokenProvider.getUserPk(token));
+//        User user = userRepository.findById(id).orElseThrow(UserNotFoundException::new);
+//        return user.getImageUrl();
+//    }
 
 
 

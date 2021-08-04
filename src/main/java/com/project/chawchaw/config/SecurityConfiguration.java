@@ -1,6 +1,6 @@
 package com.project.chawchaw.config;
 
-import com.project.chawchaw.service.PrincipalOauth2UserService;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -22,7 +22,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     private final JwtTokenProvider jwtTokenProvider;
-    private final PrincipalOauth2UserService principalOauth2UserService;
+
+    private final CorsConfig corsConfig;
+
 
 
 
@@ -38,14 +40,16 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
 
-                http.httpBasic().disable() // rest api 이므로 기본설정 사용안함. 기본설정은 비인증시 로그인폼 화면으로 리다이렉트 된다.
-                .csrf().disable() //
+        http.
+                addFilter(corsConfig.corsFilter())
+                .httpBasic().disable() // rest api 이므로 기본설정 사용안함. 기본설정은 비인증시 로그인폼 화면으로 리다이렉트 된다.
+                .csrf().disable()//
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) // jwt token으로 인증하므로 세션은 필요없으므로 생성안함.
                 .and()
                 .authorizeRequests() // 다음 리퀘스트에 대한 사용권한 체크
-                .antMatchers("/**","/users/login/**","/users/signup/**","/social/login/**","/signup/**","/social/logout/**","/users/send-email","/users/verification-email","/oauth2/**").permitAll() // 가입 및 인증 주소는 누구나 접근가능
+                .antMatchers("/login","/users/signup","/mail/**","/users/email/**","/social/login").permitAll() // 가입 및 인증 주소는 누구나 접근가능
                 .antMatchers(HttpMethod.GET, "/exception/**"
-                      ).permitAll() //
+                      ).permitAll() // 토큰없이 접근가능 안받을시 세션 생성안됨
                 .anyRequest().authenticated()// 그외 나머지 요청은 모두 인증된 회원만 접근 가능
                 .and()
                 .exceptionHandling().authenticationEntryPoint(new CustomAuthenticationEntryPoint())

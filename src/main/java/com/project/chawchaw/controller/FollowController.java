@@ -23,14 +23,14 @@ public class FollowController {
 
 
     @PostMapping("/follow/{userId}")
-    public ResponseEntity follow(@PathVariable("userId")Long toUserId, @RequestHeader(value ="X-AUTH-TOKEN")String token){
+    public ResponseEntity follow(@PathVariable("userId")Long toUserId, @RequestHeader(value ="Authorization")String token){
 
         followService.follow(toUserId,token);
         return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.FOLLOW,true),HttpStatus.CREATED);
 
     }
     @DeleteMapping("follow/{userId}")
-    public ResponseEntity unFollow(@PathVariable("userId")Long toUserId,@RequestHeader(value="X-AUTH-TOKEN")String token){
+    public ResponseEntity unFollow(@PathVariable("userId")Long toUserId,@RequestHeader(value="Authorization")String token){
         followService.unFollow(toUserId,token);
         return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.UNFOLLOW,true),HttpStatus.CREATED);
 

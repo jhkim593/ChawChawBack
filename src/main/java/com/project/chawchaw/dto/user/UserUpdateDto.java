@@ -1,5 +1,6 @@
 package com.project.chawchaw.dto.user;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -7,6 +8,7 @@ import java.util.List;
 
 @Getter
 @Setter
+@AllArgsConstructor
 public class UserUpdateDto {
     private List<String> country;
     private List<String> language;

@@ -26,8 +26,17 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain) throws IOException, ServletException {
         String token = jwtTokenProvider.resolveToken((HttpServletRequest) request);
+        if(token == null || !token.startsWith("Bearer")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+        token=token.replace("Bearer ","");
+
         if(token != null && jwtTokenProvider.validateToken(token)) {
             Authentication auth = jwtTokenProvider.getAuthentication(token);
+
+            //강제로 세션접근
+
             SecurityContextHolder.getContext().setAuthentication(auth);
         }
         filterChain.doFilter(request, response);

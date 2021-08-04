@@ -101,14 +101,15 @@ public class ExceptionAdvice {
 //    }
 //
     @ExceptionHandler(AuthenticationEntryPointException.class)
-    protected CommonResult authenticationEntryPointException(HttpServletRequest request,AuthenticationEntryPointException e){
-        return responseService.getFailResult(Integer.valueOf(getMessage("entryPointException.code")),getMessage("entryPointException.msg"));
+    protected ResponseEntity authenticationEntryPointException(HttpServletRequest request,AuthenticationEntryPointException e){
+        System.out.println("exceptiin 터짐");
+        return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.ENTRYPOINT_EXCEPTION,false),HttpStatus.OK);
     }
-//    @ExceptionHandler(AccessDeniedException.class)
-//    protected CommonResult accessDeniedException(HttpServletRequest request,AccessDeniedException e){
-//            return responseService.getFailResult(Integer.valueOf(getMessage("accessDenied.code")), getMessage("accessDenied.msg"));
-//
-//    }
+    @ExceptionHandler(AccessDeniedException.class)
+    protected CommonResult accessDeniedException(HttpServletRequest request,AccessDeniedException e){
+            return responseService.getFailResult(Integer.valueOf(getMessage("accessDenied.code")), getMessage("accessDenied.msg"));
+
+    }
 //    @ExceptionHandler(COrderNotFoundException.class)
 //    @ResponseStatus(HttpStatus.NOT_FOUND)
 //    protected CommonResult orderNotFound(HttpServletRequest request,AccessDeniedException e){

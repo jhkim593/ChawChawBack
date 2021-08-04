@@ -1,5 +1,6 @@
 package com.project.chawchaw.entity;
 
+import com.project.chawchaw.exception.ResourceNotFoundException;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,6 +15,7 @@ import java.util.List;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
+@Table(name="users")
 public class User{
 
     @Id
@@ -74,45 +76,47 @@ public class User{
     private ROLE role;
 
     public static User createUser(String email,String name,String provider,String password,
-                                  String web_email,String school,String imageUrl,String content,
-                                  List<UserCountry>country,List<UserLanguage> language,List<UserHopeLanguage> hopeLanguage,
-                                  String facebookUrl,String instagramUrl,UserCountry repCountry,UserLanguage repLanguage,UserHopeLanguage repHopeLanguage){
+                                  String web_email,String school,String imageUrl
+//                                  String content, List<UserCountry>country,List<UserLanguage> language,List<UserHopeLanguage> hopeLanguage,
+//                                  String facebookUrl,String instagramUrl,UserCountry repCountry,UserLanguage repLanguage,UserHopeLanguage repHopeLanguage
+    ){
 
 
         User user=new User();
-        user.content=content;
-        for(int i=0;i<country.size();i++){
-            country.get(i).addUser(user);
-        }
-        user.email=email;
-        for(int i=0;i<language.size();i++){
-            language.get(i).addUser(user);
-        }
         user.imageUrl=imageUrl;
         user.name=name;
-        for(int i=0;i<hopeLanguage.size();i++){
-            hopeLanguage.get(i).addUser(user);
-        }
-        user.regDate=LocalDateTime.now();
+        user.email=email;
         user.password=password;
-        user.role=ROLE.USER;
+        user.role=ROLE.GUEST;
         user.provider=provider;
         user.web_email=web_email;
         user.school=school;
-        user.facebookUrl=facebookUrl;
-        user.instagramUrl =instagramUrl;
-        repCountry.addUser(user);
-        repHopeLanguage.addUser(user);
-        repLanguage.addUser(user);
-        user.repCountry=repCountry.getCountry().getName();
-        user.repLanguage=repLanguage.getLanguage().getAbbr();
-        user.repHopeLanguage=repHopeLanguage.getHopeLanguage().getAbbr();
+        user.regDate=LocalDateTime.now();
+
+//        user.content=content;
+//        for(int i=0;i<country.size();i++){
+//            country.get(i).addUser(user);
+//        }
+//        for(int i=0;i<language.size();i++){
+//            language.get(i).addUser(user);
+//        }
+//        for(int i=0;i<hopeLanguage.size();i++){
+//            hopeLanguage.get(i).addUser(user);
+//        }
+//        user.facebookUrl=facebookUrl;
+//        user.instagramUrl =instagramUrl;
+//        repCountry.addUser(user);
+//        repHopeLanguage.addUser(user);
+//        repLanguage.addUser(user);
+//        user.repCountry=repCountry.getCountry().getName();
+//        user.repLanguage=repLanguage.getLanguage().getAbbr();
+//        user.repHopeLanguage=repHopeLanguage.getHopeLanguage().getAbbr();
 
         return user;
 
     }
 
-
+//유효성 체크
 
     public void changeRefreshToken(String refreshToken) {
 
@@ -123,21 +127,30 @@ public class User{
     }
 
     public void changeContent(String content){
+        if(content!=null)
         this.content=content;
+
     }
     public void changeFaceBookUrl(String url){
+        if(url!=null)
         this.facebookUrl=url;
     }
     public void changeInstagramUrl(String url){
+        if(url!=null)
         this.instagramUrl=url;
     }
     public void changeImageUrl(String url){
+        if(url!=null)
         this.imageUrl=url;
     }
     public void changeRep(String repCountry,String repLanguage,String repHopeLanguage){
+        if(repCountry!=null&&repLanguage!=null&&repHopeLanguage!=null)
         this.repLanguage=repLanguage;
         this.repCountry=repCountry;
         this.repHopeLanguage=repHopeLanguage;
     }
 
+    public void changeRole() {
+        this.role=ROLE.USER;
+    }
 }

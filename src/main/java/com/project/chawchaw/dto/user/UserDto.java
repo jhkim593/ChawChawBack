@@ -45,10 +45,7 @@ public class UserDto {
      List<String> hopeLanguage=new ArrayList<>();
      user.getHopeLanguage().stream().forEach(hl->{
          if(!hl.getRep()){
-//             System.out.println("중국 실험 ");
-//             System.out.println(hl.getHopeLanguage().getAbbr());
-//             System.out.println(hl.getRep());
-//             System.out.println("================================");
+//
              hopeLanguage.add(hl.getHopeLanguage().getAbbr());}
 
      });

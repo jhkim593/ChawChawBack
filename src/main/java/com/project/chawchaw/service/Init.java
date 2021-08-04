@@ -31,6 +31,7 @@ public class Init {
     static class InitService{
         private final EntityManager em;
         private final PasswordEncoder passwordEncoder;
+        private final UserService userService;
 
         public void Init(){
 
@@ -82,10 +83,14 @@ public class Init {
             user1h.add(UserHopeLanguage.createUserHopeLanguage(language1));
 
 
+            User user1 = User.createUser("1", null, null, passwordEncoder.encode("1"),
+                    null, "단국대", null
+//                    ,"ggggggg", user1c, user1l, user1h,
+//                    null, null, ruserCountry, ruserLanguage, ruserHopeLanguage
+            );
 
+            em.persist(user1);
 
-
-            em.persist(User.createUser("1",null,null,passwordEncoder.encode("1"),null,"단국대",null,"ggggggg",user1c,user1l,user1h,null,null,ruserCountry,ruserLanguage,ruserHopeLanguage));
 
 
             List<UserCountry>user2c=new ArrayList<>();
@@ -96,7 +101,12 @@ public class Init {
             user2l.add(UserLanguage.createUserLanguage(language3));
             user2c.add(UserCountry.createUserCountry(country4));
             user2l.add(UserLanguage.createUserLanguage(language4));
-            em.persist(User.createUser("2",null,null,passwordEncoder.encode("2"),null,"단국대",null,"ggggggg",user2c,user2l,user2h,null,null,ruserCountry,ruserLanguage,ruserHopeLanguage));
+            User user2 = User.createUser("2", null, null, passwordEncoder.encode("2"), null,
+                    "단국대", null
+//                    , "ggggggg", user2c, user2l, user2h,
+//                    null, null, ruserCountry, ruserLanguage, ruserHopeLanguage
+            );
+            em.persist(user2);
 
 
             List<UserCountry>user3c=new ArrayList<>();
@@ -107,8 +117,19 @@ public class Init {
             user3l.add(UserLanguage.createUserLanguage(language1));
             user3c.add(UserCountry.createUserCountry(country3));
             user3l.add(UserLanguage.createUserLanguage(language3));
-            em.persist(User.createUser("3",null,null,passwordEncoder.encode("3"),null,"단국대",null,"ggggggg",user3c,user3l,user3h,null,null,ruserCountry,ruserLanguage,ruserHopeLanguage));
+            User user3 = User.createUser("3", null, null, passwordEncoder.encode("3"),
+                    null, "단국대",
+                    null
+//                    ,"ggggggg", user3c, user3l, user3h, null, null,
+//                    ruserCountry, ruserLanguage, ruserHopeLanguage
+            );
+            em.persist(user3);
 
+
+            View view1 = View.createView(user1, user2);
+            View view2 = View.createView(user1, user3);
+            em.persist(view1);
+            em.persist(view2);
 
         }
         }

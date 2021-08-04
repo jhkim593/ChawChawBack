@@ -21,4 +21,5 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
             ServletException {
         response.sendRedirect("/exception/entrypoint");
     }
+
 }

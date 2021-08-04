@@ -1,5 +1,6 @@
 package com.project.chawchaw.repository.user;
 
+import com.project.chawchaw.dto.user.UserDto;
 import com.project.chawchaw.dto.user.UserSearch;
 import com.project.chawchaw.dto.user.UsersDto;
 import com.project.chawchaw.entity.*;
@@ -7,6 +8,7 @@ import com.project.chawchaw.repository.UserLanguageRepository;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +17,9 @@ import org.springframework.data.domain.Slice;
 
 import javax.persistence.EntityManager;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.project.chawchaw.entity.QCountry.*;
 import static com.project.chawchaw.entity.QLanguage.*;
@@ -86,19 +90,18 @@ public class UserRepositoryImpl implements  UserRepositoryCustom{
                 )
 
                 .fetch();
-
-
-        return usersList;
+       return usersList;
     }
-    public OrderSpecifier<?>searchOrder(String order) {
+    public OrderSpecifier<?> searchOrder(String order) {
         if (hasText(order)) {
             if (order.equals("like")) return user.toFollows.size().desc();
             else if (order.equals("view")) return user.views.desc();
 
             else return user.regDate.desc();
         }
-        else  return NumberExpression.random().desc();
-
+        else {
+            return Expressions.numberTemplate(Double.class, "function('rand')").asc();
+        }
     }
 
     private BooleanExpression hopeLanguageEq(String hope) {

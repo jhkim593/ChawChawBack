@@ -5,6 +5,7 @@ import com.project.chawchaw.entity.*;
 import com.project.chawchaw.exception.*;
 import com.project.chawchaw.repository.*;
 import com.project.chawchaw.repository.user.UserRepository;
+import io.lettuce.core.ScriptOutputType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
@@ -19,10 +20,14 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
 
@@ -37,6 +42,7 @@ public class UserService {
     private final UserLanguageRepository userLanguageRepository;
     private final UserHopeLanguageRepository userHopeLanguageRepository;
     private final UserCountryRepository userCountryRepository;
+    private final ViewRepository viewRepository;
 
     @Value("${file.path}")
     private String fileRealPath;
@@ -44,17 +50,17 @@ public class UserService {
     private Path diLocation;
 
     @Transactional
-    public UserDto detailUser(Long userId){
+    public UserDto detailUser(Long toUserId,Long fromUserId){
 
-        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
-        user.addView();
-        for(int i=0 ;i<user.getCountry().size();i++){
-            System.out.println("============================================");
-            System.out.println(user.getCountry().get(i).getRep());
-            System.out.println(user.getCountry().get(i).getCountry().getName());
+        System.out.println(toUserId+"  "+fromUserId);
+        User toUser = userRepository.findById(toUserId).orElseThrow(UserNotFoundException::new);
+        User fromUser = userRepository.findById(fromUserId).orElseThrow(UserNotFoundException::new);
+        if(!viewRepository.findViewByUserId(fromUserId,toUserId).isPresent()) {
+            toUser.addView();
+            viewRepository.save(View.createView(toUser, fromUser));
         }
 
-       UserDto userDto= new UserDto(user);
+       UserDto userDto= new UserDto(toUser);
 
        return userDto;
 
@@ -94,23 +100,53 @@ public class UserService {
     }
 ///
     @Transactional
-    public String fileUpload(MultipartFile file){
-        diLocation = Paths.get(fileRealPath).toAbsolutePath().normalize();
-        String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+    public String fileUpload(MultipartFile file,Long id){
+        User user = userRepository.findById(id).orElseThrow(UserNotFoundException::new);
 
-        try {
-            // 파일명에 부적합 문자가 있는지 확인한다.
-            if(fileName.contains(".."))
-                throw new FileUploadException("파일명에 부적합 문자가 포함되어 있습니다. " + fileName);
+        UUID uuid = UUID.randomUUID();
+        String uuidFilename = uuid + "_" + file.getOriginalFilename();
 
-            Path targetLocation = diLocation.resolve(fileName);
+        String date = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy/MM/dd"));
 
-            Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
-
-            return fileName;
-        }catch(Exception e) {
-            throw new FileUploadException("["+fileName+"] 파일 업로드에 실패하였습니다. 다시 시도하십시오.",e);
+        String folderPath = date.replace("//", File.separator);
+        System.out.println(folderPath);
+        File uploadPathFolder = new File(fileRealPath, folderPath);
+        if (!uploadPathFolder.exists()) {
+            uploadPathFolder.mkdirs();
         }
+        try {
+        String saveName = fileRealPath + File.separator + /*folderPath + File.separator + */uuidFilename;
+        Path savePath = Paths.get(saveName);
+        file.transferTo(savePath);
+        String encodeUrl = URLEncoder.encode(/*folderPath + File.separator +*/  uuidFilename, "UTF-8");
+        if (!URLDecoder.decode(user.getImageUrl(), "UTF-8").equals("defaultImage")) {
+            new File(fileRealPath + URLDecoder.decode(user.getImageUrl(), "UTF-8")).delete();
+        }
+        user.changeImageUrl(encodeUrl);
+        return encodeUrl;
+    } catch (Exception e) {
+        return "";
+    }
+
+
+//        diLocation = Paths.get(fileRealPath).toAbsolutePath().normalize();
+//        String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+//
+//        try {
+//            // 파일명에 부적합 문자가 있는지 확인한다.
+//            if(fileName.contains(".."))
+//                throw new FileUploadException("파일명에 부적합 문자가 포함되어 있습니다. " + fileName);
+//
+//            Path targetLocation = diLocation.resolve(fileName);
+//
+//            Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+//
+//            return fileName;
+//        }catch(Exception e) {
+//            throw new FileUploadException("["+fileName+"] 파일 업로드에 실패하였습니다. 다시 시도하십시오.",e);
+//        }
+
+
 
     }
 
@@ -141,29 +177,7 @@ public class UserService {
     @Transactional
     public void userProfileUpdate(UserUpdateDto updateDto, Long id) {
 
-
-
-
-
         User user = userRepository.findById(id).orElseThrow(UserNotFoundException::new);
-
-
-        Country repCountry = countryRepository.findByName(updateDto.getRepCountry()).orElseThrow(CountryNotFoundException::new);
-        Language repLanguage = languageRepository.findByAbbr(updateDto.getRepLanguage()).orElseThrow(LanguageNotFoundException::new);
-        Language repHopeLanguage = languageRepository.findByAbbr(updateDto.getRepHopeLanguage()).orElseThrow(LanguageNotFoundException::new);
-
-        UserHopeLanguage userRepHopeLanguage = UserHopeLanguage.createUserHopeLanguage(repHopeLanguage);
-        userRepHopeLanguage.changeRep();
-        userRepHopeLanguage.addUser(user);
-        UserLanguage userRepLanguage = UserLanguage.createUserLanguage(repLanguage);
-        userRepLanguage.changeRep();
-        userRepLanguage.addUser(user);
-        UserCountry userRepCountry = UserCountry.createUserCountry(repCountry);
-        userRepCountry.changeRep();
-        userRepCountry.addUser(user);
-
-        user.changeRep(repCountry.getName(),repLanguage.getAbbr(),repHopeLanguage.getAbbr());
-
 
 
         if (!updateDto.getCountry().isEmpty()) {
@@ -195,10 +209,27 @@ public class UserService {
 
             }
         }
+        Country repCountry = countryRepository.findByName(updateDto.getRepCountry()).orElseThrow(CountryNotFoundException::new);
+        Language repLanguage = languageRepository.findByAbbr(updateDto.getRepLanguage()).orElseThrow(LanguageNotFoundException::new);
+        Language repHopeLanguage = languageRepository.findByAbbr(updateDto.getRepHopeLanguage()).orElseThrow(LanguageNotFoundException::new);
+
+        UserHopeLanguage userRepHopeLanguage = UserHopeLanguage.createUserHopeLanguage(repHopeLanguage);
+        userRepHopeLanguage.changeRep();
+        userRepHopeLanguage.addUser(user);
+        UserLanguage userRepLanguage = UserLanguage.createUserLanguage(repLanguage);
+        userRepLanguage.changeRep();
+        userRepLanguage.addUser(user);
+        UserCountry userRepCountry = UserCountry.createUserCountry(repCountry);
+        userRepCountry.changeRep();
+        userRepCountry.addUser(user);
+
+        user.changeRep(repCountry.getName(),repLanguage.getAbbr(),repHopeLanguage.getAbbr());
+
         user.changeImageUrl(updateDto.getImageUrl());
         user.changeInstagramUrl(updateDto.getInstagramUrl());
         user.changeFaceBookUrl(updateDto.getFacebookUrl());
         user.changeContent(updateDto.getContent());
+        user.changeRole();
 
     }
 

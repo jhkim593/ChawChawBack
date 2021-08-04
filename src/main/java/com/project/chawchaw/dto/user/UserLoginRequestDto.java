@@ -9,4 +9,7 @@ import lombok.*;
 public class UserLoginRequestDto {
     private String email;
     private String password;
+    private String provider;
+    private String code;
+    private String accessToken;
 }

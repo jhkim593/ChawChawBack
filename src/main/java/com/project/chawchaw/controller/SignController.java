@@ -8,8 +8,10 @@ import com.project.chawchaw.dto.social.KakaoProfile;
 import com.project.chawchaw.dto.social.SocialLoginRequestDto;
 import com.project.chawchaw.dto.social.SocialLoginResponseDto;
 import com.project.chawchaw.dto.user.UserLoginRequestDto;
+import com.project.chawchaw.dto.user.UserLoginResponseDto;
 import com.project.chawchaw.dto.user.UserSignUpByProviderRequestDto;
 import com.project.chawchaw.dto.user.UserSignUpRequestDto;
+import com.project.chawchaw.exception.LoginFailureException;
 import com.project.chawchaw.response.CommonResult;
 import com.project.chawchaw.response.SingleResult;
 import com.project.chawchaw.service.*;
@@ -36,6 +38,7 @@ public class SignController {
     private final ResponseService responseService;
     private final KakaoService kakaoService;
     private final FaceBookService faceBookService;
+    private final UserService userService;
 
 
 
@@ -87,7 +90,7 @@ public class SignController {
 
 
     @ApiOperation(value = "중복회원조회",notes = "중복회원조회")
-    @GetMapping(value = " /users/email/duplicate/{email}")
+    @GetMapping(value = "/users/email/duplicate/{email}")
     public ResponseEntity emialDuplicate(@PathVariable("email") String email){
        return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.EMAIL_DUPLICATE,signService.userCheck(email)),HttpStatus.OK);
 
@@ -95,77 +98,94 @@ public class SignController {
     }
 
 
-    @ApiOperation(value = "로그인",notes = "로그인")
+//    @ApiOperation(value = "로그인",notes = "로그인")
+//    @PostMapping(value = "/login")
+//    public ResponseEntity login(@ModelAttribute UserLoginRequestDto requestDto
+//    , HttpServletResponse response){
+//
+//        String token = signService.login(requestDto).getToken();
+//        response.addHeader("Authorization","Bearer "+token);
+//        return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.LOGIN_SUCCESS,true,signService.getImageUrl(token)),HttpStatus.OK);
+//
+//
+//
+//
+//    }
+
+
+
     @PostMapping(value = "/login")
-    public ResponseEntity login(@ModelAttribute UserLoginRequestDto requestDto
-    , HttpServletResponse response){
-
-        String token = signService.login(requestDto).getToken();
-        response.addHeader("Authorization","Bearer "+token);
-        return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.LOGIN_SUCCESS,true,signService.getImageUrl(token)),HttpStatus.OK);
-
-
-
-
-    }
-
-
-    @ApiOperation(value = "소셜 로그인", notes = "소셜 회원 로그인을 한다.")
-    @PostMapping(value = "/users/login/{provider}")
-    public ResponseEntity loginByProvider(
-            @PathVariable("provider") String provider, @ModelAttribute SocialLoginRequestDto requestDto,HttpServletResponse response) {
+    public ResponseEntity login(
+            @ModelAttribute UserLoginRequestDto requestDto,HttpServletResponse response) {
 
         try {
 
-            if (provider.equals("kakao")) {
-                String token = kakaoService.getKakaoTokenInfo(requestDto.getCode()).getAccess_token();
-                KakaoProfile kakaoProfile = kakaoService.getKakaoProfile(token);
-                String email = kakaoProfile.getEmail();
-                if (signService.validUserWithProvider(email, provider)) {
-                    response.addHeader("Authorization", "Bearer " + signService.loginByProvider(email, provider).getToken());
-                    return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.LOGIN_SUCCESS, true), HttpStatus.OK);
-                } else {
-                    return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.LOGIN_FAIL, false,
-                            new SocialLoginResponseDto(kakaoProfile.getEmail(),kakaoProfile.getName(),kakaoProfile.getImageUrl(),kakaoProfile.getProvider())), HttpStatus.OK);
-                }
-            }
+            if (requestDto.getProvider() != null) {
 
+                if (requestDto.getProvider().equals("kakao") && requestDto.getCode() != null) {
+                    String token = kakaoService.getKakaoTokenInfo(requestDto.getCode()).getAccess_token();
+                    KakaoProfile kakaoProfile = kakaoService.getKakaoProfile(token);
+                    String email = kakaoProfile.getEmail();
+                    if (signService.validUserWithProvider(email, requestDto.getProvider())) {
+                        UserLoginResponseDto loginDto = signService.loginByProvider(email, requestDto.getProvider());
 
-            else if (provider.equals("facebook")) {
-                FaceBookProfile faceBookProfile = faceBookService.getFaceBookProfile(requestDto.getAccessToken(), requestDto.getEmail());
-                String email = faceBookProfile.getEmail();
-                if (signService.validUserWithProvider(email, provider)) {
-                    response.addHeader("Authorization", "Bearer " + signService.loginByProvider(email, provider).getToken());
-                    return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.LOGIN_SUCCESS, true), HttpStatus.OK);
+                        response.addHeader("Authorization", "Bearer " + loginDto.getToken());
+                        return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.LOGIN_SUCCESS, true,userService.userProfile(loginDto.getId())), HttpStatus.OK);
+                    } else {
+                        return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.SOCIAL_LOGIN_FAIL, false,
+                                new SocialLoginResponseDto(kakaoProfile.getEmail(), kakaoProfile.getName(), kakaoProfile.getImageUrl(), kakaoProfile.getProvider())), HttpStatus.OK);
+                    }
+                } else if (requestDto.getProvider().equals("facebook") && requestDto.getEmail() != null && requestDto.getAccessToken() != null) {
+                    FaceBookProfile faceBookProfile = faceBookService.getFaceBookProfile(requestDto.getAccessToken(), requestDto.getEmail());
+                    String email = faceBookProfile.getEmail();
+                    if (signService.validUserWithProvider(email, requestDto.getProvider())) {
+                        UserLoginResponseDto loginDto = signService.loginByProvider(email, requestDto.getProvider());
+                        response.addHeader("Authorization", "Bearer " + loginDto.getToken());
+                        return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.LOGIN_SUCCESS, true,userService.userProfile(loginDto.getId())), HttpStatus.OK);
+                    } else {
+                        return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.SOCIAL_LOGIN_FAIL, false,
+                                new SocialLoginResponseDto(faceBookProfile.getEmail(), faceBookProfile.getName(), faceBookProfile.getImageUrl(), faceBookProfile.getProvider())), HttpStatus.OK);
+                    }
                 } else {
-                    return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.LOGIN_FAIL, false,
-                            new SocialLoginResponseDto(faceBookProfile.getEmail(), faceBookProfile.getName(),faceBookProfile.getImageUrl(),faceBookProfile.getProvider())), HttpStatus.OK);
+
+                    return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.SOCIAL_LOGIN_CONNECT_FAIL, false), HttpStatus.OK);
+
                 }
+
             }
             else{
+              if(requestDto.getEmail()!=null&&requestDto.getPassword()!=null){
 
-                    return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.LOGIN_FAIL, false), HttpStatus.OK);
+                  UserLoginResponseDto loginDto = signService.login(requestDto);
+                  response.addHeader("Authorization","Bearer "+loginDto.getToken());
+                    return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.LOGIN_SUCCESS,true,userService.userProfile(loginDto.getId())),HttpStatus.OK);
 
+                }
+              else{
+                  return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.LOGIN_FAIL, false), HttpStatus.OK);
+              }
             }
-
+        }
+        catch(LoginFailureException e){
+            return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.LOGIN_FAIL, false), HttpStatus.OK);
         }
         catch (Exception e){
-            return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.FAIL_SOCIAL_LOGIN, false), HttpStatus.OK);
+            return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.SOCIAL_LOGIN_CONNECT_FAIL, false), HttpStatus.OK);
         }
 
 
 
     }
-    @ApiOperation(value = "소셜 계정 가입", notes = "소셜 계정 회원가입을 한다.")
-    @PostMapping(value = "/users/signup/{provider}")
-    public ResponseEntity signUpByProvider(@PathVariable("provider") String provider,
-
-                                         @ModelAttribute UserSignUpByProviderRequestDto requestDto) {
-
-          signService.signUpByProvider(requestDto,provider);
-
-          return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.CREATED_USER,true),HttpStatus.CREATED);
-    }
+//    @ApiOperation(value = "소셜 계정 가입", notes = "소셜 계정 회원가입을 한다.")
+//    @PostMapping(value = "/users/signup/{provider}")
+//    public ResponseEntity signUpByProvider(@PathVariable("provider") String provider,
+//
+//                                         @ModelAttribute UserSignUpByProviderRequestDto requestDto) {
+//
+//          signService.signUpByProvider(requestDto,provider);
+//
+//          return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.CREATED_USER,true),HttpStatus.CREATED);
+//    }
 
 
     @ApiOperation(value = "로그아웃", notes = "로그아웃을 한다")
@@ -177,7 +197,7 @@ public class SignController {
     }
     @ApiOperation(value = "회원탈퇴", notes = "회원탈퇴를 한다")
     @DeleteMapping (value = "/users")
-    public ResponseEntity userDelete(@RequestHeader(value="X-AUTH-TOKEN") String token) {
+    public ResponseEntity userDelete(@RequestHeader(value="Authorization") String token) {
 
         signService.userDelete(token);
         return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.DELETE_USER,true),HttpStatus.OK);

@@ -1,6 +1,6 @@
 package com.project.chawchaw.entity;
 
-import com.nimbusds.langtag.LangTagException;
+
 import lombok.*;
 
 import javax.persistence.Entity;

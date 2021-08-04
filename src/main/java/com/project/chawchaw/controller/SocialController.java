@@ -53,6 +53,7 @@ public class SocialController {
         return mav;
     }
 
+
     /**
      * 카카오 인증 완료 후 리다이렉트 화면
      */

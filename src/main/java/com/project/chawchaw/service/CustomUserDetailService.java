@@ -24,8 +24,11 @@ public class CustomUserDetailService implements UserDetailsService{
 
         @Override
         public UserDetails loadUserByUsername(String userPk) {
-        User user = userRepository.findById(Long.valueOf(userPk)).orElseThrow(UserNotFoundException::new);
+                System.out.println("=================loadbyusername으로 만드는중");
+                System.out.println(userPk);
+                User user = userRepository.findById(Long.valueOf(userPk)).orElseThrow(UserNotFoundException::new);
         return new CustomUserDetails(
+                Long.valueOf(userPk),
                 user.getEmail(),
                 user.getPassword(),
                 new SimpleGrantedAuthority(user.getRole().toString()));

@@ -8,13 +8,15 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class CustomUserDetails implements UserDetails {
 
+public class CustomUserDetails implements UserDetails {
+    private Long id;
     private String emil;
     private String password;
     private GrantedAuthority authorities;
 
-    public CustomUserDetails(String email, String password, GrantedAuthority authorities) {
+    public CustomUserDetails(Long id,String email, String password, GrantedAuthority authorities) {
+        this.id=id;
         this.emil = email;
         this.password = password;
         this.authorities = authorities;
@@ -34,6 +36,11 @@ public class CustomUserDetails implements UserDetails {
     @Override
     public String getPassword() {
         return password;
+    }
+
+
+    public Long getId() {
+        return id;
     }
 
     @Override
