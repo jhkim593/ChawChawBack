@@ -23,6 +23,7 @@ bin/
 *.iws
 *.iml
 *.yaml
+application.yml
 *.yml
 *.ipr
 out/
