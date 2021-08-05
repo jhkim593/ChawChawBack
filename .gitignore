@@ -22,7 +22,7 @@ bin/
 .idea
 *.iws
 *.iml
-*.yaml
+application.yml
 mail.properties
 
 *.ipr
