@@ -23,6 +23,7 @@ bin/
 *.iws
 *.iml
 *.yaml
+mail.properties
 
 *.ipr
 out/
