@@ -13,9 +13,9 @@ spring:
 #    url: jdbc:mysql://localhost:3308/chawchaw?useSSL=false&characterEncoding=UTF-8&serverTimezone=UTC
 #    username: root
     password: rla8834ok
-      url: jdbc:mysql://chawchawdb.cjek1elpmvy4.ap-northeast-2.rds.amazonaws.com:3306/board?serverTimezone=UTC&characterEncoding=UTF-8
-      username: admin
-      
+    url: jdbc:mysql://chawchawdb.cjek1elpmvy4.ap-northeast-2.rds.amazonaws.com:3306/board?serverTimezone=UTC&characterEncoding=UTF-8
+    username: admin
+
 
   jpa:
     database: mysql
