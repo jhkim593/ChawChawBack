@@ -61,6 +61,10 @@ dependencies {
 	implementation 'com.google.code.gson:gson'
 	//mail
 	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-mail', version: '1.2.0.RELEASE'
+    //jasypt
+	implementation group: 'com.github.ulisesbocchio', name: 'jasypt-spring-boot-starter', version: '3.0.3'
+
+
 
 	//mysql
 	implementation group: 'mysql', name: 'mysql-connector-java', version: '8.0.21'

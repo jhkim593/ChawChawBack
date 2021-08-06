@@ -1,0 +1,72 @@
+
+spring:
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      enabled: true
+
+
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    password: ENC(3F1eltMp3xhu5T+HyPoTIg==)
+    url: ENC(/pngs7V2Z7zRkPVPEwTPmVWb2cTBBa3HUP8OcDLuzxD4rDYKjb+r6wrlg+q0hKndBFaBB+YR3uVRCw54dskPPt55bfJ+6YEUCxRGJKr1JVBwdIHXvWoRAR1iJG4WHMOcI9DRembZDhg=)
+    username: ENC(XiRNju+2VhAm6XrJDOJ3zw==)
+#    password: ENC(6um9Qa+wMOGQq41hiFycTiRqRkkeiOGb)
+#    url: ENC(WYUFn5EHnDQSVM7rYX0zRWWJU5imcmWzQBPSFG93/nu0idnv5InXVXFZZF1L8rGZ5VaggOq2YBc56bq6NZ79sY2HD4xcsJyXJg2m5y+zW10DnV8MdRHKPjqWzEc2yz/hRYnwOphEwmCHtjSj4zcCkxXZYnplAjWDxBuHvp4DZAE0EIrgjEVwcw==)
+#    username: ENC(ifD0zstnaBqDxGwu4NlGfg==)
+
+
+
+  jpa:
+    database: mysql
+    database-platform: ENC(voUvSc5bHsIEKBvrSNAQx5mIJZSJD+khDpFMhSABjivmijlczwEdhA3R4Y3wopxvhvwDUNNstOQ=)
+    generate-ddl: true
+
+    show-sql: true
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        format_sql: true
+        default_batch_fetch_size: 88
+
+
+
+
+  social:
+    kakao:
+      client_id: ENC(+u+95J5utk6myxTxjIe1AOE3IeOS/6b5lJOXQs++gyeEU0pI3Spd0It7jVF+J0Tg) # 앱생성시 받은 REST API 키
+      redirect: ENC(7Ypcrv0cSmsMoncSKzR4zhPOWWz2ElmfHvgYP/wn2Fo=)
+      url:
+        login: https://kauth.kakao.com/oauth/authorize
+        token: https://kauth.kakao.com/oauth/token
+        profile: https://kapi.kakao.com/v2/user/me
+
+
+
+  url:
+    base: ENC(MW8wFwF3UMJulKx9rdX5btEsUPxVZs/aHnCk+Zs146o=)
+
+  messages:
+    basename: i18n/exception
+    encoding: UTF-8
+  jwt:
+    secret: ENC(F9Lj4bOY902USCatzTr6GmIAcR7Lj9XM)
+
+file:
+#  path: C:\chawchaw\
+  path: ENC(BGTJOACnd+mHvk7cUjsNZCbdEtTU5jqmYgE15djVQqI=)
+
+
+
+
+  mvc:
+    view:
+      prefix: /templates/
+      suffix: .mustache
+
+jasypt:
+  encryptor:
+    bean: jasyptStringEncryptor
+
