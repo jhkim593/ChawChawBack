@@ -17,6 +17,9 @@ public class ResponseMessage {
     public static final String EMAIL_DUPLICATE = "회원 중복 조회 성공";
     public static final String NOT_FOUND_USER = "회원을 찾을 수 없습니다.";
     public static final String CREATED_USER = "회원 가입 성공";
+    public static final String ALREADY_FOLLOW = "이미 팔로우 중입니다.";
+    public static final String NOT_FOUND_FOLLOW = "팔로우 중이 아닙니다.";
+    public static final String CREATED_USER_FAIL = "회원 가입 실패";
     public static final String UPDATE_USER = "회원 정보 수정 성공";
     public static final String DELETE_USER = "회원 탈퇴 성공";
     public static final String IMAGE_UPLOAD_SUCCESS="이미지 업로드 성공";

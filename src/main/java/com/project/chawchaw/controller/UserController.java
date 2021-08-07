@@ -44,6 +44,9 @@ public class UserController {
     @Value("${file.path}")
     private String fileRealPath;
 
+    @Value("${file.defaultImage}")
+    private String defaultImage;
+
     @ApiOperation(value = "단일 회원 조회",notes = "다른유저의 단일 회원 정보를 조회한다.")
     @GetMapping(value = "/users/{userId}")
     public ResponseEntity userDetail(@PathVariable("userId") Long userId,
@@ -91,14 +94,20 @@ public class UserController {
     @ApiOperation(value = "이미지 업로드",notes = "자신의 프로필 이미지를 업로드 한다.")
     @PostMapping(value = "/users/image")
     public ResponseEntity profileImageUpload(@RequestParam("file") MultipartFile file,@RequestHeader("Authorization") String token){
-        try {
+
             String imageUrl = userService.fileUpload(file, Long.valueOf(jwtTokenProvider.getUserPk(token)));
-            return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.IMAGE_UPLOAD_SUCCESS, true,
-                    imageUrl), HttpStatus.OK);
-        }
-        catch (Exception e){
-            return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.IMAGE_UPLOAD_FAIL, false), HttpStatus.OK);
-        }
+            if(imageUrl.isEmpty()){
+
+                return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.IMAGE_UPLOAD_FAIL, false), HttpStatus.OK);
+
+
+            }
+            else {
+                return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.IMAGE_UPLOAD_SUCCESS, true,
+                        imageUrl), HttpStatus.OK);
+
+            }
+
 //         String s=userService.fileUpload(file, Long.valueOf(jwtTokenProvider.getUserPk(token)));
 
 
@@ -112,7 +121,7 @@ public class UserController {
 
     }
     @GetMapping("/users/image")
-    public ResponseEntity getUserImage(@RequestParam String imageUrl) {
+    public ResponseEntity getUserImage(@RequestParam String imageUrl,@RequestHeader("Authorization")String token) {
         byte[] result = null;
         HttpHeaders header = new HttpHeaders();
 
@@ -134,10 +143,10 @@ public class UserController {
 
 
     @ApiOperation(value = "프로필 이미지 삭제",notes = "업로드된 프로필 이미지를 삭제한다.")
-    @DeleteMapping(value = "/users/image/{imageUrl}")
-    public ResponseEntity profileImageDelete(@PathVariable("imageUrl")String imageUrl, @RequestHeader("Authorization") String token){
-            if( userService.deleteImage(imageUrl,Long.valueOf(jwtTokenProvider.getUserPk(token)))){
-                return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.IMAGE_DELETE_SUCCESS, true,"baseurl"), HttpStatus.OK);
+    @DeleteMapping(value = "/users/image")
+    public ResponseEntity profileImageDelete( @RequestHeader("Authorization") String token){
+            if( userService.deleteImage(Long.valueOf(jwtTokenProvider.getUserPk(token)))){
+                return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.IMAGE_DELETE_SUCCESS, true,defaultImage), HttpStatus.OK);
             }
             else{
                 return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.IMAGE_DELETE_FAIL,false), HttpStatus.OK);

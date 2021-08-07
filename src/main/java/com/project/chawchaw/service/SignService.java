@@ -11,11 +11,13 @@ import com.project.chawchaw.exception.*;
 import com.project.chawchaw.repository.CountryRepository;
 import com.project.chawchaw.repository.FollowRepository;
 import com.project.chawchaw.repository.LanguageRepository;
+import com.project.chawchaw.repository.ViewRepository;
 import com.project.chawchaw.repository.user.UserRepository;
 import com.project.chawchaw.dto.user.UserLoginResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -32,7 +34,7 @@ import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
-
+@Transactional(readOnly = true)
 
 public class SignService {
 
@@ -47,6 +49,10 @@ public class SignService {
     private final CountryRepository countryRepository;
     private final LanguageRepository languageRepository;
     private final FollowRepository followRepository;
+    private final ViewRepository viewRepository;
+
+    @Value("${file.defaultImage}")
+    private String defaultImage;
 
 
 
@@ -164,8 +170,12 @@ public class SignService {
 
         }
 
+        String imageUrl=defaultImage;
+        if(requestDto.getImageUrl()!=null){
+            imageUrl=requestDto.getImageUrl();
+        }
         userRepository.save(User.createUser(requestDto.getEmail(),requestDto.getName(),requestDto.getProvider(),passwordEncoder.encode(requestDto.getPassword()),
-                requestDto.getWeb_email(),requestDto.getSchool(),requestDto.getImageUrl()
+                requestDto.getWeb_email(),requestDto.getSchool(),imageUrl
 //                ,requestDto.getContent(), countryList, languageList,hopeLanguageList,requestDto.getFacebookUrl(),requestDto.getInstagramUrl(),userRepCountry,userRepLanguage,userRepHopeLanguage
         ));
 
@@ -296,9 +306,13 @@ public class SignService {
 
 
 
+
+    //스프링 시큐리티 세션 처리 해야될듯
+    @Transactional
     public void userDelete(String token) {
         User user = userRepository.findById(Long.valueOf(jwtTokenProvider.getUserPk(token))).orElseThrow(UserNotFoundException::new);
         followRepository.deleteFollowByUserId(user.getId());
+        viewRepository.deleteView(user.getId());
         userRepository.delete(user);
 
     }

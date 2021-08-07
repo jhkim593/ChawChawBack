@@ -43,8 +43,8 @@ public class ExceptionAdvice {
     }
     @ExceptionHandler(FollowAlreadyException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    protected CommonResult followAlreadyExistException(){
-        return responseService.getFailResult(Integer.valueOf(getMessage("followAlreadyExist.code")),getMessage("followAlreadyExist.msg"));
+    protected ResponseEntity followAlreadyExistException(){
+        return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.ALREADY_FOLLOW,false),HttpStatus.OK);
     }
 
     @ExceptionHandler(InvalidateProviderException.class)
@@ -80,9 +80,8 @@ public class ExceptionAdvice {
 
     @ExceptionHandler(FollwNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    protected CommonResult followNotFoundException(HttpServletRequest request, FollwNotFoundException e){
-        return responseService.getFailResult(Integer.valueOf(getMessage("followNotFound.code")),getMessage("followNotFound.msg"));
-
+    protected ResponseEntity followNotFoundException(HttpServletRequest request, FollwNotFoundException e){
+        return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.NOT_FOUND_FOLLOW,false),HttpStatus.OK);
     }
 //    @ExceptionHandler(CUsernameSigninFailedException.class)
 //    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)

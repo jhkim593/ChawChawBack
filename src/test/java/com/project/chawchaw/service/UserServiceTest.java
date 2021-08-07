@@ -133,8 +133,9 @@ class UserServiceTest {
     }
     @Test
     public void jasyptTest()throws Exception{
-        String huk = "1234~";
-        String en="1234";
+        String huk = "defaultImage_233500392.png";
+        String en="C:\\chawchaw\\";
+
         String jae="1234";
         String du="aa236326";
         String nu="1234";
@@ -146,7 +147,7 @@ class UserServiceTest {
         jasypt.setAlgorithm("PBEWithMD5AndDES");
 
         String encryptedText1 = jasypt.encrypt(huk);
-        System.out.println("======================혁준");
+        System.out.println("======================default");
         System.out.println(encryptedText1);
         String decryptedText1 = jasypt.decrypt(encryptedText1);
         assertThat(huk).isEqualTo(decryptedText1);

@@ -49,8 +49,11 @@ public class SignController {
     @PostMapping("/mail/send") // 이메일 인증 코드 보내기
     public ResponseEntity emailAuth(@RequestParam String email, HttpServletRequest request) throws Exception {
         HttpSession session=request.getSession();
+
+
         session.setAttribute(email,signService.sendSimpleMessage(email));
-        session.setMaxInactiveInterval(60);
+        session.setMaxInactiveInterval(180);
+        System.out.println(session.getAttribute(email));
 
         return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.SEND_MAIL,true),HttpStatus.OK);
     }
@@ -61,8 +64,10 @@ public class SignController {
 
     @PostMapping("/mail/verification") // 이메일 인증 코드 검증
     public ResponseEntity verifyCode(@RequestParam String verificationNumber,@RequestParam String email,HttpServletRequest request) {
-       HttpSession session=request.getSession();
+
+        HttpSession session=request.getSession();
         Object attribute = session.getAttribute(email);
+
         if (attribute==null) {
 
             return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.VERIFICATION_MAIL_FAIL,false),HttpStatus.OK);
@@ -83,7 +88,17 @@ public class SignController {
     @ApiOperation(value = "회원가입",notes = "회원가입")
     @PostMapping(value = "/users/signup")
     public ResponseEntity signup(@ModelAttribute @Valid UserSignUpRequestDto requestDto){
-        signService.signup(requestDto);
+        if(requestDto.getProvider()!=null){
+            if(requestDto.getProvider().equals("kakao")||requestDto.getProvider().equals("facebook")) {
+                signService.signup(requestDto);
+            }
+            else{
+                return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.CREATED_USER_FAIL,true),HttpStatus.OK);
+            }
+        }
+        else{
+            signService.signup(requestDto);
+        }
        return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.CREATED_USER,true),HttpStatus.CREATED);
 
     }

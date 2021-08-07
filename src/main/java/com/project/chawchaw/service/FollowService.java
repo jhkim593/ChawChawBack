@@ -29,7 +29,6 @@ public class FollowService {
         }
         User fromUser = userRepository.findById(fromUserId).orElseThrow(UserNotFoundException::new);
         User toUser = userRepository.findById(toUserId).orElseThrow(UserNotFoundException::new);
-        System.out.println();
         followRepository.save(Follow.createFollow(fromUser, toUser));
 
     }

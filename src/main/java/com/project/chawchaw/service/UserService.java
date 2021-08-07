@@ -46,6 +46,8 @@ public class UserService {
 
     @Value("${file.path}")
     private String fileRealPath;
+    @Value("${file.defaultImage}")
+    private String defaultImage;
 
     private Path diLocation;
 
@@ -79,25 +81,25 @@ public class UserService {
         return new UserProfileDto(user);
 
     }
-    @Transactional
-    public String userImageUpload(MultipartFile file,Long id) throws IOException {
-        User user = userRepository.findById(id).orElseThrow(UserNotFoundException::new);
-
-
-        UUID uuid = UUID.randomUUID();
-        String uuidFilename = uuid + "_" + file.getOriginalFilename();
-
-        System.out.println("-=--------------------=======================");
-        Path filePath = Paths.get(fileRealPath + uuidFilename);
-        try {
-            Files.write(filePath, file.getBytes());
-            return uuidFilename;
-        } catch (IOException e) {
-            throw new IOException();
-        }
-
-
-    }
+//    @Transactional
+//    public String userImageUpload(MultipartFile file,Long id) throws IOException {
+//        User user = userRepository.findById(id).orElseThrow(UserNotFoundException::new);
+//
+//
+//        UUID uuid = UUID.randomUUID();
+//        String uuidFilename = uuid + "_" + file.getOriginalFilename();
+//
+//        System.out.println("-=--------------------=======================");
+//        Path filePath = Paths.get(fileRealPath + uuidFilename);
+//        try {
+//            Files.write(filePath, file.getBytes());
+//            return uuidFilename;
+//        } catch (IOException e) {
+//            throw new IOException();
+//        }
+//
+//
+//    }
 ///
     @Transactional
     public String fileUpload(MultipartFile file,Long id){
@@ -121,7 +123,7 @@ public class UserService {
             System.out.println(savePath.toString());
         file.transferTo(savePath);
         String encodeUrl = URLEncoder.encode(folderPath + File.separator +  uuidFilename, "UTF-8");
-        if (!URLDecoder.decode(user.getImageUrl(), "UTF-8").equals("defaultImage")) {
+        if (!URLDecoder.decode(user.getImageUrl(), "UTF-8").equals(defaultImage)) {
             new File(fileRealPath + URLDecoder.decode(user.getImageUrl(), "UTF-8")).delete();
         }
         user.changeImageUrl(encodeUrl);
@@ -152,20 +154,20 @@ public class UserService {
 
     }
 
-    public Resource loadFileAsResource(String fileName) {
-        try {
-            Path filePath = diLocation.resolve(fileName).normalize();
-            Resource resource = new UrlResource(filePath.toUri());
-
-            if(resource.exists()) {
-                return resource;
-            }else {
-                throw new FileDownloadException(fileName + " 파일을 찾을 수 없습니다.");
-            }
-        }catch(MalformedURLException e) {
-            throw new FileDownloadException(fileName + " 파일을 찾을 수 없습니다.", e);
-        }
-    }
+//    public Resource loadFileAsResource(String fileName) {
+//        try {
+//            Path filePath = diLocation.resolve(fileName).normalize();
+//            Resource resource = new UrlResource(filePath.toUri());
+//
+//            if(resource.exists()) {
+//                return resource;
+//            }else {
+//                throw new FileDownloadException(fileName + " 파일을 찾을 수 없습니다.");
+//            }
+//        }catch(MalformedURLException e) {
+//            throw new FileDownloadException(fileName + " 파일을 찾을 수 없습니다.", e);
+//        }
+//    }
 
 
 
@@ -232,23 +234,38 @@ public class UserService {
         user.changeInstagramUrl(updateDto.getInstagramUrl());
         user.changeFaceBookUrl(updateDto.getFacebookUrl());
         user.changeContent(updateDto.getContent());
-        user.changeRole();
-
+        if(user.getRole().equals(ROLE.GUEST)) {
+            user.changeRole();
+        }
     }
 
-    public Boolean deleteImage(String imageUrl, Long id) {
+    @Transactional
+    public Boolean deleteImage(Long id) {
         User user = userRepository.findById(id).orElseThrow(UserNotFoundException::new);
 
-        File file=new File(fileRealPath+imageUrl
-        );
-        if(file.exists()){
-            if(file.delete()){
-                user.changeImageUrl(fileRealPath+"defaultImage_233500392.png");
-                return true;
-            }
-            else return false;
+        try{
+        if (!user.getImageUrl().equals(defaultImage)) {
+
+            File file = new File(fileRealPath + URLDecoder.decode(user.getImageUrl(), "UTF-8"));
+
+
+            if (file.exists()) {
+                if (file.delete()) {
+                    user.changeImageUrl(defaultImage);
+                    return true;
+                } else return false;
+            } else return false;
+
         }
-        else return false;
+        else{
+            return false;
+        }
+
+        } catch (Exception e) {
+
+         return false;
+        }
+
     }
 //
 

@@ -17,4 +17,8 @@ public interface ViewRepository extends JpaRepository<View,Long> {
 
     @Query("select v from View v where v.fromUser.id=:fromUserId and v.toUser.id=:toUserId")
     Optional<View>findViewByUserId(@Param("fromUserId")Long fromUserId,@Param("toUserId")Long toUserId);
+
+    @Modifying
+    @Query("delete from View v where v.fromUser.id=:userId or v.toUser=:userId")
+    int deleteView(@Param("userId")Long userId);
 }
