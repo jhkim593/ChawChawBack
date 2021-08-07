@@ -133,82 +133,50 @@ class UserServiceTest {
     }
     @Test
     public void jasyptTest()throws Exception{
-        String password = "";
-        String url="";
-        String username="";
-        String base="";
-        String secret="";
-        String path="";
-        String client_id="";
-        String redirect="";
-        String id="";
-        String pw="";
+        String huk = "1234~";
+        String en="1234";
+        String jae="1234";
+        String du="aa236326";
+        String nu="1234";
+
 
 
         StandardPBEStringEncryptor jasypt = new StandardPBEStringEncryptor();
         jasypt.setPassword(System.getProperty("jasypt.encryptor.password"));
         jasypt.setAlgorithm("PBEWithMD5AndDES");
 
-        String encryptedTextid = jasypt.encrypt(id);
-        System.out.println("======================");
-        System.out.println(encryptedTextid);
-        String decryptedTextid = jasypt.decrypt(encryptedTextid);
-        assertThat(id).isEqualTo(decryptedTextid);
+        String encryptedText1 = jasypt.encrypt(huk);
+        System.out.println("======================혁준");
+        System.out.println(encryptedText1);
+        String decryptedText1 = jasypt.decrypt(encryptedText1);
+        assertThat(huk).isEqualTo(decryptedText1);
 
-        String encryptedTextpw = jasypt.encrypt(pw);
-        System.out.println("======================route");
-        System.out.println(encryptedTextpw);
-        String decryptedTextpw = jasypt.decrypt(encryptedTextpw);
-        assertThat(pw).isEqualTo(decryptedTextpw);
+        String encryptedText2 = jasypt.encrypt(en);
+        System.out.println("======================은경");
+        System.out.println(encryptedText2);
+        String decryptedText2 = jasypt.decrypt(encryptedText2);
+        assertThat(en).isEqualTo(decryptedText2);
+
+        String encryptedText3 = jasypt.encrypt(jae);
+        System.out.println("======================재민");
+        System.out.println(encryptedText3);
+        String decryptedText3= jasypt.decrypt(encryptedText3);
+        assertThat(jae).isEqualTo(decryptedText3);
+
+        String encryptedText4 = jasypt.encrypt(du);
+        System.out.println("======================두진");
+        System.out.println(encryptedText4);
+        String decryptedText4 = jasypt.decrypt(encryptedText4);
+        assertThat(du).isEqualTo(decryptedText4);
+
+        String encryptedText5= jasypt.encrypt(nu);
+        System.out.println("======================누가");
+        System.out.println(encryptedText5);
+        String decryptedText5 = jasypt.decrypt(encryptedText5);
+        assertThat(nu).isEqualTo(decryptedText5);
 
 
-        String encryptedTextpa = jasypt.encrypt(password);
-        System.out.println("======================password");
-        System.out.println(encryptedTextpa);
-        String decryptedTextpa = jasypt.decrypt(encryptedTextpa);
-        assertThat(password).isEqualTo(decryptedTextpa);
 
-        String encryptedTextpaurl = jasypt.encrypt(url);
-        System.out.println("======================url");
-        System.out.println(encryptedTextpaurl);
-        String decryptedTexturl = jasypt.decrypt(encryptedTextpaurl);
-        assertThat(url).isEqualTo(decryptedTexturl);
-
-        String encryptedTextpausername = jasypt.encrypt(username);
-        System.out.println("======================username");
-        System.out.println(encryptedTextpausername);
-        String decryptedTextusername = jasypt.decrypt(encryptedTextpausername);
-        assertThat(username).isEqualTo(decryptedTextusername);
-
-        String encryptedTextpabase = jasypt.encrypt(base);
-        System.out.println("======================base");
-        System.out.println(encryptedTextpabase);
-        String decryptedTextbase= jasypt.decrypt(encryptedTextpabase);
-        assertThat(base).isEqualTo(decryptedTextbase);
-
-        String encryptedTextpath = jasypt.encrypt(path);
-        System.out.println("======================path");
-        System.out.println(encryptedTextpath);
-        String decryptedTextpath = jasypt.decrypt(encryptedTextpath);
-        assertThat(path).isEqualTo(decryptedTextpath);
-
-        String encryptedTextclient = jasypt.encrypt(client_id);
-        System.out.println("======================client_id");
-        System.out.println(encryptedTextclient);
-        String decryptedTextclient = jasypt.decrypt(encryptedTextclient);
-        assertThat(client_id).isEqualTo(decryptedTextclient);
-
-        String encryptedTextredirect = jasypt.encrypt(redirect);
-        System.out.println("======================admin");
-        System.out.println(encryptedTextredirect);
-        String decryptedTextredirect = jasypt.decrypt(encryptedTextredirect);
-        assertThat(redirect).isEqualTo(decryptedTextredirect);
-
-        String encryptedTextsecret = jasypt.encrypt(secret);
-        System.out.println("======================secret");
-        System.out.println(encryptedTextsecret);
-        String decryptedTextsecret = jasypt.decrypt(encryptedTextsecret);
-        assertThat(secret).isEqualTo(decryptedTextsecret);
 
 
 
