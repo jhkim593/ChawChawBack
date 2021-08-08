@@ -134,7 +134,7 @@ class UserServiceTest {
     @Test
     public void jasyptTest()throws Exception{
         String huk = "defaultImage_233500392.png";
-        String en="C:\\chawchaw\\";
+        String en="mmyulgerilcrypwm";
 
         String jae="1234";
         String du="aa236326";
@@ -153,7 +153,7 @@ class UserServiceTest {
         assertThat(huk).isEqualTo(decryptedText1);
 
         String encryptedText2 = jasypt.encrypt(en);
-        System.out.println("======================은경");
+        System.out.println("======================PW");
         System.out.println(encryptedText2);
         String decryptedText2 = jasypt.decrypt(encryptedText2);
         assertThat(en).isEqualTo(decryptedText2);
