@@ -71,8 +71,9 @@ public class UserService {
 
 
     }
-    public List<UsersDto> users(UserSearch userSearch, String school){
-        return userRepository.usersList(userSearch,school);
+    public List<UsersDto> users(UserSearch userSearch, Long userId,int pageNo){
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+        return userRepository.usersList(userSearch,user.getSchool());
     }
 
 

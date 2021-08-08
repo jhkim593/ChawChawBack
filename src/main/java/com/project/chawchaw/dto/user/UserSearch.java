@@ -11,4 +11,5 @@ public class UserSearch {
     private String hopeLanguage;
     private String language;
     private String order;
+    private int pageNo;
 }
