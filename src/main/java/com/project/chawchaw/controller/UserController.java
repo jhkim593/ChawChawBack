@@ -83,14 +83,12 @@ public class UserController {
     }
     @ApiOperation(value = "전체 회원 조회",notes = "검색조건에 맞는 전체회원을 조회한다.")
     @GetMapping(value = "/users")
-    public ResponseEntity users(@ModelAttribute UserSearch userSearch, @RequestHeader("Authorization")String token,@CookieValue("exclude")String exclude){
-
-
-
-
+    public ResponseEntity users(@ModelAttribute UserSearch userSearch, @RequestHeader("Authorization")String token
+//                                ,@CookieValue("exclude")String exclude
+    ){
 
         return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.READ_USER,true,
-                userService.users(userSearch,Long.valueOf(jwtTokenProvider.getUserPk(token)),userSearch.getPageNo())),HttpStatus.OK);
+                userService.users(userSearch,Long.valueOf(jwtTokenProvider.getUserPk(token)))),HttpStatus.OK);
 
     }
 

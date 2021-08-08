@@ -12,4 +12,6 @@ public class UserSearch {
     private String language;
     private String order;
     private int pageNo;
+    private Long userId;
+    private String school;
 }

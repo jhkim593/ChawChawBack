@@ -10,8 +10,8 @@ import java.util.List;
 
 @Repository
 public interface UserRepositoryCustom {
-    Slice<UsersDto> users(Long lastRegistedShoesId , Pageable pageable, UserSearch userSearch, String school);
-    List<UsersDto> usersList( UserSearch userSearch, String school);
+//    Slice<UsersDto> users(Long lastRegistedShoesId , Pageable pageable, UserSearch userSearch, String school);
+    List<UsersDto> usersList( UserSearch userSearch);
 
 
 }

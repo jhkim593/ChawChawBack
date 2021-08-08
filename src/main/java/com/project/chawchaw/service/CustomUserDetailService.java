@@ -24,8 +24,7 @@ public class CustomUserDetailService implements UserDetailsService{
 
         @Override
         public UserDetails loadUserByUsername(String userPk) {
-                System.out.println("=================loadbyusername으로 만드는중");
-                System.out.println(userPk);
+
                 User user = userRepository.findById(Long.valueOf(userPk)).orElseThrow(UserNotFoundException::new);
         return new CustomUserDetails(
                 Long.valueOf(userPk),

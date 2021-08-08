@@ -36,38 +36,37 @@ public class UserRepositoryImpl implements  UserRepositoryCustom{
     @Autowired
     UserLanguageRepository userLanguageRepository;
 
-    @Autowired
-    private EntityManager em;
+
 
     public UserRepositoryImpl(EntityManager em){this.queryFactory=new JPAQueryFactory(em);}
 
+//    @Override
+//    public Slice<UsersDto> users(Long lastUserId, Pageable pageable, UserSearch userSearch,String school) {
+//        List<UsersDto> usersDtos = queryFactory.select(Projections.constructor(UsersDto.class, user.id, user.imageUrl, user.content,
+//                                user.regDate, user.views, user.country.size())).from(userCountry, userLanguage)
+//                                .join(userCountry.country, country)
+//
+//                                .join(userLanguage.user, user)
+//                                .join(userCountry.user, user).where(
+////                                        countryEq(userSearch.getCountry())
+//                                         languageEq(userSearch.getLanguage())
+//                        , nameEq(userSearch.getName())
+//                        , user.school.eq(school)).fetch();
+//
+//
+//        return null;
 
-    @Override
-    public Slice<UsersDto> users(Long lastUserId, Pageable pageable, UserSearch userSearch,String school) {
-        List<UsersDto> usersDtos = queryFactory.select(Projections.constructor(UsersDto.class, user.id, user.imageUrl, user.content,
-                                user.regDate, user.views, user.country.size())).from(userCountry, userLanguage)
-                                .join(userCountry.country, country)
-
-                                .join(userLanguage.user, user)
-                                .join(userCountry.user, user).where(
-//                                        countryEq(userSearch.getCountry())
-                                         languageEq(userSearch.getLanguage())
-                        , nameEq(userSearch.getName())
-                        , user.school.eq(school)).fetch();
-
-
-        return null;
-
-
-
+//
 
 
-    }
+
+
+//    }
 
     QLanguage language2=new QLanguage("language2");
 
     @Override
-    public List<UsersDto> usersList(UserSearch userSearch, String school) {
+    public List<UsersDto> usersList(UserSearch userSearch) {
 
         List<UsersDto> usersList = queryFactory.select(Projections.constructor(UsersDto.class, user.id, user.imageUrl, user.content,
 
@@ -82,12 +81,16 @@ public class UserRepositoryImpl implements  UserRepositoryCustom{
                         hopeLanguageEq(userSearch.getHopeLanguage())
                         , languageEq(userSearch.getLanguage())
                         , nameEq(userSearch.getName())
-                        , user.school.eq(school)
+                        , user.school.eq(userSearch.getSchool())
+                        , user.id.notIn(userSearch.getUserId())
+                        , user.role.eq(ROLE.USER)
+
 
                 ).orderBy(
                         searchOrder(userSearch.getOrder())
-
                 )
+//                .offset(0)
+//                .limit()
 
                 .fetch();
        return usersList;
