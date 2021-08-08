@@ -12,6 +12,8 @@ import com.project.chawchaw.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -40,6 +42,7 @@ public class UserController {
     private final UserService userService;
     private final ResponseService responseService;
     private final JwtTokenProvider jwtTokenProvider;
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Value("${file.path}")
     private String fileRealPath;
@@ -64,6 +67,7 @@ public class UserController {
     @ApiOperation(value = "본인 프로필 조회",notes = "자신의 프로필 정보를 조회한다.")
     @GetMapping(value = "/users/profile")
     public ResponseEntity<UserProfileDto> userProfile(@RequestHeader("Authorization")String token){
+        logger.info(token);
         return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.READ_USER,true,
                 userService.userProfile(Long.valueOf(jwtTokenProvider.getUserPk(token)))),HttpStatus.OK);
 
