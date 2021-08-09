@@ -27,6 +27,8 @@ public class ResponseMessage {
     public static final String IMAGE_DELETE_SUCCESS="이미지 삭제 성공";
     public static final String ENTRYPOINT_EXCEPTION="해당 리소스의 접근하기 위한 권한이 없습니다.";
     public static final String IMAGE_GET_FAIL="이미지 불러오기에 실패하였습니다.";
+    public static final String SET_REP="대표국가,언어,희망언어를 입력해주세요";
+    
 
     public static final String IMAGE_DELETE_FAIL="이미지 삭제 실패";
     public static final String INTERNAL_SERVER_ERROR = "서버 내부 에러";

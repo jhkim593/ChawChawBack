@@ -309,8 +309,8 @@ public class SignService {
 
     //스프링 시큐리티 세션 처리 해야될듯
     @Transactional
-    public void userDelete(String token) {
-        User user = userRepository.findById(Long.valueOf(jwtTokenProvider.getUserPk(token))).orElseThrow(UserNotFoundException::new);
+    public void userDelete(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
         followRepository.deleteFollowByUserId(user.getId());
         viewRepository.deleteView(user.getId());
         userRepository.delete(user);

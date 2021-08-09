@@ -62,6 +62,9 @@ public class User{
 
 
 
+
+
+
 //    @OneToMany(mappedBy = "user",cascade = CascadeType.ALL)
 //    private List<Follow>follows=new ArrayList<>();
 

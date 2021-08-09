@@ -6,6 +6,7 @@ import javax.persistence.*;
 
 @Getter
 @Entity
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class UserCountry {

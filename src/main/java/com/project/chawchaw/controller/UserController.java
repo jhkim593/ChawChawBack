@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.FileInputStream;
@@ -49,6 +50,15 @@ public class UserController {
 
     @Value("${file.defaultImage}")
     private String defaultImage;
+
+    @GetMapping("/mail/test")
+    public void test(HttpServletRequest request){
+        Cookie[] cookies = request.getCookies();
+        for(Cookie cookie:cookies){
+            System.out.println(cookie.getValue());
+            System.out.println(cookie.getDomain());
+        }
+    }
 
     @ApiOperation(value = "단일 회원 조회",notes = "다른유저의 단일 회원 정보를 조회한다.")
     @GetMapping(value = "/users/{userId}")
@@ -76,21 +86,23 @@ public class UserController {
 
     @ApiOperation(value = "프로필 수정",notes = "자신의 프로필 정보를 수정한다.")
     @PostMapping(value = "/users/profile")
-    public ResponseEntity userProfileUpdate( @ModelAttribute UserUpdateDto userUpdateDto,
+    public ResponseEntity userProfileUpdate( @RequestBody UserUpdateDto userUpdateDto,
                                             @RequestHeader("Authorization")String token){
 
 
-        userService.userProfileUpdate(userUpdateDto,Long.valueOf(jwtTokenProvider.getUserPk(token)));
-   return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.UPDATE_USER,true),HttpStatus.OK);
+        if(userService.userProfileUpdate(userUpdateDto,Long.valueOf(jwtTokenProvider.getUserPk(token)))) {
 
+            return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.UPDATE_USER, true), HttpStatus.OK);
+        }else{
+            return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.SET_REP, false), HttpStatus.OK);
+        }
 
     }
     @ApiOperation(value = "전체 회원 조회",notes = "검색조건에 맞는 전체회원을 조회한다.")
     @GetMapping(value = "/users")
-    public ResponseEntity users(@ModelAttribute UserSearch userSearch, @RequestHeader("Authorization")String token
-//                                ,@CookieValue("exclude")String exclude
-    ){
+    public ResponseEntity users(@ModelAttribute UserSearch userSearch, @RequestHeader("Authorization")String token,HttpServletRequest request){
 
+        Cookie[] cookies = request.getCookies();
         return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.READ_USER,true,
                 userService.users(userSearch,Long.valueOf(jwtTokenProvider.getUserPk(token)))),HttpStatus.OK);
 
@@ -98,7 +110,7 @@ public class UserController {
 
     @ApiOperation(value = "이미지 업로드",notes = "자신의 프로필 이미지를 업로드 한다.")
     @PostMapping(value = "/users/image")
-    public ResponseEntity profileImageUpload(@RequestParam("file") MultipartFile file,@RequestHeader("Authorization") String token){
+    public ResponseEntity profileImageUpload(@RequestBody MultipartFile file,@RequestHeader("Authorization") String token){
 
             String imageUrl = userService.fileUpload(file, Long.valueOf(jwtTokenProvider.getUserPk(token)));
             if(imageUrl.isEmpty()){

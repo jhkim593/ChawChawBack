@@ -5,6 +5,7 @@ import com.project.chawchaw.entity.*;
 import com.project.chawchaw.exception.*;
 import com.project.chawchaw.repository.*;
 import com.project.chawchaw.repository.user.UserRepository;
+import com.querydsl.core.types.dsl.BooleanOperation;
 import io.lettuce.core.ScriptOutputType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -49,7 +50,6 @@ public class UserService {
     @Value("${file.defaultImage}")
     private String defaultImage;
 
-    private Path diLocation;
 
     @Transactional
     public UserDto detailUser(Long toUserId,Long fromUserId){
@@ -183,63 +183,75 @@ public class UserService {
 
 
     @Transactional
-    public void userProfileUpdate(UserUpdateDto updateDto, Long id) {
+    public Boolean userProfileUpdate(UserUpdateDto updateDto, Long id) {
 
 
         User user = userRepository.findById(id).orElseThrow(UserNotFoundException::new);
+//        User user2 = userRepository.findById(2l).orElseThrow(UserNotFoundException::new);
 
+        if(updateDto.getRepHopeLanguage()!=null&&updateDto.getRepLanguage()!=null&&updateDto.getRepCountry()!=null) {
 
-        if (!updateDto.getCountry().isEmpty()) {
-            userCountryRepository.deleteByUserId(id);
-            for (int i = 0; i < updateDto.getCountry().size(); i++) {
-                Country country = countryRepository.findByName(updateDto.getCountry().get(i)).orElseThrow(CountryNotFoundException::new);
-                UserCountry userCountry = UserCountry.createUserCountry(country);
-                userCountry.addUser(user);
+            if (updateDto.getCountry()!=null) {
+                userCountryRepository.deleteByUserId(id);
+//            UserCountry userCountry1 = user.getCountry().get(0);
+//            user.getCountry().remove(userCountry1);
 
-            }
+//            userCountry1.setUser(user2);
+                for (int i = 0; i < updateDto.getCountry().size(); i++) {
+                    Country country = countryRepository.findByName(updateDto.getCountry().get(i)).orElseThrow(CountryNotFoundException::new);
+                    UserCountry userCountry = UserCountry.createUserCountry(country);
+                    userCountry.addUser(user);
 
-        }
-        if (!updateDto.getLanguage().isEmpty()) {
-            userLanguageRepository.deleteByUserId(id);
-            for (int i = 0; i < updateDto.getLanguage().size(); i++) {
-                Language language = languageRepository.findByAbbr(updateDto.getLanguage().get(i)).orElseThrow(LanguageNotFoundException::new);
-                UserLanguage userLanguage = UserLanguage.createUserLanguage(language);
-                userLanguage.addUser(user);
+                }
 
             }
-        }
+            if (updateDto.getLanguage()!=null) {
+                userLanguageRepository.deleteByUserId(id);
+                for (int i = 0; i < updateDto.getLanguage().size(); i++) {
+                    Language language = languageRepository.findByAbbr(updateDto.getLanguage().get(i)).orElseThrow(LanguageNotFoundException::new);
+                    UserLanguage userLanguage = UserLanguage.createUserLanguage(language);
+                    userLanguage.addUser(user);
 
-        if (!updateDto.getHopeLanguage().isEmpty()) {
-            userHopeLanguageRepository.deleteByUserId(id);
-            for (int i = 0; i < updateDto.getHopeLanguage().size(); i++) {
-                Language language = languageRepository.findByAbbr(updateDto.getHopeLanguage().get(i)).orElseThrow(LanguageNotFoundException::new);
-                UserHopeLanguage userHopeLanguage = UserHopeLanguage.createUserHopeLanguage(language);
-                userHopeLanguage.addUser(user);
-
+                }
             }
+
+            if (updateDto.getHopeLanguage()!=null) {
+                userHopeLanguageRepository.deleteByUserId(id);
+                for (int i = 0; i < updateDto.getHopeLanguage().size(); i++) {
+                    Language language = languageRepository.findByAbbr(updateDto.getHopeLanguage().get(i)).orElseThrow(LanguageNotFoundException::new);
+                    UserHopeLanguage userHopeLanguage = UserHopeLanguage.createUserHopeLanguage(language);
+                    userHopeLanguage.addUser(user);
+
+                }
+            }
+
+            Country repCountry = countryRepository.findByName(updateDto.getRepCountry()).orElseThrow(CountryNotFoundException::new);
+            Language repLanguage = languageRepository.findByAbbr(updateDto.getRepLanguage()).orElseThrow(LanguageNotFoundException::new);
+            Language repHopeLanguage = languageRepository.findByAbbr(updateDto.getRepHopeLanguage()).orElseThrow(LanguageNotFoundException::new);
+
+            UserHopeLanguage userRepHopeLanguage = UserHopeLanguage.createUserHopeLanguage(repHopeLanguage);
+            userRepHopeLanguage.changeRep();
+            userRepHopeLanguage.addUser(user);
+            UserLanguage userRepLanguage = UserLanguage.createUserLanguage(repLanguage);
+            userRepLanguage.changeRep();
+            userRepLanguage.addUser(user);
+            UserCountry userRepCountry = UserCountry.createUserCountry(repCountry);
+            userRepCountry.changeRep();
+            userRepCountry.addUser(user);
+
+            user.changeRep(repCountry.getName(), repLanguage.getAbbr(), repHopeLanguage.getAbbr());
+
+            user.changeImageUrl(updateDto.getImageUrl());
+            user.changeInstagramUrl(updateDto.getInstagramUrl());
+            user.changeFaceBookUrl(updateDto.getFacebookUrl());
+            user.changeContent(updateDto.getContent());
+            if (user.getRole().equals(ROLE.GUEST)) {
+                user.changeRole();
+            }
+            return true;
         }
-        Country repCountry = countryRepository.findByName(updateDto.getRepCountry()).orElseThrow(CountryNotFoundException::new);
-        Language repLanguage = languageRepository.findByAbbr(updateDto.getRepLanguage()).orElseThrow(LanguageNotFoundException::new);
-        Language repHopeLanguage = languageRepository.findByAbbr(updateDto.getRepHopeLanguage()).orElseThrow(LanguageNotFoundException::new);
-
-        UserHopeLanguage userRepHopeLanguage = UserHopeLanguage.createUserHopeLanguage(repHopeLanguage);
-        userRepHopeLanguage.changeRep();
-        userRepHopeLanguage.addUser(user);
-        UserLanguage userRepLanguage = UserLanguage.createUserLanguage(repLanguage);
-        userRepLanguage.changeRep();
-        userRepLanguage.addUser(user);
-        UserCountry userRepCountry = UserCountry.createUserCountry(repCountry);
-        userRepCountry.changeRep();
-        userRepCountry.addUser(user);
-
-        user.changeRep(repCountry.getName(),repLanguage.getAbbr(),repHopeLanguage.getAbbr());
-
-        user.changeImageUrl(updateDto.getImageUrl());
-        user.changeInstagramUrl(updateDto.getInstagramUrl());
-        user.changeFaceBookUrl(updateDto.getFacebookUrl());
-        user.changeContent(updateDto.getContent());
-        if(user.getRole().equals(ROLE.GUEST)) {
-            user.changeRole();
+        else{
+            return false;
         }
     }
 

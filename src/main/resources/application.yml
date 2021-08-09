@@ -22,7 +22,7 @@ spring:
   jpa:
     database: mysql
     database-platform: ENC(voUvSc5bHsIEKBvrSNAQx5mIJZSJD+khDpFMhSABjivmijlczwEdhA3R4Y3wopxvhvwDUNNstOQ=)
-    generate-ddl: true
+    generate-ddl: false
 
     show-sql: true
     hibernate:

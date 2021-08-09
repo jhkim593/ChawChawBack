@@ -134,7 +134,7 @@ class UserServiceTest {
     @Test
     public void jasyptTest()throws Exception{
         String huk = "defaultImage_233500392.png";
-        String en="mmyulgerilcrypwm";
+        String en="";
 
         String jae="1234";
         String du="aa236326";

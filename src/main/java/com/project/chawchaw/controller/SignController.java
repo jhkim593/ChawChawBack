@@ -11,6 +11,7 @@ import com.project.chawchaw.dto.user.UserLoginRequestDto;
 import com.project.chawchaw.dto.user.UserLoginResponseDto;
 import com.project.chawchaw.dto.user.UserSignUpByProviderRequestDto;
 import com.project.chawchaw.dto.user.UserSignUpRequestDto;
+import com.project.chawchaw.entity.CustomUserDetails;
 import com.project.chawchaw.exception.LoginFailureException;
 import com.project.chawchaw.response.CommonResult;
 import com.project.chawchaw.response.SingleResult;
@@ -19,6 +20,7 @@ import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -47,7 +49,7 @@ public class SignController {
 
     @ApiOperation(value = "메일 인증번호 전송", notes = "가입 할 이메일에 인증코드 전송")
     @PostMapping("/mail/send") // 이메일 인증 코드 보내기
-    public ResponseEntity emailAuth(@RequestParam String email, HttpServletRequest request) throws Exception {
+    public ResponseEntity emailAuth(@RequestBody String email, HttpServletRequest request) throws Exception {
         HttpSession session=request.getSession();
 
 
@@ -63,7 +65,7 @@ public class SignController {
     @ApiOperation(value = "인증번호 판별", notes = "입력 받은 인증번호를 판별한다.")
 
     @PostMapping("/mail/verification") // 이메일 인증 코드 검증
-    public ResponseEntity verifyCode(@RequestParam String verificationNumber,@RequestParam String email,HttpServletRequest request) {
+    public ResponseEntity verifyCode(@RequestBody String verificationNumber,@RequestBody String email,HttpServletRequest request) {
 
         HttpSession session=request.getSession();
         Object attribute = session.getAttribute(email);
@@ -87,7 +89,7 @@ public class SignController {
 
     @ApiOperation(value = "회원가입",notes = "회원가입")
     @PostMapping(value = "/users/signup")
-    public ResponseEntity signup(@ModelAttribute @Valid UserSignUpRequestDto requestDto){
+    public ResponseEntity signup(@RequestBody @Valid UserSignUpRequestDto requestDto){
         if(requestDto.getProvider()!=null){
             if(requestDto.getProvider().equals("kakao")||requestDto.getProvider().equals("facebook")) {
                 signService.signup(requestDto);
@@ -106,7 +108,7 @@ public class SignController {
 
     @ApiOperation(value = "중복회원조회",notes = "중복회원조회")
     @GetMapping(value = "/users/email/duplicate/{email}")
-    public ResponseEntity emialDuplicate(@PathVariable("email") String email){
+    public ResponseEntity emailDuplicate(@PathVariable("email") String email){
        return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.EMAIL_DUPLICATE,signService.userCheck(email)),HttpStatus.OK);
 
 
@@ -131,7 +133,7 @@ public class SignController {
 
     @PostMapping(value = "/login")
     public ResponseEntity login(
-            @ModelAttribute UserLoginRequestDto requestDto,HttpServletResponse response) {
+            @RequestBody UserLoginRequestDto requestDto,HttpServletResponse response) {
 
         try {
 
@@ -212,9 +214,12 @@ public class SignController {
     }
     @ApiOperation(value = "회원탈퇴", notes = "회원탈퇴를 한다")
     @DeleteMapping (value = "/users")
-    public ResponseEntity userDelete(@RequestHeader(value="Authorization") String token) {
+    public ResponseEntity userDelete(
+//            @RequestHeader(value="Authorization") String token
+            @AuthenticationPrincipal CustomUserDetails customUserDetails
+            ) {
 
-        signService.userDelete(token);
+        signService.userDelete(customUserDetails.getId());
         return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.DELETE_USER,true),HttpStatus.OK);
     }
 
