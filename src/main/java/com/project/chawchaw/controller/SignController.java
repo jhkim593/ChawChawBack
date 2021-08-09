@@ -90,7 +90,7 @@ public class SignController {
     @ApiOperation(value = "회원가입",notes = "회원가입")
     @PostMapping(value = "/users/signup")
     public ResponseEntity signup(@RequestBody @Valid UserSignUpRequestDto requestDto){
-        if(requestDto.getProvider()!=null){
+        if(requestDto.getProvider()!=null&&!requestDto.getProvider().isEmpty()){
             if(requestDto.getProvider().equals("kakao")||requestDto.getProvider().equals("facebook")) {
                 signService.signup(requestDto);
             }
@@ -205,14 +205,14 @@ public class SignController {
 //    }
 
 
-    @ApiOperation(value = "로그아웃", notes = "로그아웃을 한다")
+
     @PostMapping(value = "/users/logout")
     public CommonResult logout(@RequestHeader(value="X-AUTH-TOKEN") String token) {
 
         signService.logoutMember(token);
         return responseService.getSuccessResult();
     }
-    @ApiOperation(value = "회원탈퇴", notes = "회원탈퇴를 한다")
+
     @DeleteMapping (value = "/users")
     public ResponseEntity userDelete(
 //            @RequestHeader(value="Authorization") String token

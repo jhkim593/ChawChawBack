@@ -1,5 +1,6 @@
 package com.project.chawchaw.config;
 
+import io.lettuce.core.output.ScoredValueScanOutput;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.GenericFilterBean;
@@ -35,8 +36,11 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
         }
         token=token.replace("Bearer ","");
 
+        logger.info(jwtTokenProvider.validateToken(token));
+        System.out.println(jwtTokenProvider.validateToken(token));
         if(token != null && jwtTokenProvider.validateToken(token)) {
             logger.info("토큰 유효해");
+
             Authentication auth = jwtTokenProvider.getAuthentication(token);
 
             //강제로 세션접근

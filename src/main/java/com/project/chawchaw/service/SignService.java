@@ -174,6 +174,7 @@ public class SignService {
         if(requestDto.getImageUrl()!=null){
             imageUrl=requestDto.getImageUrl();
         }
+        //basic 추가?
         userRepository.save(User.createUser(requestDto.getEmail(),requestDto.getName(),requestDto.getProvider(),passwordEncoder.encode(requestDto.getPassword()),
                 requestDto.getWeb_email(),requestDto.getSchool(),imageUrl
 //                ,requestDto.getContent(), countryList, languageList,hopeLanguageList,requestDto.getFacebookUrl(),requestDto.getInstagramUrl(),userRepCountry,userRepLanguage,userRepHopeLanguage
