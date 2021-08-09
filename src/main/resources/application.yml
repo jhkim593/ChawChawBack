@@ -4,6 +4,10 @@ spring:
     multipart:
       max-file-size: 5MB
       enabled: true
+  data:
+    redis:
+      repositories:
+        enabled: false
 
 
 

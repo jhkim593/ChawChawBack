@@ -28,6 +28,7 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
         String token = jwtTokenProvider.resolveToken((HttpServletRequest) request);
         System.out.println("==============================");
         System.out.println(token);
+        logger.info(token);
         if(token == null || !token.startsWith("Bearer")) {
             filterChain.doFilter(request, response);
             return;
@@ -35,6 +36,7 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
         token=token.replace("Bearer ","");
 
         if(token != null && jwtTokenProvider.validateToken(token)) {
+            logger.info("토큰 유효해");
             Authentication auth = jwtTokenProvider.getAuthentication(token);
 
             //강제로 세션접근
