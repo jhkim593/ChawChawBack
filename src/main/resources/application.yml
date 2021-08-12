@@ -9,7 +9,8 @@ spring:
       repositories:
         enabled: false
   redis:
-    host: localhost
+#    host: localhost
+    host: 172.31.1.254
     port: 6379
 
 
