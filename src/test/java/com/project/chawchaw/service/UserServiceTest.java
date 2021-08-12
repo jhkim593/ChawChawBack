@@ -113,8 +113,8 @@ class UserServiceTest {
 
         Language language1=Language.createLanguage("한국어","kor");
         Country country1=Country.createCountry("한국");
-       countryRepository.save(country1);
-       languageRepository.save(language1);
+        countryRepository.save(country1);
+        languageRepository.save(language1);
 
 
        //when
@@ -128,13 +128,12 @@ class UserServiceTest {
 //        assertThat(userDto.getInstagramUrl()).isEqualTo(user.getInstagramUrl());
 //        assertThat(userDto.getName()).isEqualTo(user.getName());
 //        assertThat(userDto.getFollows()).isEqualTo(user.getToFollows().size());
-
-
     }
+
     @Test
     public void jasyptTest()throws Exception{
-        String huk = "defaultImage_233500392.png";
-        String en="";
+        String huk = "68624915764-rtgrpn4738ochpqtishc1fvgg7buejo2.apps.googleusercontent.com";
+        String en="XUEjp3JMUCeR5F5lvAPEM0fN";
 
         String jae="1234";
         String du="aa236326";
@@ -147,13 +146,13 @@ class UserServiceTest {
         jasypt.setAlgorithm("PBEWithMD5AndDES");
 
         String encryptedText1 = jasypt.encrypt(huk);
-        System.out.println("======================default");
+        System.out.println("======================client");
         System.out.println(encryptedText1);
         String decryptedText1 = jasypt.decrypt(encryptedText1);
         assertThat(huk).isEqualTo(decryptedText1);
 
         String encryptedText2 = jasypt.encrypt(en);
-        System.out.println("======================PW");
+        System.out.println("======================secret");
         System.out.println(encryptedText2);
         String decryptedText2 = jasypt.decrypt(encryptedText2);
         assertThat(en).isEqualTo(decryptedText2);

@@ -2,6 +2,7 @@ package com.project.chawchaw.entity;
 
 import com.project.chawchaw.exception.ResourceNotFoundException;
 import lombok.*;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -35,6 +36,7 @@ public class User{
 
     private String imageUrl;
 
+
     private String content;
 
     private String facebookUrl;
@@ -59,10 +61,6 @@ public class User{
     private String repLanguage;
 
     private String repHopeLanguage;
-
-
-
-
 
 
 //    @OneToMany(mappedBy = "user",cascade = CascadeType.ALL)

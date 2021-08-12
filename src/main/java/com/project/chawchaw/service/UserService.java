@@ -37,7 +37,6 @@ import java.util.UUID;
 @Transactional(readOnly = true)
 public class UserService {
     private final UserRepository userRepository;
-    private final FollowRepository followRepository;
     private final CountryRepository countryRepository;
     private final LanguageRepository languageRepository;
     private final UserLanguageRepository userLanguageRepository;
@@ -73,8 +72,8 @@ public class UserService {
     }
     public List<UsersDto> users(UserSearch userSearch, Long userId){
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
-        userSearch.setUserId(user.getId());
         userSearch.setSchool(user.getSchool());
+        userSearch.getExcludes().add(userId);
 
         return userRepository.usersList(userSearch);
     }

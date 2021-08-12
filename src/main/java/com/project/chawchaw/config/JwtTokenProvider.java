@@ -3,6 +3,8 @@ package com.project.chawchaw.config;
 import io.jsonwebtoken.*;
 
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 
 import org.springframework.data.redis.core.RedisTemplate;
@@ -29,6 +31,8 @@ public class JwtTokenProvider { // JWT 토큰을 생성 및 검증 모듈
     private String secretKey;
 
     private final RedisTemplate redisTemplate;
+
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private long tokenValidMilisecond = 1000L * 60 * 60; // 1시간만 토큰 유효
 
@@ -107,6 +111,7 @@ public class JwtTokenProvider { // JWT 토큰을 생성 및 검증 모듈
     public boolean validateToken(String jwtToken) {
         try {
 //            if(isLoggedOut(jwtToken)) return false;
+            logger.info(redisTemplate.opsForValue().get(jwtToken).toString());
             Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(jwtToken);
             return !claims.getBody().getExpiration().before(new Date());
         } catch (Exception e) {
@@ -116,6 +121,7 @@ public class JwtTokenProvider { // JWT 토큰을 생성 및 검증 모듈
 
     public boolean validateTokenExceptExpiration(String jwtToken) {
         try {
+
 //            if(isLoggedOut(jwtToken)) return false;
             Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(jwtToken);
             return claims.getBody().getExpiration().before(new Date());
@@ -124,6 +130,7 @@ public class JwtTokenProvider { // JWT 토큰을 생성 및 검증 모듈
         } catch (Exception e) {
             return false;
         }
+
     }
     public boolean isLoggedOut(String jwtToken) {
         return redisTemplate.opsForValue().get(jwtToken) != null;

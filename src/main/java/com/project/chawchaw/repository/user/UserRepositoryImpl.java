@@ -6,6 +6,7 @@ import com.project.chawchaw.dto.user.UsersDto;
 import com.project.chawchaw.entity.*;
 import com.project.chawchaw.repository.UserLanguageRepository;
 import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
@@ -67,6 +68,17 @@ public class UserRepositoryImpl implements  UserRepositoryCustom{
 
     @Override
     public List<UsersDto> usersList(UserSearch userSearch) {
+        int offset=0;
+        int limit=0;
+        if (userSearch.getPageNo()==1){
+            limit=6;
+
+        }
+        else{
+            offset=6+3*(userSearch.getPageNo()-2);
+            limit=3;
+        }
+
 
         List<UsersDto> usersList = queryFactory.select(Projections.constructor(UsersDto.class, user.id, user.imageUrl, user.content,
 
@@ -81,20 +93,25 @@ public class UserRepositoryImpl implements  UserRepositoryCustom{
                         hopeLanguageEq(userSearch.getHopeLanguage())
                         , languageEq(userSearch.getLanguage())
                         , nameEq(userSearch.getName())
-                        , user.school.eq(userSearch.getSchool())
-                        , user.id.notIn(userSearch.getUserId())
+                        , user.school.eq(userSearch.getSchool()),
+//
+                        excludeId(userSearch.getExcludes())
                         , user.role.eq(ROLE.USER)
 
 
                 ).orderBy(
                         searchOrder(userSearch.getOrder())
                 )
-//                .offset(0)
-//                .limit()
+                .offset(offset)
+                .limit(limit)
 
                 .fetch();
        return usersList;
+
     }
+
+
+
     public OrderSpecifier<?> searchOrder(String order) {
         if (hasText(order)) {
             if (order.equals("like")) return user.toFollows.size().desc();
@@ -105,6 +122,13 @@ public class UserRepositoryImpl implements  UserRepositoryCustom{
         else {
             return Expressions.numberTemplate(Double.class, "function('rand')").asc();
         }
+    }
+
+    private BooleanExpression excludeId(List<Long> excludes) {
+        if(excludes!=null&&!excludes.isEmpty()){
+            return user.id.notIn(excludes);
+        }
+        return null;
     }
 
     private BooleanExpression hopeLanguageEq(String hope) {

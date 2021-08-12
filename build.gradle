@@ -43,6 +43,9 @@ dependencies {
 	testAnnotationProcessor ("com.querydsl:querydsl-apt:4.4.0:jpa")
 
 
+	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+
+
 
 
 
@@ -65,6 +68,10 @@ dependencies {
     //jasypt
 	implementation group: 'com.github.ulisesbocchio', name: 'jasypt-spring-boot-starter', version: '3.0.3'
 
+	//webSocket
+	implementation 'org.springframework.boot:spring-boot-starter-websocket'
+	implementation 'org.webjars:stomp-websocket:2.3.3-1'
+	implementation 'org.webjars:sockjs-client:1.1.2'
 
 
 	//mysql

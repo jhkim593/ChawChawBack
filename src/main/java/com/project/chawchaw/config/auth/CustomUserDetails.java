@@ -1,4 +1,4 @@
-package com.project.chawchaw.entity;
+package com.project.chawchaw.config.auth;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -15,6 +15,9 @@ public class CustomUserDetails implements UserDetails {
     private String password;
     private GrantedAuthority authorities;
 
+
+
+
     public CustomUserDetails(Long id,String email, String password, GrantedAuthority authorities) {
         this.id=id;
         this.emil = email;
@@ -28,8 +31,6 @@ public class CustomUserDetails implements UserDetails {
         ArrayList<GrantedAuthority> auth = new ArrayList<>();
         auth.add(authorities);
         return auth;
-
-
 
     }
 

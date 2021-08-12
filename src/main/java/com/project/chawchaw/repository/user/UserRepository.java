@@ -16,6 +16,7 @@ public interface UserRepository extends JpaRepository<User,Long>,UserRepositoryC
 //    @Query("select u from User u where ")
 
 
+//    @Query("select u from User u where u")
 
 
 

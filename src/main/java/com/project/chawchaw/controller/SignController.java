@@ -1,20 +1,16 @@
 package com.project.chawchaw.controller;
 
-import com.project.chawchaw.config.JwtTokenProvider;
 import com.project.chawchaw.config.response.DefaultResponseVo;
 import com.project.chawchaw.config.response.ResponseMessage;
 import com.project.chawchaw.dto.social.FaceBookProfile;
 import com.project.chawchaw.dto.social.KakaoProfile;
-import com.project.chawchaw.dto.social.SocialLoginRequestDto;
 import com.project.chawchaw.dto.social.SocialLoginResponseDto;
 import com.project.chawchaw.dto.user.UserLoginRequestDto;
 import com.project.chawchaw.dto.user.UserLoginResponseDto;
-import com.project.chawchaw.dto.user.UserSignUpByProviderRequestDto;
 import com.project.chawchaw.dto.user.UserSignUpRequestDto;
-import com.project.chawchaw.entity.CustomUserDetails;
+import com.project.chawchaw.config.auth.CustomUserDetails;
 import com.project.chawchaw.exception.LoginFailureException;
 import com.project.chawchaw.response.CommonResult;
-import com.project.chawchaw.response.SingleResult;
 import com.project.chawchaw.service.*;
 import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +18,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -87,11 +82,15 @@ public class SignController {
     }
 
 
+
+
     @ApiOperation(value = "회원가입",notes = "회원가입")
     @PostMapping(value = "/users/signup")
     public ResponseEntity signup(@RequestBody @Valid UserSignUpRequestDto requestDto){
         if(requestDto.getProvider()!=null&&!requestDto.getProvider().isEmpty()){
             if(requestDto.getProvider().equals("kakao")||requestDto.getProvider().equals("facebook")) {
+                requestDto.setPassword(requestDto.getEmail());
+
                 signService.signup(requestDto);
             }
             else{

@@ -4,9 +4,7 @@ package com.project.chawchaw.controller;
 import com.project.chawchaw.config.JwtTokenProvider;
 import com.project.chawchaw.config.response.DefaultResponseVo;
 import com.project.chawchaw.config.response.ResponseMessage;
-import com.project.chawchaw.dto.FileUploadResponse;
 import com.project.chawchaw.dto.user.*;
-import com.project.chawchaw.entity.CustomUserDetails;
 import com.project.chawchaw.service.ResponseService;
 import com.project.chawchaw.service.UserService;
 import io.swagger.annotations.Api;
@@ -15,24 +13,18 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -103,6 +95,17 @@ public class UserController {
     public ResponseEntity users(@ModelAttribute UserSearch userSearch, @RequestHeader("Authorization")String token,HttpServletRequest request){
 
         Cookie[] cookies = request.getCookies();
+
+        if(cookies!=null) {
+            for (Cookie cookie : cookies) {
+                if (cookie.getName().equals("exclude")&&!cookie.getValue().isEmpty()) {
+                    String[] exclude = cookie.getValue().split("/");
+                    for (int i = 0; i < exclude.length; i++) {
+                        userSearch.getExcludes().add(Long.parseLong(exclude[i]));
+                    }
+                }
+            }
+        }
         return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.READ_USER,true,
                 userService.users(userSearch,Long.valueOf(jwtTokenProvider.getUserPk(token)))),HttpStatus.OK);
 

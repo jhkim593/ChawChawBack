@@ -1,6 +1,6 @@
-package com.project.chawchaw.service;
+package com.project.chawchaw.config.auth;
 
-import com.project.chawchaw.entity.CustomUserDetails;
+import com.project.chawchaw.config.auth.CustomUserDetails;
 import com.project.chawchaw.entity.User;
 import com.project.chawchaw.exception.UserNotFoundException;
 import com.project.chawchaw.repository.user.UserRepository;

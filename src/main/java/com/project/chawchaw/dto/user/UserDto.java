@@ -43,6 +43,7 @@ public class UserDto {
      List<String> country=new ArrayList<>();
      List<String> language=new ArrayList<>();
      List<String> hopeLanguage=new ArrayList<>();
+
      user.getHopeLanguage().stream().forEach(hl->{
          if(!hl.getRep()){
 //
