@@ -12,6 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 public class UsersDto {
     private Long id;
+    private String name;
     private String imageUrl;
     private String content;
     private LocalDateTime createDate;

@@ -80,7 +80,7 @@ public class UserRepositoryImpl implements  UserRepositoryCustom{
         }
 
 
-        List<UsersDto> usersList = queryFactory.select(Projections.constructor(UsersDto.class, user.id, user.imageUrl, user.content,
+        List<UsersDto> usersList = queryFactory.select(Projections.constructor(UsersDto.class, user.id, user.name ,user.imageUrl, user.content,
 
                 user.regDate, user.views,user.toFollows.size(),user.repCountry,user.repLanguage,user.repHopeLanguage)).distinct().from(userLanguage)
 

@@ -1,6 +1,6 @@
 package com.project.chawchaw.service;
 
-import com.project.chawchaw.config.JwtTokenProvider;
+import com.project.chawchaw.config.jwt.JwtTokenProvider;
 import com.project.chawchaw.entity.Follow;
 import com.project.chawchaw.entity.User;
 import com.project.chawchaw.exception.FollowAlreadyException;

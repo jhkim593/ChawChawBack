@@ -73,6 +73,9 @@ dependencies {
 	implementation 'org.webjars:stomp-websocket:2.3.3-1'
 	implementation 'org.webjars:sockjs-client:1.1.2'
 
+	//slack 실시간 log
+	implementation 'com.github.maricn:logback-slack-appender:1.4.0'
+
 
 	//mysql
 	implementation group: 'mysql', name: 'mysql-connector-java', version: '8.0.21'

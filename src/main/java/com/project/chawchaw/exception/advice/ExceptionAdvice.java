@@ -1,7 +1,8 @@
-package com.project.chawchaw.exception;
+package com.project.chawchaw.exception.advice;
 
 import com.project.chawchaw.config.response.DefaultResponseVo;
 import com.project.chawchaw.config.response.ResponseMessage;
+import com.project.chawchaw.exception.*;
 import com.project.chawchaw.response.CommonResult;
 import com.project.chawchaw.service.ResponseService;
 
@@ -105,10 +106,11 @@ public class ExceptionAdvice {
         return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.ENTRYPOINT_EXCEPTION,false),HttpStatus.FORBIDDEN);
     }
     @ExceptionHandler(AccessDeniedException.class)
-    protected CommonResult accessDeniedException(HttpServletRequest request,AccessDeniedException e){
-            return responseService.getFailResult(Integer.valueOf(getMessage("accessDenied.code")), getMessage("accessDenied.msg"));
-
+    protected ResponseEntity accessDeniedException(HttpServletRequest request,AccessDeniedException e){
+        return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.ACCESS_DENIED,false),HttpStatus.FORBIDDEN);
     }
+
+
 //    @ExceptionHandler(COrderNotFoundException.class)
 //    @ResponseStatus(HttpStatus.NOT_FOUND)
 //    protected CommonResult orderNotFound(HttpServletRequest request,AccessDeniedException e){

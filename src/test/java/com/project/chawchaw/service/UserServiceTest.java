@@ -132,8 +132,8 @@ class UserServiceTest {
 
     @Test
     public void jasyptTest()throws Exception{
-        String huk = "68624915764-rtgrpn4738ochpqtishc1fvgg7buejo2.apps.googleusercontent.com";
-        String en="XUEjp3JMUCeR5F5lvAPEM0fN";
+        String huk = "172.31.1.254";
+        String en="https://hooks.slack.com/services/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";
 
         String jae="1234";
         String du="aa236326";
@@ -146,13 +146,13 @@ class UserServiceTest {
         jasypt.setAlgorithm("PBEWithMD5AndDES");
 
         String encryptedText1 = jasypt.encrypt(huk);
-        System.out.println("======================client");
+        System.out.println("======================redishost");
         System.out.println(encryptedText1);
         String decryptedText1 = jasypt.decrypt(encryptedText1);
         assertThat(huk).isEqualTo(decryptedText1);
 
         String encryptedText2 = jasypt.encrypt(en);
-        System.out.println("======================secret");
+        System.out.println("======================slack");
         System.out.println(encryptedText2);
         String decryptedText2 = jasypt.decrypt(encryptedText2);
         assertThat(en).isEqualTo(decryptedText2);

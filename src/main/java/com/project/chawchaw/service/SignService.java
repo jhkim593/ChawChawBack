@@ -2,9 +2,8 @@ package com.project.chawchaw.service;
 
 
 
-import com.project.chawchaw.config.JwtTokenProvider;
+import com.project.chawchaw.config.jwt.JwtTokenProvider;
 import com.project.chawchaw.dto.user.UserLoginRequestDto;
-import com.project.chawchaw.dto.user.UserSignUpByProviderRequestDto;
 import com.project.chawchaw.dto.user.UserSignUpRequestDto;
 import com.project.chawchaw.entity.*;
 import com.project.chawchaw.exception.*;
@@ -28,8 +27,6 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.mail.Message;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
 @Service

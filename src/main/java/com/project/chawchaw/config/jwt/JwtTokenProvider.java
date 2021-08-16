@@ -1,4 +1,4 @@
-package com.project.chawchaw.config;
+package com.project.chawchaw.config.jwt;
 
 import io.jsonwebtoken.*;
 
@@ -111,7 +111,7 @@ public class JwtTokenProvider { // JWT 토큰을 생성 및 검증 모듈
     public boolean validateToken(String jwtToken) {
         try {
 //            if(isLoggedOut(jwtToken)) return false;
-            logger.info(redisTemplate.opsForValue().get(jwtToken).toString());
+//            logger.info(redisTemplate.opsForValue().get(jwtToken).toString());
             Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(jwtToken);
             return !claims.getBody().getExpiration().before(new Date());
         } catch (Exception e) {

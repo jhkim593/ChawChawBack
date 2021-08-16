@@ -1,6 +1,5 @@
-package com.project.chawchaw.config;
+package com.project.chawchaw.config.jwt;
 
-import io.lettuce.core.output.ScoredValueScanOutput;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.GenericFilterBean;
@@ -29,7 +28,7 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
         String token = jwtTokenProvider.resolveToken((HttpServletRequest) request);
         System.out.println("==============================");
         System.out.println(token);
-        logger.info(token);
+
         if(token == null || !token.startsWith("Bearer")) {
             filterChain.doFilter(request, response);
             return;
