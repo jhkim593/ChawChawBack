@@ -133,7 +133,7 @@ class UserServiceTest {
     @Test
     public void jasyptTest()throws Exception{
         String huk = "172.31.1.254";
-        String en="hooks.slack.com/services/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";
+        String en=null;
 
 
         String jae="1234";
