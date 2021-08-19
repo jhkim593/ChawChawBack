@@ -12,20 +12,20 @@ spring:
         enabled: false
 
   redis:
-    host: localhost
-#    host: ENC(G99qlTRZQ3QA0LAYoyC7gy8ychImw6dx)
+#    host: localhost
+    host: ENC(G99qlTRZQ3QA0LAYoyC7gy8ychImw6dx)
     port: 6379
 
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    password: ENC(3F1eltMp3xhu5T+HyPoTIg==)
-    url: ENC(/pngs7V2Z7zRkPVPEwTPmVWb2cTBBa3HUP8OcDLuzxD4rDYKjb+r6wrlg+q0hKndBFaBB+YR3uVRCw54dskPPt55bfJ+6YEUCxRGJKr1JVBwdIHXvWoRAR1iJG4WHMOcI9DRembZDhg=)
-    username: ENC(XiRNju+2VhAm6XrJDOJ3zw==)
+#    password: ENC(3F1eltMp3xhu5T+HyPoTIg==)
+#    url: ENC(/pngs7V2Z7zRkPVPEwTPmVWb2cTBBa3HUP8OcDLuzxD4rDYKjb+r6wrlg+q0hKndBFaBB+YR3uVRCw54dskPPt55bfJ+6YEUCxRGJKr1JVBwdIHXvWoRAR1iJG4WHMOcI9DRembZDhg=)
+#    username: ENC(XiRNju+2VhAm6XrJDOJ3zw==)
 
-#    password: ENC(6um9Qa+wMOGQq41hiFycTiRqRkkeiOGb)
-#    url: ENC(WYUFn5EHnDQSVM7rYX0zRWWJU5imcmWzQBPSFG93/nu0idnv5InXVXFZZF1L8rGZ5VaggOq2YBc56bq6NZ79sY2HD4xcsJyXJg2m5y+zW10DnV8MdRHKPjqWzEc2yz/hRYnwOphEwmCHtjSj4zcCkxXZYnplAjWDxBuHvp4DZAE0EIrgjEVwcw==)
-#    username: ENC(ifD0zstnaBqDxGwu4NlGfg==)
+    password: ENC(6um9Qa+wMOGQq41hiFycTiRqRkkeiOGb)
+    url: ENC(WYUFn5EHnDQSVM7rYX0zRWWJU5imcmWzQBPSFG93/nu0idnv5InXVXFZZF1L8rGZ5VaggOq2YBc56bq6NZ79sY2HD4xcsJyXJg2m5y+zW10DnV8MdRHKPjqWzEc2yz/hRYnwOphEwmCHtjSj4zcCkxXZYnplAjWDxBuHvp4DZAE0EIrgjEVwcw==)
+    username: ENC(ifD0zstnaBqDxGwu4NlGfg==)
 
 
 
@@ -71,7 +71,9 @@ file:
   path: ENC(BGTJOACnd+mHvk7cUjsNZCbdEtTU5jqmYgE15djVQqI=)
   defaultImage: ENC(VffDQ+CbjDjLANLlPSjovhJTEp2ihPyUXxAAwn5YJRY1T1lciP6O0w==)
 
-#logging:
+logging:
+  level:
+    org.springframework: warn
 #  slack:
 #    webhook-uri:
 #  config: classpath:logback-spring.xml
@@ -83,6 +85,7 @@ file:
     view:
       prefix: /templates/
       suffix: .html
+
 
 jasypt:
   encryptor:
