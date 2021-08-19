@@ -18,21 +18,21 @@ public class ChatRoomUser {
 
     @ManyToOne
     @JoinColumn(name="userTo_id")
-    private User toUser;
+    private User user;
 
-    @ManyToOne
-    @JoinColumn(name="userFrom_id")
-    private User fromUser;
+//    @ManyToOne
+//    @JoinColumn(name="userFrom_id")
+//    private User fromUser;
 
     @ManyToOne
     @JoinColumn(name="chatRoom_id")
     private ChatRoom chatRoom;
 
-    public static ChatRoomUser createChatRoomUser(ChatRoom chatRoom, User toUser,User fromUser){
+    public static ChatRoomUser createChatRoomUser(ChatRoom chatRoom, User user){
         ChatRoomUser chatRoomUser=new ChatRoomUser();
         chatRoomUser.chatRoom=chatRoom;
-        chatRoomUser.toUser=toUser;
-        chatRoomUser.fromUser=fromUser;
+        chatRoomUser.user=user;
+
         return chatRoomUser;
     }
 

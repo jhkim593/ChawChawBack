@@ -13,6 +13,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 
 
 @Slf4j
@@ -40,12 +41,13 @@ public class ChatSubService implements MessageListener {
             ChatMessageDto roomMessage = objectMapper.readValue(publishMessage, ChatMessageDto.class);
 
             System.out.println(roomMessage.getRoomId());
-            ChatRoomUser chatRoomUser = chatRoomUserRepository.findByRoomId(roomMessage.getRoomId()).orElseThrow();
+            List<ChatRoomUser> chatRoomUser = chatRoomUserRepository.findByRoomId(roomMessage.getRoomId());
             // Websocket 구독자에게 채팅 메시지 Send
             messagingTemplate.convertAndSend("/queue/chat/room/" +roomMessage.getRoomId(),roomMessage);
-            messagingTemplate.convertAndSend("/queue/chat/" +chatRoomUser.getFromUser().getId(),roomMessage);
-            messagingTemplate.convertAndSend("/queue/chat/" +chatRoomUser.getToUser().getId(),roomMessage);
 
+            for(ChatRoomUser c:chatRoomUser) {
+                messagingTemplate.convertAndSend("/queue/chat/room/wait/" + c.getUser().getId(), roomMessage);
+            }
 
         } catch (Exception e) {
             log.error(e.getMessage());

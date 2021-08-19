@@ -29,6 +29,9 @@ public class ResponseMessage {
     public static final String IMAGE_GET_FAIL="이미지 불러오기에 실패하였습니다.";
     public static final String SET_REP="대표국가,언어,희망언어를 입력해주세요";
     public static final String ACCESS_DENIED="보유하신 권한으로 접근할 수 없습니다.";
+    public static final String CHATROOM_FIND_SUCCESS="채팅방 조회에 성공하였습니다.";
+    public static final String CHATROOM_CREAT_SUCCESS="채팅방 생성에 성공하였습니다.";
+
     
 
     public static final String IMAGE_DELETE_FAIL="이미지 삭제 실패";

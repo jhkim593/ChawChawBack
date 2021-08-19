@@ -11,6 +11,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ChatDto {
     private Long roomId;
+    private Long senderId;
     private String sender;
     private String imageUrl;
     private List<ChatMessageDto> messages;

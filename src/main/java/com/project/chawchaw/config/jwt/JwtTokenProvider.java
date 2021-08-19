@@ -103,6 +103,8 @@ public class JwtTokenProvider { // JWT 토큰을 생성 및 검증 모듈
         long seconds = (claims.getBody().getExpiration().getTime() - claims.getBody().getIssuedAt().getTime()) / 1000;
         return Duration.ofSeconds(seconds < 0 ? 0 : seconds);
     }
+
+
     // Request의 Header에서 token 파싱 : "X-AUTH-TOKEN: jwt토큰"
     public String resolveToken(HttpServletRequest req) {
         return req.getHeader("Authorization");

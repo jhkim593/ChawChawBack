@@ -52,42 +52,68 @@ public class ChatService {
     public List<ChatDto> createRoom(Long toUserId, Long fromUserId){
         User toUser=userRepository.findById(toUserId).orElseThrow(UserNotFoundException::new);
         User fromUser=userRepository.findById(fromUserId).orElseThrow(UserNotFoundException::new);
+        ChatRoom chatRoom = chatRoomRepository.save(ChatRoom.createChatRoom(UUID.randomUUID().toString()));
+        chatRoomUserRepository.save(ChatRoomUser.createChatRoomUser(chatRoom,toUser));
+        chatRoomUserRepository.save(ChatRoomUser.createChatRoomUser(chatRoom,fromUser));
+        chatMessageRepository.createChatMessage(new ChatMessageDto(chatRoom.getId(),fromUserId,fromUser.getName(),fromUser.getName()+"님이 입장하셨습니다.", LocalDateTime.now().withNano(0)));
 
-        ChatRoom chatRoom=null;
-        Optional<ChatRoomUser> findChatRoomUser = chatRoomUserRepository.findByToUserIdAndFromUserId(toUserId, fromUserId);
-        if(!findChatRoomUser.isPresent()) {
-           chatRoom = chatRoomRepository.save(ChatRoom.createChatRoom(UUID.randomUUID().toString()));
-            chatRoomUserRepository.save(ChatRoomUser.createChatRoomUser(chatRoom,toUser,fromUser));
-            chatMessageRepository.createChatMessage(new ChatMessageDto(chatRoom.getId(),fromUser.getName(),fromUser.getName()+"님이 입장하셨습니다.", LocalDateTime.now()));
-        }
-        else{
-           chatRoom=findChatRoomUser.get().getChatRoom();
+//        ChatRoom chatRoom=null;
+////        Optional<ChatRoomUser> findChatRoomUser = chatRoomUserRepository.findByToUserIdAndFromUserId(toUserId, fromUserId);
+//        if(!chatRoomUserRepository.isChatRoom(toUserId,fromUserId)) {
+//           chatRoom = chatRoomRepository.save(ChatRoom.createChatRoom(UUID.randomUUID().toString()));
+//            chatRoomUserRepository.save(ChatRoomUser.createChatRoomUser(chatRoom,toUser));
+//            chatRoomUserRepository.save(ChatRoomUser.createChatRoomUser(chatRoom,fromUser));
+//            chatMessageRepository.createChatMessage(new ChatMessageDto(chatRoom.getId(),fromUser.getName(),fromUser.getName()+"님이 입장하셨습니다.", LocalDateTime.now().withNano(0)));
+//        }
+//        else{
+//           chatRoom=findChatRoomUser.get().getChatRoom();
+//
+//        }
+        return  getChat(fromUserId);
+//            if(chatRoomUser.getChatRoom().getId()==(chatRoom.getId()))continue;
+//            if(chatRoomUser.getFromUser().getId()==(fromUser.getId())){
+//                ChatDto chatDto=new ChatDto(chatRoomUser.getChatRoom().getId(),chatRoomUser.getToUser().getName(),chatRoomUser.getToUser().getImageUrl(),
+//                        chatMessageRepository.findChatMessageByRoomId(chatRoomUser.getChatRoom().getId()));
+//                chatDtos.add(chatDto);
+//
+//            }
+//            else {
+//                ChatDto chatDto=new ChatDto(chatRoomUser.getChatRoom().getId(),chatRoomUser.getFromUser().getName(),chatRoomUser.getFromUser().getImageUrl(),
+//                        chatMessageRepository.findChatMessageByRoomId(chatRoomUser.getChatRoom().getId()));
+//                chatDtos.add(chatDto);
+//
+//            }
+//        }
+//        return chatDtos;
+    }
+    public List<ChatDto> getChat(Long id){
 
-        }
         List<ChatDto> chatDtos=new ArrayList<>();
-       chatDtos.add(new ChatDto(chatRoom.getId(),toUser.getName(),toUser.getImageUrl(),
-               chatMessageRepository.findChatMessageByRoomId(chatRoom.getId())));
-
-        List<ChatRoomUser> chatRoomUserByUserId = chatRoomUserRepository.findByChatRoomUserByUserId(fromUserId);
+//       chatDtos.add(new ChatDto(chatRoom.getId(),toUser.getId(),toUser.getName(),toUser.getImageUrl(),
+//               chatMessageRepository.findChatMessageByRoomId(chatRoom.getId())));
+//
+        List<ChatRoomUser> chatRoomUserByUserId = chatRoomUserRepository.
+                findByChatRoomUserByUserId(id);
         for(int i=0;i<chatRoomUserByUserId.size();i++){
-            ChatRoomUser chatRoomUser = chatRoomUserByUserId.get(i);
-            if(chatRoomUser.getChatRoom().getId()==(chatRoom.getId()))continue;
-            if(chatRoomUser.getFromUser().getId()==(fromUser.getId())){
-                ChatDto chatDto=new ChatDto(chatRoomUser.getChatRoom().getId(),chatRoomUser.getToUser().getName(),chatRoomUser.getToUser().getImageUrl(),
-                        chatMessageRepository.findChatMessageByRoomId(chatRoomUser.getChatRoom().getId()));
-                chatDtos.add(chatDto);
+            ChatRoomUser chatRoomUser1 = chatRoomUserByUserId.get(i);
+            List<ChatRoomUser> chatRoomUserByRoomId = chatRoomUserRepository.findByChatRoomUserByRoomId(chatRoomUser1.getChatRoom().getId());
+            for(int j=0;j<chatRoomUserByRoomId.size();j++){
+                ChatRoomUser chatRoomUser2 = chatRoomUserByRoomId.get(j);
+                if(!chatRoomUser2.getUser().getId().equals(id)){
+                    ChatDto chatDto=new ChatDto(chatRoomUser1.getChatRoom().getId(),chatRoomUser2.getUser().getId(),chatRoomUser2.getUser().getName(),chatRoomUser2.getUser().getImageUrl(),
+                            chatMessageRepository.findChatMessageByRoomId(chatRoomUser2.getChatRoom().getId()));
 
-            }
-            else {
-                ChatDto chatDto=new ChatDto(chatRoomUser.getChatRoom().getId(),chatRoomUser.getFromUser().getName(),chatRoomUser.getFromUser().getImageUrl(),
-                        chatMessageRepository.findChatMessageByRoomId(chatRoomUser.getChatRoom().getId()));
-                chatDtos.add(chatDto);
-
+                    chatDtos.add(chatDto);
+                }
             }
         }
         return chatDtos;
 
+
     }
+
+
+
     public void enterChatRoom(Long roomId) {
         ChannelTopic topic = topics.get(roomId);
         if (topic == null) {

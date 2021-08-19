@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 
 public class UserProfileDto {
 
+    private Long id;
     private String email;
     private String name;
     private String web_email;
@@ -30,6 +31,7 @@ public class UserProfileDto {
     private String repHopeLanguage;
 
     public UserProfileDto(User user){
+        this.id=user.getId();
         this.email=user.getEmail();
         this.name=user.getName();
         this.web_email=user.getWeb_email();

@@ -24,11 +24,9 @@ public class QChatRoomUser extends EntityPathBase<ChatRoomUser> {
 
     public final QChatRoom chatRoom;
 
-    public final QUser fromUser;
-
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
-    public final QUser toUser;
+    public final QUser user;
 
     public QChatRoomUser(String variable) {
         this(ChatRoomUser.class, forVariable(variable), INITS);
@@ -49,8 +47,7 @@ public class QChatRoomUser extends EntityPathBase<ChatRoomUser> {
     public QChatRoomUser(Class<? extends ChatRoomUser> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
         this.chatRoom = inits.isInitialized("chatRoom") ? new QChatRoom(forProperty("chatRoom")) : null;
-        this.fromUser = inits.isInitialized("fromUser") ? new QUser(forProperty("fromUser")) : null;
-        this.toUser = inits.isInitialized("toUser") ? new QUser(forProperty("toUser")) : null;
+        this.user = inits.isInitialized("user") ? new QUser(forProperty("user")) : null;
     }
 
 }

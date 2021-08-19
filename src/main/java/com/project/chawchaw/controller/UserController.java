@@ -41,16 +41,8 @@ public class UserController {
     @Value("${file.defaultImage}")
     private String defaultImage;
 
-    @GetMapping("/mail/test")
-    public void test(HttpServletRequest request){
-        Cookie[] cookies = request.getCookies();
-        for(Cookie cookie:cookies){
-            System.out.println(cookie.getValue());
-            System.out.println(cookie.getDomain());
-        }
-    }
 
-    @ApiOperation(value = "단일 회원 조회",notes = "다른유저의 단일 회원 정보를 조회한다.")
+
     @GetMapping(value = "/users/{userId}")
     public ResponseEntity userDetail(@PathVariable("userId") Long userId,
 //                                     @AuthenticationPrincipal CustomUserDetails customUserDetails
@@ -64,7 +56,6 @@ public class UserController {
 
     }
 
-    @ApiOperation(value = "본인 프로필 조회",notes = "자신의 프로필 정보를 조회한다.")
     @GetMapping(value = "/users/profile")
     public ResponseEntity<UserProfileDto> userProfile(@RequestHeader("Authorization")String token){
         logger.info(token);
@@ -74,7 +65,6 @@ public class UserController {
 
     }
 
-    @ApiOperation(value = "프로필 수정",notes = "자신의 프로필 정보를 수정한다.")
     @PostMapping(value = "/users/profile")
     public ResponseEntity userProfileUpdate( @RequestBody UserUpdateDto userUpdateDto,
                                             @RequestHeader("Authorization")String token){
@@ -88,7 +78,6 @@ public class UserController {
         }
 
     }
-    @ApiOperation(value = "전체 회원 조회",notes = "검색조건에 맞는 전체회원을 조회한다.")
     @GetMapping(value = "/users")
     public ResponseEntity users(@ModelAttribute UserSearch userSearch, @RequestHeader("Authorization")String token,HttpServletRequest request){
 
@@ -109,7 +98,6 @@ public class UserController {
 
     }
 
-    @ApiOperation(value = "이미지 업로드",notes = "자신의 프로필 이미지를 업로드 한다.")
     @PostMapping(value = "/users/image")
     public ResponseEntity profileImageUpload(@RequestBody MultipartFile file,@RequestHeader("Authorization") String token){
 
@@ -160,7 +148,6 @@ public class UserController {
 
 
 
-    @ApiOperation(value = "프로필 이미지 삭제",notes = "업로드된 프로필 이미지를 삭제한다.")
     @DeleteMapping(value = "/users/image")
     public ResponseEntity profileImageDelete( @RequestHeader("Authorization") String token){
             if( userService.deleteImage(Long.valueOf(jwtTokenProvider.getUserPk(token)))){

@@ -89,7 +89,7 @@ public class User{
         user.provider=provider;
         user.web_email=web_email;
         user.school=school;
-        user.regDate=LocalDateTime.now();
+        user.regDate=LocalDateTime.now().withNano(0);
 
 //        user.content=content;
 //        for(int i=0;i<country.size();i++){

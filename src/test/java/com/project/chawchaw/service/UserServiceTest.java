@@ -133,7 +133,8 @@ class UserServiceTest {
     @Test
     public void jasyptTest()throws Exception{
         String huk = "172.31.1.254";
-        String en="https://hooks.slack.com/services/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";
+        String en="hooks.slack.com/services/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";
+
 
         String jae="1234";
         String du="aa236326";
@@ -155,25 +156,26 @@ class UserServiceTest {
         System.out.println("======================slack");
         System.out.println(encryptedText2);
         String decryptedText2 = jasypt.decrypt(encryptedText2);
+        System.out.println(decryptedText2);
         assertThat(en).isEqualTo(decryptedText2);
 
-        String encryptedText3 = jasypt.encrypt(jae);
-        System.out.println("======================재민");
-        System.out.println(encryptedText3);
-        String decryptedText3= jasypt.decrypt(encryptedText3);
-        assertThat(jae).isEqualTo(decryptedText3);
-
-        String encryptedText4 = jasypt.encrypt(du);
-        System.out.println("======================두진");
-        System.out.println(encryptedText4);
-        String decryptedText4 = jasypt.decrypt(encryptedText4);
-        assertThat(du).isEqualTo(decryptedText4);
-
-        String encryptedText5= jasypt.encrypt(nu);
-        System.out.println("======================누가");
-        System.out.println(encryptedText5);
-        String decryptedText5 = jasypt.decrypt(encryptedText5);
-        assertThat(nu).isEqualTo(decryptedText5);
+//        String encryptedText3 = jasypt.encrypt(jae);
+//        System.out.println("======================재민");
+//        System.out.println(encryptedText3);
+//        String decryptedText3= jasypt.decrypt(encryptedText3);
+//        assertThat(jae).isEqualTo(decryptedText3);
+//
+//        String encryptedText4 = jasypt.encrypt(du);
+//        System.out.println("======================두진");
+//        System.out.println(encryptedText4);
+//        String decryptedText4 = jasypt.decrypt(encryptedText4);
+//        assertThat(du).isEqualTo(decryptedText4);
+//
+//        String encryptedText5= jasypt.encrypt(nu);
+//        System.out.println("======================누가");
+//        System.out.println(encryptedText5);
+//        String decryptedText5 = jasypt.decrypt(encryptedText5);
+//        assertThat(nu).isEqualTo(decryptedText5);
 
 
 

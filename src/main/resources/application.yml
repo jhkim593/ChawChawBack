@@ -1,13 +1,16 @@
-
+server:
+  port: 8080
 spring:
   servlet:
     multipart:
       max-file-size: 5MB
       enabled: true
+
   data:
     redis:
       repositories:
         enabled: false
+
   redis:
 #    host: localhost
     host: ENC(G99qlTRZQ3QA0LAYoyC7gy8ychImw6dx)
@@ -70,8 +73,10 @@ file:
 
 logging:
   slack:
-    webhook-uri: ENC(YchBRljnXglX+Frqt2cXLJkvAnIifrVETBK7eHBtohKIfeiwy3ObFWgqi+1Qjvl+hWRwfqfGfWO7IESCXIA5llSQKAewl8eQRmT9/w16FGP0GFQBOwLKK/r6oSdq2THq)
+    webhook-uri: https://hooks.slack.com/services/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
   config: classpath:logback-spring.xml
+
+
 
 
   mvc:

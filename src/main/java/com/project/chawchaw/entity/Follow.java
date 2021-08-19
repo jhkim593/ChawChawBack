@@ -35,7 +35,7 @@ public class Follow {
         toUser.getToFollows().add(follow);
         follow.toUser=toUser;
 
-        follow.regDate=LocalDateTime.now();
+        follow.regDate=LocalDateTime.now().withNano(0);
         return follow;
 
     }
