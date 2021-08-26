@@ -94,7 +94,6 @@ public class ChatService {
 //        return chatDtos;
     }
     public List<ChatDto> getChat(Long id){
-
         List<ChatDto> chatDtos=new ArrayList<>();
 //       chatDtos.add(new ChatDto(chatRoom.getId(),toUser.getId(),toUser.getName(),toUser.getImageUrl(),
 //               chatMessageRepository.findChatMessageByRoomId(chatRoom.getId())));
