@@ -31,6 +31,9 @@ public class ResponseMessage {
     public static final String ACCESS_DENIED="보유하신 권한으로 접근할 수 없습니다.";
     public static final String CHATROOM_FIND_SUCCESS="채팅방 조회에 성공하였습니다.";
     public static final String CHATROOM_CREAT_SUCCESS="채팅방 생성에 성공하였습니다.";
+    public static final String CHATROOM_NOT_FOUND="채팅방을 찾을 수 없습니다.";
+    public static final String CHATROOM_DELETE_SUCCESS="채팅방 삭제에 성공 하였습니다.";
+    public static final String EXPIRED_TOKEN="AccessToken 만료";
 
     
 

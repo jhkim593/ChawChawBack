@@ -79,6 +79,13 @@ public class ExceptionAdvice {
         return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.NOT_FOUND_LANGUAGE,false),HttpStatus.OK);
     }
 
+    @ExceptionHandler(ChatRoomNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    protected ResponseEntity chatRoomNotFoundException(HttpServletRequest request, LanguageNotFoundException e){
+        return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.CHATROOM_NOT_FOUND,false),HttpStatus.OK);
+    }
+
+
     @ExceptionHandler(FollwNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     protected ResponseEntity followNotFoundException(HttpServletRequest request, FollwNotFoundException e){
@@ -103,7 +110,7 @@ public class ExceptionAdvice {
     @ExceptionHandler(AuthenticationEntryPointException.class)
     protected ResponseEntity authenticationEntryPointException(HttpServletRequest request,AuthenticationEntryPointException e){
 
-        return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.ENTRYPOINT_EXCEPTION,false),HttpStatus.FORBIDDEN);
+        return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.ENTRYPOINT_EXCEPTION,false),HttpStatus.UNAUTHORIZED);
     }
     @ExceptionHandler(AccessDeniedException.class)
     protected ResponseEntity accessDeniedException(HttpServletRequest request,AccessDeniedException e){

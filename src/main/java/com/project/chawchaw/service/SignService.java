@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -207,64 +208,7 @@ public class SignService {
 
     }
 
-//    private String getEmailByProvider(String accessToken, String provider) {
-//        if(provider.equals("kakao")) {
-//            return kakaoService.getKakaoProfile(accessToken).getId();
-//        }
-//        throw new InvalidateProviderException();
-//    }
-
-//    @Transactional
-//    public void signUpByProvider(UserSignUpByProviderRequestDto requestDto,String provider) {
 //
-//        if(validUserWithProvider(requestDto.getEmail(),provider)){
-//            throw new UserAlreadyExistException();
-//        }
-//
-//        Country repCountry = countryRepository.findByName(requestDto.getRepCountry()).orElseThrow(CountryNotFoundException::new);
-//        Language repLanguage = languageRepository.findByAbbr(requestDto.getRepLanguage()).orElseThrow(LanguageNotFoundException::new);
-//        Language repHopeLanguage = languageRepository.findByAbbr(requestDto.getRepHopeLanguage()).orElseThrow(LanguageNotFoundException::new);
-//
-//        UserHopeLanguage userRepHopeLanguage = UserHopeLanguage.createUserHopeLanguage(repHopeLanguage);
-//        userRepHopeLanguage.changeRep();
-//        UserLanguage userRepLanguage = UserLanguage.createUserLanguage(repLanguage);
-//        userRepLanguage.changeRep();
-//        UserCountry userRepCountry = UserCountry.createUserCountry(repCountry);
-//        userRepCountry.changeRep();
-//
-//        List<UserHopeLanguage> hopeLanguageList=new ArrayList<>();
-//        for(int i=0;i<requestDto.getHopeLanguage().size();i++){
-//            String hopeLanguageName=requestDto.getHopeLanguage().get(i);
-//            Language language = languageRepository.findByAbbr(hopeLanguageName).orElseThrow(LanguageNotFoundException::new);
-//            UserHopeLanguage userHopeLanguage = UserHopeLanguage.createUserHopeLanguage(language);
-//            hopeLanguageList.add(userHopeLanguage);
-//
-//        }
-//        List<UserLanguage>languageList=new ArrayList<>();
-//        for(int i=0;i<requestDto.getLanguage().size();i++){
-//            String LanguageName=requestDto.getLanguage().get(i);
-//            Language language = languageRepository.findByAbbr(LanguageName).orElseThrow(LanguageNotFoundException::new);
-//            UserLanguage userLanguage = UserLanguage.createUserLanguage(language);
-//            languageList.add(userLanguage);
-//
-//        }
-//
-//        List<UserCountry>countryList=new ArrayList<>();
-//        for(int i=0;i<requestDto.getCountry().size();i++){
-//            String countryName=requestDto.getCountry().get(i);
-//            Country country = countryRepository.findByName(countryName).orElseThrow(CountryNotFoundException::new);
-//            UserCountry userCountry = UserCountry.createUserCountry(country);
-//            countryList.add(userCountry);
-//
-//        }
-//
-//
-//
-//        userRepository.save(User.createUser(requestDto.getEmail(),requestDto.getName(),provider,null,
-//                requestDto.getWeb_email(),requestDto.getSchool(),requestDto.getImageUrl(),requestDto.getContent(),countryList,languageList,
-//                hopeLanguageList,requestDto.getFacebookUrl(),requestDto.getInstagramUrl(),userRepCountry,userRepLanguage,userRepHopeLanguage));
-//
-//    }
 
 
     public Boolean validUserWithProvider(String email, String provider) {
@@ -301,6 +245,16 @@ public class SignService {
             user.changeRefreshToken("invalidate");
 
     }
+//    @Transactional
+//    public UserLoginResponseDto refreshToken(String refreshToken){
+//
+//        if(!jwtTokenProvider.validateTokenExceptExpiration(token))throw new AccessDeniedException("");
+//        Member member = memberRepository.findById(Long.valueOf(jwtTokenProvider.getMemberPk(token))).orElseThrow(CUserNotFoundException::new);
+//        if(!jwtTokenProvider.validateToken(member.getRefreshToken())||!refreshToken.equals(member.getRefreshToken()))
+//            throw new AccessDeniedException("");
+//        member.changeRefreshToken(jwtTokenProvider.createRefreshToken());
+//        return new MemberLoginResponseDto(member.getId(),jwtTokenProvider.createToken(String.valueOf(member.getId()),member.getRoles()),member.getRefreshToken());
+//    }
 
 
 

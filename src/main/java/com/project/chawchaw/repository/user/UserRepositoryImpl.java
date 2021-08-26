@@ -68,16 +68,12 @@ public class UserRepositoryImpl implements  UserRepositoryCustom{
 
     @Override
     public List<UsersDto> usersList(UserSearch userSearch) {
-        int offset=0;
-        int limit=0;
-        if (userSearch.getPageNo()==1){
-            limit=6;
 
+        int limit=3;
+        if (userSearch.getIsFirst()){
+            limit=6;
         }
-        else{
-            offset=6+3*(userSearch.getPageNo()-2);
-            limit=3;
-        }
+
 
 
         List<UsersDto> usersList = queryFactory.select(Projections.constructor(UsersDto.class, user.id, user.name ,user.imageUrl, user.content,
@@ -102,7 +98,6 @@ public class UserRepositoryImpl implements  UserRepositoryCustom{
                 ).orderBy(
                         searchOrder(userSearch.getOrder())
                 )
-                .offset(offset)
                 .limit(limit)
 
                 .fetch();

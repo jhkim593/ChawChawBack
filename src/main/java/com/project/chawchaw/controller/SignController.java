@@ -138,8 +138,8 @@ public class SignController {
 
             if (requestDto.getProvider() != null) {
 
-                if (requestDto.getProvider().equals("kakao") && requestDto.getCode() != null) {
-                    String token = kakaoService.getKakaoTokenInfo(requestDto.getCode()).getAccess_token();
+                if (requestDto.getProvider().equals("kakao") && requestDto.getKakaoToken() != null) {
+                    String token = kakaoService.getKakaoTokenInfo(requestDto.getKakaoToken()).getAccess_token();
                     KakaoProfile kakaoProfile = kakaoService.getKakaoProfile(token);
                     String email = kakaoProfile.getEmail();
                     if (signService.validUserWithProvider(email, requestDto.getProvider())) {
@@ -151,8 +151,8 @@ public class SignController {
                         return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.SOCIAL_LOGIN_FAIL, false,
                                 new SocialLoginResponseDto(kakaoProfile.getEmail(), kakaoProfile.getName(), kakaoProfile.getImageUrl(), kakaoProfile.getProvider())), HttpStatus.OK);
                     }
-                } else if (requestDto.getProvider().equals("facebook") && requestDto.getEmail() != null && requestDto.getAccessToken() != null) {
-                    FaceBookProfile faceBookProfile = faceBookService.getFaceBookProfile(requestDto.getAccessToken(), requestDto.getEmail());
+                } else if (requestDto.getProvider().equals("facebook") && requestDto.getFacebookId() != null && requestDto.getFacebookToken() != null) {
+                    FaceBookProfile faceBookProfile = faceBookService.getFaceBookProfile(requestDto.getFacebookToken(), requestDto.getFacebookId());
                     String email = faceBookProfile.getEmail();
                     if (signService.validUserWithProvider(email, requestDto.getProvider())) {
                         UserLoginResponseDto loginDto = signService.loginByProvider(email, requestDto.getProvider());
@@ -162,7 +162,8 @@ public class SignController {
                         return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.SOCIAL_LOGIN_FAIL, false,
                                 new SocialLoginResponseDto(faceBookProfile.getEmail(), faceBookProfile.getName(), faceBookProfile.getImageUrl(), faceBookProfile.getProvider())), HttpStatus.OK);
                     }
-                } else {
+                }
+                else {
 
                     return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.SOCIAL_LOGIN_CONNECT_FAIL, false), HttpStatus.OK);
 
@@ -205,12 +206,19 @@ public class SignController {
 
 
 
-    @PostMapping(value = "/users/logout")
-    public CommonResult logout(@RequestHeader(value="X-AUTH-TOKEN") String token) {
+//    @PostMapping(value = "/users/logout")
+//    public CommonResult logout(@RequestHeader(value="X-AUTH-TOKEN") String token) {
+//
+//        signService.logoutMember(token);
+//        return responseService.getSuccessResult();
+//    }
 
-        signService.logoutMember(token);
-        return responseService.getSuccessResult();
-    }
+//    @PostMapping(value = "/users/auth/refresh")
+//    public ResponseEntity logout(@RequestHeader(value="X-AUTH-TOKEN") String token) {
+//
+//        signService.logoutMember(token);
+//        return responseService.getSuccessResult();
+//    }
 
     @DeleteMapping (value = "/users")
     public ResponseEntity userDelete(

@@ -10,6 +10,7 @@ public class UserLoginRequestDto {
     private String email;
     private String password;
     private String provider;
-    private String code;
-    private String accessToken;
+    private String kakaoToken;
+    private String facebookToken;
+    private String facebookId;
 }

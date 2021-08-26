@@ -6,6 +6,7 @@ import com.project.chawchaw.config.response.DefaultResponseVo;
 import com.project.chawchaw.config.response.ResponseMessage;
 import com.project.chawchaw.dto.user.*;
 import com.project.chawchaw.service.ResponseService;
+import com.project.chawchaw.service.S3Service;
 import com.project.chawchaw.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -31,15 +32,17 @@ import java.nio.file.Files;
 public class UserController {
 
     private final UserService userService;
-    private final ResponseService responseService;
     private final JwtTokenProvider jwtTokenProvider;
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final S3Service s3Service;
 
     @Value("${file.path}")
     private String fileRealPath;
 
     @Value("${file.defaultImage}")
     private String defaultImage;
+
+    public static final String CLOUD_FRONT_DOMAIN_NAME = "d3t4l8y7wi01lo.cloudfront.net";
 
 
 
@@ -98,21 +101,41 @@ public class UserController {
 
     }
 
-    @PostMapping(value = "/users/image")
-    public ResponseEntity profileImageUpload(@RequestBody MultipartFile file,@RequestHeader("Authorization") String token){
+//    @PostMapping(value = "/users/image")
+//    public ResponseEntity profileImageUpload(@RequestBody MultipartFile file,@RequestHeader("Authorization") String token){
+//
+//            String imageUrl = userService.fileUpload(file, Long.valueOf(jwtTokenProvider.getUserPk(token)));
+//            if(imageUrl.isEmpty()){
+//
+//                return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.IMAGE_UPLOAD_FAIL, false), HttpStatus.OK);
+//
+//
+//            }
+//            else {
+//                return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.IMAGE_UPLOAD_SUCCESS, true,
+//                        imageUrl), HttpStatus.OK);
+//
+//            }
+        @PostMapping(value = "/users/image")
+        public ResponseEntity profileImageUpload(@RequestBody MultipartFile file,@RequestHeader("Authorization") String token){
 
-            String imageUrl = userService.fileUpload(file, Long.valueOf(jwtTokenProvider.getUserPk(token)));
-            if(imageUrl.isEmpty()){
+        try {
+            String imageUrl = s3Service.upload(file,Long.valueOf(jwtTokenProvider.getUserPk(token)));
+            if (imageUrl.isEmpty()) {
 
                 return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.IMAGE_UPLOAD_FAIL, false), HttpStatus.OK);
 
 
-            }
-            else {
+            } else {
                 return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.IMAGE_UPLOAD_SUCCESS, true,
                         imageUrl), HttpStatus.OK);
 
             }
+        }catch (Exception e){
+
+            return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.IMAGE_UPLOAD_FAIL, false), HttpStatus.OK);
+        }
+
 
 //         String s=userService.fileUpload(file, Long.valueOf(jwtTokenProvider.getUserPk(token)));
 
@@ -126,21 +149,25 @@ public class UserController {
 
 
     }
-    @GetMapping("/users/image")
-    public ResponseEntity getUserImage(@RequestParam String imageUrl,@RequestHeader("Authorization")String token) {
-        byte[] result = null;
-        HttpHeaders header = new HttpHeaders();
 
-        try {
-            File file = new File(fileRealPath + File.separator + imageUrl);
-            header.add("Content-Type", Files.probeContentType(file.toPath()));
-            result = FileCopyUtils.copyToByteArray(file);
+    /**
+     * Aws s3사용으로 필요하지 않음**/
 
-        } catch (Exception e) {
-            return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.IMAGE_GET_FAIL, false), HttpStatus.OK);
-        }
-        return new ResponseEntity(result, header, HttpStatus.OK);
-    }
+//    @GetMapping("/users/image")
+//    public ResponseEntity getUserImage(@RequestParam String imageUrl,@RequestHeader("Authorization")String token) {
+//        byte[] result = null;
+//        HttpHeaders header = new HttpHeaders();
+//
+//        try {
+//            File file = new File(fileRealPath + File.separator + imageUrl);
+//            header.add("Content-Type", Files.probeContentType(file.toPath()));
+//            result = FileCopyUtils.copyToByteArray(file);
+//
+//        } catch (Exception e) {
+//            return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.IMAGE_GET_FAIL, false), HttpStatus.OK);
+//        }
+//        return new ResponseEntity(result, header, HttpStatus.OK);
+//    }
 
 
 
@@ -149,17 +176,17 @@ public class UserController {
 
 
     @DeleteMapping(value = "/users/image")
-    public ResponseEntity profileImageDelete( @RequestHeader("Authorization") String token){
-            if( userService.deleteImage(Long.valueOf(jwtTokenProvider.getUserPk(token)))){
-                return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.IMAGE_DELETE_SUCCESS, true,defaultImage), HttpStatus.OK);
-            }
-            else{
-                return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.IMAGE_DELETE_FAIL,false), HttpStatus.OK);
+    public ResponseEntity profileImageDelete( @RequestHeader("Authorization") String token) {
+
+            if (s3Service.deleteImage(Long.valueOf(jwtTokenProvider.getUserPk(token)))) {
+                return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.IMAGE_DELETE_SUCCESS, true,"https://"+CLOUD_FRONT_DOMAIN_NAME+"/"+defaultImage), HttpStatus.OK);
+            } else {
+                return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.IMAGE_DELETE_FAIL, false), HttpStatus.OK);
 
             }
+
 
     }
-
 
 
 

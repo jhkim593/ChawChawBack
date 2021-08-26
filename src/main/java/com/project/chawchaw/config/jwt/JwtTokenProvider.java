@@ -15,6 +15,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import java.time.Duration;
 import java.util.Base64;
@@ -34,7 +35,7 @@ public class JwtTokenProvider { // JWT 토큰을 생성 및 검증 모듈
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private long tokenValidMilisecond = 1000L * 60 * 60; // 1시간만 토큰 유효
+    private long tokenValidMilisecond=1000L * 60 * 60; // 1시간만 토큰 유효
 
     private long refreshTokenValidMillisecond = 1000L * 60 * 60 * 24 * 7; // 7일
 
@@ -115,21 +116,45 @@ public class JwtTokenProvider { // JWT 토큰을 생성 및 검증 모듈
 //            if(isLoggedOut(jwtToken)) return false;
 //            logger.info(redisTemplate.opsForValue().get(jwtToken).toString());
             Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(jwtToken);
+
             return !claims.getBody().getExpiration().before(new Date());
-        } catch (Exception e) {
+        }
+
+        catch (Exception e) {
+
             return false;
         }
     }
+    public boolean validateTokenWithRequest(String jwtToken, ServletRequest request) {
+        try {
 
-    public boolean validateTokenExceptExpiration(String jwtToken) {
+//            if(isLoggedOut(jwtToken)) return false;
+            Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(jwtToken);
+            return !claims.getBody().getExpiration().before(new Date());
+
+        } catch(ExpiredJwtException e) {
+            request.setAttribute("exception","expiredException");
+            return false;
+        } catch (Exception e) {
+            request.setAttribute("exception","entrypointException");
+            return false;
+        }
+
+    }
+
+
+
+    public boolean validateTokenExceptExpiration(String jwtToken, ServletRequest request) {
         try {
 
 //            if(isLoggedOut(jwtToken)) return false;
             Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(jwtToken);
             return claims.getBody().getExpiration().before(new Date());
         } catch(ExpiredJwtException e) {
+
             return true;
         } catch (Exception e) {
+
             return false;
         }
 

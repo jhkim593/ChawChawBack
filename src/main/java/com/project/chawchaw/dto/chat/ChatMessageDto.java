@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 public class ChatMessageDto implements Serializable {
 
 
-//    private MessageType type; // 메시지 타입
+    private MessageType type; // 메시지 타입
     private Long roomId; // 방번호
     private Long senderId;
     private String sender; // 메시지 보낸사람

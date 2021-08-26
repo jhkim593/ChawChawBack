@@ -67,6 +67,11 @@ public class ChatMessageRepository {
 
     }
 
+    public void deleteByRoomId(Long roomId) {
+        Set<String> keys = redisTemplate.keys(roomId.toString()+"_"+"*");
+        redisTemplate.delete(keys);
+    }
+
 
 //    @PostConstruct
 //    private void init() {

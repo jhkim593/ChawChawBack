@@ -19,6 +19,13 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException ex) throws IOException,
             ServletException {
+
+        Object exception = request.getAttribute("exception");
+        System.out.println(exception.toString());
+        if(exception.equals("expiredException")){
+            response.sendRedirect("/exception/entrypoint/expired");
+        }
+        else
         response.sendRedirect("/exception/entrypoint");
     }
 

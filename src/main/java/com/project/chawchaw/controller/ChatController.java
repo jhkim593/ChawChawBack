@@ -6,6 +6,7 @@ import com.project.chawchaw.config.response.DefaultResponseVo;
 import com.project.chawchaw.config.response.ResponseMessage;
 import com.project.chawchaw.dto.chat.ChatMessageDto;
 import com.project.chawchaw.dto.chat.ChatRoomRequestDto;
+import com.project.chawchaw.dto.chat.MessageType;
 import com.project.chawchaw.repository.chat.ChatMessageRepository;
 import com.project.chawchaw.repository.chat.ChatRoomUserRepository;
 import com.project.chawchaw.service.chat.ChatService;
@@ -42,8 +43,10 @@ public class ChatController {
         if (message.getRegDate()==null) {
             message.setRegDate(LocalDateTime.now().withNano(0));
         }
+        
 //        System.out.println(message.getRegDate());
         chatService.enterChatRoom(message.getRoomId());
+
         // Websocket에 발행된 메시지를 redis로 발행한다(publish)
         chatService.publish(chatService.getTopic(message.getRoomId()), message);
     }
@@ -67,6 +70,7 @@ public class ChatController {
                     true,chatService.getChat(fromUserId)), HttpStatus.OK);
         }
         else{
+
             return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.CHATROOM_CREAT_SUCCESS,
                     true,chatService.createRoom(requestDto.getUserId(), fromUserId)), HttpStatus.CREATED);
         }
@@ -81,6 +85,20 @@ public class ChatController {
         Long userId = Long.valueOf(jwtTokenProvider.getUserPk(token));
 
         return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.CHATROOM_FIND_SUCCESS,
+                true,chatService.getChat(userId)), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/chat/room/{roomId}")
+    @ResponseBody
+    public ResponseEntity deleteChatRoom(@PathVariable("roomId") Long roomId,@RequestHeader("Authorization") String token) {
+
+        Long userId = Long.valueOf(jwtTokenProvider.getUserPk(token));
+
+        chatService.deleteChatRoom(roomId,userId);
+
+
+
+        return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.CHATROOM_DELETE_SUCCESS,
                 true,chatService.getChat(userId)), HttpStatus.OK);
     }
 

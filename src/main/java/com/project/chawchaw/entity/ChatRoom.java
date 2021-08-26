@@ -17,7 +17,7 @@ public class ChatRoom {
 
     private String name;
 
-    @OneToMany(mappedBy = "chatRoom")
+    @OneToMany(mappedBy = "chatRoom" ,cascade = CascadeType.ALL)
     private List<ChatRoomUser>chatRoomUsers=new ArrayList<>();
 
     public static ChatRoom createChatRoom(String name){

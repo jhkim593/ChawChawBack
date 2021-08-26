@@ -69,7 +69,7 @@ file:
 #  path: ENC(WmVfhwpi+DK/8LwMmb3JH+otf1+k0n7I)
 
   path: ENC(BGTJOACnd+mHvk7cUjsNZCbdEtTU5jqmYgE15djVQqI=)
-  defaultImage: ENC(VffDQ+CbjDjLANLlPSjovhJTEp2ihPyUXxAAwn5YJRY1T1lciP6O0w==)
+  defaultImage: ENC(XlhuSnt0n6mUWfotvHMPxOwBz0L3dCPgOwYoZiIq59ee8/mYmN/T1w==)
 
 logging:
   level:
@@ -91,3 +91,14 @@ jasypt:
   encryptor:
     bean: jasyptStringEncryptor
 
+cloud:
+  aws:
+    credentials:
+      accessKey: ENC(Eo5WgpF9C68LQghuoYjA0supkNBCCzj+kozsXonnqjc=)
+      secretKey: ENC(C25Kq1ebAtj/nJQLxoTIDWphssBvZDOokPCzluCmV9QQ6VWMTcXYEBqxgwPikzfp6ut1tq2bi5k=)
+    s3:
+      bucket: ENC(iy9q4ZtQORotlIQrRHTvQpKfdkYWmCn1)
+    region:
+      static: ap-northeast-2
+    stack:
+      auto: false
