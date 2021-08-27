@@ -190,7 +190,7 @@ public class SignService {
         if(!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())){
             throw new LoginFailureException();
         }
-        user.changeRefreshToken(jwtTokenProvider.createRefreshToken());
+        user.changeRefreshToken(jwtTokenProvider.createRefreshToken(String.valueOf(user.getId())));
         return new UserLoginResponseDto(user.getId(), jwtTokenProvider.createToken(String.valueOf(user.getId())), user.getRefreshToken());
     }
 
@@ -202,7 +202,7 @@ public class SignService {
         User user = userRepository.findUserByEmailAndProvider(email, provider).orElseThrow(UserNotFoundException::new);
 
 //
-        user.changeRefreshToken(jwtTokenProvider.createRefreshToken());
+        user.changeRefreshToken(jwtTokenProvider.createRefreshToken(String.valueOf(user.getId())));
         return new UserLoginResponseDto(user.getId(), jwtTokenProvider.createToken(String.valueOf(user.getId())), user.getRefreshToken() );
 //
 
@@ -245,16 +245,15 @@ public class SignService {
             user.changeRefreshToken("invalidate");
 
     }
-//    @Transactional
-//    public UserLoginResponseDto refreshToken(String refreshToken){
-//
-//        if(!jwtTokenProvider.validateTokenExceptExpiration(token))throw new AccessDeniedException("");
-//        Member member = memberRepository.findById(Long.valueOf(jwtTokenProvider.getMemberPk(token))).orElseThrow(CUserNotFoundException::new);
-//        if(!jwtTokenProvider.validateToken(member.getRefreshToken())||!refreshToken.equals(member.getRefreshToken()))
-//            throw new AccessDeniedException("");
-//        member.changeRefreshToken(jwtTokenProvider.createRefreshToken());
-//        return new MemberLoginResponseDto(member.getId(),jwtTokenProvider.createToken(String.valueOf(member.getId()),member.getRoles()),member.getRefreshToken());
-//    }
+    @Transactional
+    public UserLoginResponseDto refreshToken(String refreshToken){
+
+        User user = userRepository.findById(Long.valueOf(jwtTokenProvider.getUserPkByRefreshToken(refreshToken))).orElseThrow(UserNotFoundException::new);
+        if(!jwtTokenProvider.validateToken(user.getRefreshToken())||!refreshToken.equals(user.getRefreshToken()))
+            throw new AccessDeniedException("");
+        user.changeRefreshToken(jwtTokenProvider.createRefreshToken(String.valueOf(user.getId())));
+        return new UserLoginResponseDto(user.getId(),jwtTokenProvider.createToken(String.valueOf(user.getId())),user.getRefreshToken());
+    }
 
 
 

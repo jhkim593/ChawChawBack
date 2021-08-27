@@ -36,7 +36,7 @@ spring:
 
     show-sql: false
     hibernate:
-      ddl-auto: none
+      ddl-auto: create
     properties:
       hibernate:
         format_sql: false
@@ -74,6 +74,7 @@ file:
 logging:
   level:
     org.springframework: warn
+
 #  slack:
 #    webhook-uri:
 #  config: classpath:logback-spring.xml

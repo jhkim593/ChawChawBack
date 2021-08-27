@@ -34,6 +34,8 @@ public class ResponseMessage {
     public static final String CHATROOM_NOT_FOUND="채팅방을 찾을 수 없습니다.";
     public static final String CHATROOM_DELETE_SUCCESS="채팅방 삭제에 성공 하였습니다.";
     public static final String EXPIRED_TOKEN="AccessToken 만료";
+    public static final String REFRESH_TOKEN_SUCCESS="AccessToken 재발급 성공";
+    public static final String REFRESH_TOKEN_FAIL="AccessToken 재발급 실패";
 
     
 

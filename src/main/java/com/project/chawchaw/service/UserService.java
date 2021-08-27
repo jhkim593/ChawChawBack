@@ -192,10 +192,7 @@ public class UserService {
 
             if (updateDto.getCountry()!=null) {
                 userCountryRepository.deleteByUserId(id);
-//            UserCountry userCountry1 = user.getCountry().get(0);
-//            user.getCountry().remove(userCountry1);
 
-//            userCountry1.setUser(user2);
                 for (int i = 0; i < updateDto.getCountry().size(); i++) {
                     Country country = countryRepository.findByName(updateDto.getCountry().get(i)).orElseThrow(CountryNotFoundException::new);
                     UserCountry userCountry = UserCountry.createUserCountry(country);

@@ -20,6 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.time.Duration;
 import java.util.Base64;
 import java.util.Date;
+import java.util.UUID;
 
 // import 생략
 
@@ -35,9 +36,9 @@ public class JwtTokenProvider { // JWT 토큰을 생성 및 검증 모듈
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private long tokenValidMilisecond=1000L * 60 * 60; // 1시간만 토큰 유효
+    private long tokenValidMilisecond=1000L * 60 * 2; // 30분만 토큰 유효
 
-    private long refreshTokenValidMillisecond = 1000L * 60 * 60 * 24 * 7; // 7일
+    private long refreshTokenValidMillisecond = 1000L * 60 * 60 * 24 * 30; // 30일
 
     private final UserDetailsService userDetailsService;
 
@@ -72,9 +73,12 @@ public class JwtTokenProvider { // JWT 토큰을 생성 및 검증 모듈
 //    }
 
     // jwt refresh 토큰 생성
-    public String createRefreshToken() {
+    public String createRefreshToken(String userPk) {
+        String uuid=UUID.randomUUID().toString();
+        Claims claims = Jwts.claims().setSubject(userPk+"_"+uuid);
         Date now = new Date();
         return Jwts.builder()
+                .setClaims(claims)
                 .setIssuedAt(now)
                 .setExpiration(new Date(now.getTime() + refreshTokenValidMillisecond))
                 .signWith(SignatureAlgorithm.HS256, secretKey)
@@ -98,6 +102,20 @@ public class JwtTokenProvider { // JWT 토큰을 생성 및 검증 모듈
             return e.getClaims().getSubject();
         }
     }
+
+    public String getUserPkByRefreshToken(String token) {
+        //
+        token=token.replace("Bearer ","");
+
+        try {
+            String subject = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
+            return subject.split("_")[0];
+        } catch(ExpiredJwtException e) {
+            return e.getClaims().getSubject();
+        }
+    }
+
+
 
     public Duration getRemainingSeconds(String jwtToken) {
         Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(jwtToken);

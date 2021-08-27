@@ -146,6 +146,7 @@ public class SignController {
                         UserLoginResponseDto loginDto = signService.loginByProvider(email, requestDto.getProvider());
 
                         response.addHeader("Authorization", "Bearer " + loginDto.getToken());
+                        response.addHeader("RefreshToken","Bearer "+loginDto.getRefreshToken());
                         return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.LOGIN_SUCCESS, true,userService.userProfile(loginDto.getId())), HttpStatus.OK);
                     } else {
                         return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.SOCIAL_LOGIN_FAIL, false,
@@ -157,6 +158,7 @@ public class SignController {
                     if (signService.validUserWithProvider(email, requestDto.getProvider())) {
                         UserLoginResponseDto loginDto = signService.loginByProvider(email, requestDto.getProvider());
                         response.addHeader("Authorization", "Bearer " + loginDto.getToken());
+                        response.addHeader("RefreshToken","Bearer "+loginDto.getRefreshToken());
                         return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.LOGIN_SUCCESS, true,userService.userProfile(loginDto.getId())), HttpStatus.OK);
                     } else {
                         return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.SOCIAL_LOGIN_FAIL, false,
@@ -175,6 +177,7 @@ public class SignController {
 
                   UserLoginResponseDto loginDto = signService.login(requestDto);
                   response.addHeader("Authorization","Bearer "+loginDto.getToken());
+                  response.addHeader("RefreshToken","Bearer "+loginDto.getRefreshToken());
                     return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.LOGIN_SUCCESS,true,userService.userProfile(loginDto.getId())),HttpStatus.OK);
 
                 }
@@ -213,12 +216,19 @@ public class SignController {
 //        return responseService.getSuccessResult();
 //    }
 
-//    @PostMapping(value = "/users/auth/refresh")
-//    public ResponseEntity logout(@RequestHeader(value="X-AUTH-TOKEN") String token) {
-//
-//        signService.logoutMember(token);
-//        return responseService.getSuccessResult();
-//    }
+    @PostMapping(value = "/users/auth/refresh")
+    public ResponseEntity refreshToken(@RequestHeader(value="RefreshToken") String token,HttpServletResponse response) {
+
+        try{
+            UserLoginResponseDto userLoginResponseDto = signService.refreshToken(token);
+            response.addHeader("Authorization","Bearer "+userLoginResponseDto.getToken());
+            response.addHeader("RefreshToken","Bearer "+userLoginResponseDto.getRefreshToken());
+            return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.REFRESH_TOKEN_SUCCESS,true),HttpStatus.OK);
+    }catch (Exception e){
+            return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.REFRESH_TOKEN_FAIL,false),HttpStatus.OK);
+        }
+    }
+
 
     @DeleteMapping (value = "/users")
     public ResponseEntity userDelete(
