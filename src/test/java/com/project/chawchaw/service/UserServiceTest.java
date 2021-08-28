@@ -132,8 +132,8 @@ class UserServiceTest {
 
     @Test
     public void jasyptTest()throws Exception{
-        String huk = "AKIAV6UP46Y5V3LKKBCQ";
-        String en="1hYWbnc2ZBnGdwYQnH5knzijTFSVqno36E3IrHyZ";
+        String huk = "";
+        String en="";
 
 
         String jae="chawchaw";

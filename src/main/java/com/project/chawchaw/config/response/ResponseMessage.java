@@ -36,6 +36,8 @@ public class ResponseMessage {
     public static final String EXPIRED_TOKEN="AccessToken 만료";
     public static final String REFRESH_TOKEN_SUCCESS="AccessToken 재발급 성공";
     public static final String REFRESH_TOKEN_FAIL="AccessToken 재발급 실패";
+    public static final String EXPIRED_REFRESH_TOKEN="RefreshToken 만료";
+
 
     
 

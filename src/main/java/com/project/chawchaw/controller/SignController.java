@@ -12,6 +12,7 @@ import com.project.chawchaw.config.auth.CustomUserDetails;
 import com.project.chawchaw.exception.LoginFailureException;
 import com.project.chawchaw.response.CommonResult;
 import com.project.chawchaw.service.*;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -19,10 +20,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import java.nio.file.AccessDeniedException;
 
 
 @RequiredArgsConstructor
@@ -146,19 +149,23 @@ public class SignController {
                         UserLoginResponseDto loginDto = signService.loginByProvider(email, requestDto.getProvider());
 
                         response.addHeader("Authorization", "Bearer " + loginDto.getToken());
-                        response.addHeader("RefreshToken","Bearer "+loginDto.getRefreshToken());
+                        Cookie cookie = new Cookie("RefreshToken",loginDto.getRefreshToken());
+                        response.addCookie(cookie);
                         return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.LOGIN_SUCCESS, true,userService.userProfile(loginDto.getId())), HttpStatus.OK);
                     } else {
                         return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.SOCIAL_LOGIN_FAIL, false,
                                 new SocialLoginResponseDto(kakaoProfile.getEmail(), kakaoProfile.getName(), kakaoProfile.getImageUrl(), kakaoProfile.getProvider())), HttpStatus.OK);
                     }
-                } else if (requestDto.getProvider().equals("facebook") && requestDto.getFacebookId() != null && requestDto.getFacebookToken() != null) {
+                } else if (requestDto.getProvider().equals("facebook") && requestDto.getFacebookId() != null
+                        && requestDto.getFacebookToken() != null) {
+
                     FaceBookProfile faceBookProfile = faceBookService.getFaceBookProfile(requestDto.getFacebookToken(), requestDto.getFacebookId());
                     String email = faceBookProfile.getEmail();
                     if (signService.validUserWithProvider(email, requestDto.getProvider())) {
                         UserLoginResponseDto loginDto = signService.loginByProvider(email, requestDto.getProvider());
                         response.addHeader("Authorization", "Bearer " + loginDto.getToken());
-                        response.addHeader("RefreshToken","Bearer "+loginDto.getRefreshToken());
+                        Cookie cookie = new Cookie("RefreshToken",loginDto.getRefreshToken());
+                        response.addCookie(cookie);
                         return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.LOGIN_SUCCESS, true,userService.userProfile(loginDto.getId())), HttpStatus.OK);
                     } else {
                         return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.SOCIAL_LOGIN_FAIL, false,
@@ -177,7 +184,8 @@ public class SignController {
 
                   UserLoginResponseDto loginDto = signService.login(requestDto);
                   response.addHeader("Authorization","Bearer "+loginDto.getToken());
-                  response.addHeader("RefreshToken","Bearer "+loginDto.getRefreshToken());
+                  Cookie cookie = new Cookie("RefreshToken",loginDto.getRefreshToken());
+                  response.addCookie(cookie);
                     return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.LOGIN_SUCCESS,true,userService.userProfile(loginDto.getId())),HttpStatus.OK);
 
                 }
@@ -190,6 +198,7 @@ public class SignController {
             return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.LOGIN_FAIL, false), HttpStatus.OK);
         }
         catch (Exception e){
+            e.printStackTrace();
             return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.SOCIAL_LOGIN_CONNECT_FAIL, false), HttpStatus.OK);
         }
 
@@ -217,15 +226,36 @@ public class SignController {
 //    }
 
     @PostMapping(value = "/users/auth/refresh")
-    public ResponseEntity refreshToken(@RequestHeader(value="RefreshToken") String token,HttpServletResponse response) {
+    public ResponseEntity refreshToken(HttpServletRequest request,HttpServletResponse response) {
+
+        String refreshToken=null;
+        Cookie[] cookies=request.getCookies();
+        Cookie refreshTokenCookie=null;
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (cookie.getName().equals("RefreshToken")&&!cookie.getValue().isEmpty()) {
+                    refreshTokenCookie=cookie;
+                    refreshToken = cookie.getValue();
+                }
+            }
+        }
+        if(refreshToken==null){
+            return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.REFRESH_TOKEN_FAIL,false),HttpStatus.UNAUTHORIZED);
+        }
+
 
         try{
-            UserLoginResponseDto userLoginResponseDto = signService.refreshToken(token);
+            UserLoginResponseDto userLoginResponseDto = signService.refreshToken(refreshToken);
             response.addHeader("Authorization","Bearer "+userLoginResponseDto.getToken());
-            response.addHeader("RefreshToken","Bearer "+userLoginResponseDto.getRefreshToken());
             return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.REFRESH_TOKEN_SUCCESS,true),HttpStatus.OK);
-    }catch (Exception e){
-            return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.REFRESH_TOKEN_FAIL,false),HttpStatus.OK);
+    }
+        catch (ExpiredJwtException e){
+            return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.EXPIRED_REFRESH_TOKEN,false),HttpStatus.UNAUTHORIZED);
+        }
+
+        catch (Exception e){
+            e.printStackTrace();
+            return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.REFRESH_TOKEN_FAIL,false),HttpStatus.UNAUTHORIZED);
         }
     }
 

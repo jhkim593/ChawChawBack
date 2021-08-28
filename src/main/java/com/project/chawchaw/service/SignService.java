@@ -246,14 +246,16 @@ public class SignService {
 
     }
     @Transactional
-    public UserLoginResponseDto refreshToken(String refreshToken){
+    public UserLoginResponseDto refreshToken(String refreshToken)throws Exception{
 
         User user = userRepository.findById(Long.valueOf(jwtTokenProvider.getUserPkByRefreshToken(refreshToken))).orElseThrow(UserNotFoundException::new);
+
         if(!jwtTokenProvider.validateToken(user.getRefreshToken())||!refreshToken.equals(user.getRefreshToken()))
             throw new AccessDeniedException("");
-        user.changeRefreshToken(jwtTokenProvider.createRefreshToken(String.valueOf(user.getId())));
+//        user.changeRefreshToken(jwtTokenProvider.createRefreshToken(String.valueOf(user.getId())));
         return new UserLoginResponseDto(user.getId(),jwtTokenProvider.createToken(String.valueOf(user.getId())),user.getRefreshToken());
     }
+
 
 
 
