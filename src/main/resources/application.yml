@@ -73,7 +73,11 @@ file:
 
 logging:
   level:
-    org.springframework: warn
+#    org.springframework: warn
+      com:
+        amazonaws:
+          util:
+            EC2MetadataUtils: error
 
 #  slack:
 #    webhook-uri:
