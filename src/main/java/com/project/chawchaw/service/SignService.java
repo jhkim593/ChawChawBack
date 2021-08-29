@@ -2,6 +2,7 @@ package com.project.chawchaw.service;
 
 
 
+import com.mysql.cj.exceptions.DataConversionException;
 import com.project.chawchaw.config.jwt.JwtTokenProvider;
 import com.project.chawchaw.dto.user.UserLoginRequestDto;
 import com.project.chawchaw.dto.user.UserSignUpRequestDto;
@@ -29,6 +30,7 @@ import javax.mail.Message;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.util.Random;
+import java.util.zip.DataFormatException;
 
 @Service
 @RequiredArgsConstructor
@@ -164,19 +166,23 @@ public class SignService {
 
         if(validUserWithProvider(requestDto.getEmail(),requestDto.getProvider())){
 
-            throw new UserAlreadyExistException();
+            throw new DataConversionException("s");
+//            throw new UserAlreadyExistException();
 
         }
 
         String imageUrl=defaultImage;
         if(requestDto.getImageUrl()!=null){
             imageUrl=requestDto.getImageUrl();
+
         }
+
         //basic 추가?
         userRepository.save(User.createUser(requestDto.getEmail(),requestDto.getName(),requestDto.getProvider(),passwordEncoder.encode(requestDto.getPassword()),
                 requestDto.getWeb_email(),requestDto.getSchool(),imageUrl
 //                ,requestDto.getContent(), countryList, languageList,hopeLanguageList,requestDto.getFacebookUrl(),requestDto.getInstagramUrl(),userRepCountry,userRepLanguage,userRepHopeLanguage
         ));
+
 
     }
 
