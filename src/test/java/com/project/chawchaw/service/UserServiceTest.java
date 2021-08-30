@@ -132,7 +132,7 @@ class UserServiceTest {
 
     @Test
     public void jasyptTest()throws Exception{
-        String huk = "";
+        String huk = "https://hooks.slack.com/services/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";
         String en=null;
 
 
