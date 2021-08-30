@@ -2,6 +2,7 @@ package com.project.chawchaw.controller;
 
 import com.project.chawchaw.config.response.DefaultResponseVo;
 import com.project.chawchaw.config.response.ResponseMessage;
+import com.project.chawchaw.dto.MailRequestDto;
 import com.project.chawchaw.dto.social.FaceBookProfile;
 import com.project.chawchaw.dto.social.KakaoProfile;
 import com.project.chawchaw.dto.social.SocialLoginResponseDto;
@@ -45,11 +46,11 @@ public class SignController {
 
 
 
-    @ApiOperation(value = "메일 인증번호 전송", notes = "가입 할 이메일에 인증코드 전송")
-    @PostMapping("/mail/send") // 이메일 인증 코드 보내기
-    public ResponseEntity emailAuth(@RequestBody String email, HttpServletRequest request) throws Exception {
-        HttpSession session=request.getSession();
 
+    @PostMapping("/mail/send") // 이메일 인증 코드 보내기
+    public ResponseEntity emailAuth(@RequestBody MailRequestDto mailRequestDto, HttpServletRequest request) throws Exception {
+        HttpSession session=request.getSession();
+        String email=mailRequestDto.getEmail();
 
         session.setAttribute(email,signService.sendSimpleMessage(email));
         session.setMaxInactiveInterval(180);
@@ -60,20 +61,20 @@ public class SignController {
 
 
     //인증 번호를 db에 저장할지 따로 쿠키에 저장할지
-    @ApiOperation(value = "인증번호 판별", notes = "입력 받은 인증번호를 판별한다.")
+
 
     @PostMapping("/mail/verification") // 이메일 인증 코드 검증
-    public ResponseEntity verifyCode(@RequestBody String verificationNumber,@RequestBody String email,HttpServletRequest request) {
+    public ResponseEntity verifyCode(@RequestBody MailRequestDto mailRequestDto, HttpServletRequest request) {
 
         HttpSession session=request.getSession();
-        Object attribute = session.getAttribute(email);
+        Object attribute = session.getAttribute(mailRequestDto.getEmail());
 
         if (attribute==null) {
 
             return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.VERIFICATION_MAIL_FAIL,false),HttpStatus.OK);
         }
         else {
-          if(attribute.toString().equals(verificationNumber)){
+          if(attribute.toString().equals(mailRequestDto.getVerificationNumber())){
               session.invalidate();
               return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.VERIFICATION_MAIL_SUCCESS,true),HttpStatus.OK);
 
