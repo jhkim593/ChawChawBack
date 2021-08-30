@@ -36,7 +36,7 @@ public class JwtTokenProvider { // JWT 토큰을 생성 및 검증 모듈
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private long tokenValidMilisecond=1000L * 60 * 2; // 30분만 토큰 유효
+    private long tokenValidMilisecond=1000L * 60 * 30; // 30분만 토큰 유효
 
     private long refreshTokenValidMillisecond = 1000L * 60 * 60 * 24 * 30; // 30일
 

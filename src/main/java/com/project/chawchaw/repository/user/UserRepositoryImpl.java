@@ -69,6 +69,7 @@ public class UserRepositoryImpl implements  UserRepositoryCustom{
     @Override
     public List<UsersDto> usersList(UserSearch userSearch) {
 
+        System.out.println(userSearch.getSchool());
         int limit=3;
         if (userSearch.getIsFirst()){
             limit=6;
@@ -89,15 +90,16 @@ public class UserRepositoryImpl implements  UserRepositoryCustom{
                         hopeLanguageEq(userSearch.getHopeLanguage())
                         , languageEq(userSearch.getLanguage())
                         , nameEq(userSearch.getName())
-                        , user.school.eq(userSearch.getSchool()),
-//
-                        excludeId(userSearch.getExcludes())
+                        ,user.school.eq(userSearch.getSchool())
+
+                        ,excludeId(userSearch.getExcludes())
                         , user.role.eq(ROLE.USER)
 
 
                 ).orderBy(
                         searchOrder(userSearch.getOrder())
-                )
+                ).offset(0)
+
                 .limit(limit)
 
                 .fetch();
@@ -127,7 +129,7 @@ public class UserRepositoryImpl implements  UserRepositoryCustom{
     }
 
     private BooleanExpression hopeLanguageEq(String hope) {
-        return hasText(hope) ? language2.name.eq(hope) : null;
+        return hasText(hope) ? language2.abbr.eq(hope) : null;
     }
     private BooleanExpression schoolEq(String school) {
         return hasText(school) ? user.school.eq(school) : null;
@@ -144,7 +146,7 @@ public class UserRepositoryImpl implements  UserRepositoryCustom{
 //    }
     private BooleanExpression languageEq(String lang) {
 
-        return hasText(lang) ? language.name.eq(lang) : null;
+        return hasText(lang) ? language.abbr.eq(lang) : null;
     }
 //
 //    private BooleanExpression countryEq(String country) {

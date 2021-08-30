@@ -96,6 +96,7 @@ public class UserController {
                 }
             }
         }
+        System.out.println( userService.users(userSearch,Long.valueOf(jwtTokenProvider.getUserPk(token))).isEmpty());
         return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.READ_USER,true,
                 userService.users(userSearch,Long.valueOf(jwtTokenProvider.getUserPk(token)))),HttpStatus.OK);
 

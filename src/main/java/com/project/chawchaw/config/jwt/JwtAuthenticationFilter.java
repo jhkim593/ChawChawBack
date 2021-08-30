@@ -38,7 +38,7 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
 
 
         if(token != null && jwtTokenProvider.validateTokenWithRequest(token,request)) {
-            logger.info("토큰 유효해");
+//            logger.info("토큰 유효해");
 
             Authentication auth = jwtTokenProvider.getAuthentication(token);
 
