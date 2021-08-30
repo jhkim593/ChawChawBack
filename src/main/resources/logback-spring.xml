@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
 <configuration>
-    <springProperty scope="context" name="SLACK_WEBHOOK_URI" source="logging.slack.webhook-uri" />
+    <springProperty  name="SLACK_WEBHOOK_URI" source="logging.slack.webhook-uri" />
 <!--    <properties resource="slack.yaml">-->
 <!--    <property name="driver" value="${webHookUrl}"/>-->
 <!--    </properties>-->

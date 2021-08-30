@@ -79,7 +79,8 @@ logging:
             EC2MetadataUtils: error
 
   slack:
-    webhook-uri: https://hooks.slack.com/services/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
+    webhook-uri: https://hooks.slack.com/services/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
+
 #    ENC(F8LR/QiB95Ri8iafTfE8vag8amq0WAvizA9dke/B/OP7NU4MPjepd9UjhATferW6gaykZiMziVzkT3NDGz2yXvPNZTmIj4d9hhQXJ1QedoqMsAI4uQCDO4HDja2WUx62)
   config: classpath:logback-spring.xml
 
