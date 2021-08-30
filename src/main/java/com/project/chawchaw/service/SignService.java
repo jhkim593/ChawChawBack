@@ -166,8 +166,8 @@ public class SignService {
 
         if(validUserWithProvider(requestDto.getEmail(),requestDto.getProvider())){
 
-            throw new DataConversionException("s");
-//            throw new UserAlreadyExistException();
+//            throw new DataConversionException("s");
+            throw new UserAlreadyExistException();
 
         }
 
