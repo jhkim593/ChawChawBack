@@ -22,8 +22,8 @@ public class FollowService {
     private final JwtTokenProvider jwtTokenProvider;
 
 
-    public void follow(Long toUserId, String token) {
-        Long fromUserId = Long.valueOf(jwtTokenProvider.getUserPk(token));
+    public void follow(Long toUserId, Long fromUserId) {
+
         if(followRepository.findByFollow(fromUserId,toUserId).isPresent()){
             throw new FollowAlreadyException();
         }
@@ -33,9 +33,9 @@ public class FollowService {
 
     }
 
-    public void unFollow(Long toUserId, String token) {
+    public void unFollow(Long toUserId, Long fromUserId) {
 
-        Long fromUserId = Long.valueOf(jwtTokenProvider.getUserPk(token));
+
         Follow follow = followRepository.findByFollow(fromUserId, toUserId).orElseThrow(FollwNotFoundException::new);
         followRepository.delete(follow);
     }

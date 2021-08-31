@@ -19,21 +19,21 @@ public class User{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    @Column(nullable = false)
     private String email;
-
+    @Column(nullable = false)
     private String name;
 
     private String provider;
 
     private String refreshToken;
-
+    @Column(nullable = false)
     private String password;
-
+    @Column(nullable = false)
     private String web_email;
-
+    @Column(nullable = false)
     private String school;
-
+    @Column(nullable = false)
     private String imageUrl;
 
 

@@ -103,37 +103,37 @@ public class UserService {
 //
 //
 //    }
-///
-    @Transactional
-    public String fileUpload(MultipartFile file,Long id){
-        User user = userRepository.findById(id).orElseThrow(UserNotFoundException::new);
-
-        UUID uuid = UUID.randomUUID();
-        String uuidFilename = uuid + "_" + file.getOriginalFilename();
-
-        String date = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy/MM/dd"));
-
-        String folderPath = date.replace("//", File.separator);
-        System.out.println(folderPath);
-        File uploadPathFolder = new File(fileRealPath, folderPath);
-        if (!uploadPathFolder.exists()) {
-            uploadPathFolder.mkdirs();
-        }
-        try {
-        String saveName = fileRealPath + File.separator + folderPath + File.separator + uuidFilename;
-
-        Path savePath = Paths.get(saveName);
-            System.out.println(savePath.toString());
-        file.transferTo(savePath);
-        String encodeUrl = URLEncoder.encode(folderPath + File.separator +  uuidFilename, "UTF-8");
-        if (!URLDecoder.decode(user.getImageUrl(), "UTF-8").equals(defaultImage)) {
-            new File(fileRealPath + URLDecoder.decode(user.getImageUrl(), "UTF-8")).delete();
-        }
-        user.changeImageUrl(encodeUrl);
-        return encodeUrl;
-    } catch (Exception e) {
-        return "";
-    }
+//
+//    @Transactional
+//    public String fileUpload(MultipartFile file,Long id){
+//        User user = userRepository.findById(id).orElseThrow(UserNotFoundException::new);
+//
+//        UUID uuid = UUID.randomUUID();
+//        String uuidFilename = uuid + "_" + file.getOriginalFilename();
+//
+//        String date = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy/MM/dd"));
+//
+//        String folderPath = date.replace("//", File.separator);
+//        System.out.println(folderPath);
+//        File uploadPathFolder = new File(fileRealPath, folderPath);
+//        if (!uploadPathFolder.exists()) {
+//            uploadPathFolder.mkdirs();
+//        }
+//        try {
+//        String saveName = fileRealPath + File.separator + folderPath + File.separator + uuidFilename;
+//
+//        Path savePath = Paths.get(saveName);
+//            System.out.println(savePath.toString());
+//        file.transferTo(savePath);
+//        String encodeUrl = URLEncoder.encode(folderPath + File.separator +  uuidFilename, "UTF-8");
+//        if (!URLDecoder.decode(user.getImageUrl(), "UTF-8").equals(defaultImage)) {
+//            new File(fileRealPath + URLDecoder.decode(user.getImageUrl(), "UTF-8")).delete();
+//        }
+//        user.changeImageUrl(encodeUrl);
+//        return encodeUrl;
+//    } catch (Exception e) {
+//        return "";
+//    }
 
 
 //        diLocation = Paths.get(fileRealPath).toAbsolutePath().normalize();
@@ -155,7 +155,7 @@ public class UserService {
 
 
 
-    }
+//    }
 
 //    public Resource loadFileAsResource(String fileName) {
 //        try {

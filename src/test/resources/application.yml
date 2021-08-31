@@ -1,0 +1,110 @@
+server:
+  port: 8080
+spring:
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      enabled: true
+
+  data:
+    redis:
+      repositories:
+        enabled: false
+
+  redis:
+    host: localhost
+#    host: ENC(G99qlTRZQ3QA0LAYoyC7gy8ychImw6dx)
+    port: 6379
+
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    password: ENC(3F1eltMp3xhu5T+HyPoTIg==)
+    url: jdbc:mysql://localhost:3308/chawchaw_test?useSSL=false&characterEncoding=UTF-8&serverTimezone=UTC
+    username: ENC(XiRNju+2VhAm6XrJDOJ3zw==)
+
+#    password: ENC(6um9Qa+wMOGQq41hiFycTiRqRkkeiOGb)
+#    url: ENC(WYUFn5EHnDQSVM7rYX0zRWWJU5imcmWzQBPSFG93/nu0idnv5InXVXFZZF1L8rGZ5VaggOq2YBc56bq6NZ79sY2HD4xcsJyXJg2m5y+zW10DnV8MdRHKPjqWzEc2yz/hRYnwOphEwmCHtjSj4zcCkxXZYnplAjWDxBuHvp4DZAE0EIrgjEVwcw==)
+#    username: ENC(ifD0zstnaBqDxGwu4NlGfg==)
+
+
+
+  jpa:
+    database: mysql
+    database-platform: org.hibernate.dialect.MySQL5Dialect
+    generate-ddl: false
+
+    show-sql: false
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        format_sql: false
+        default_batch_fetch_size: 88
+
+
+
+
+
+  social:
+    kakao:
+      client_id: ENC(+u+95J5utk6myxTxjIe1AOE3IeOS/6b5lJOXQs++gyeEU0pI3Spd0It7jVF+J0Tg) # 앱생성시 받은 REST API 키
+      redirect: ENC(7Ypcrv0cSmsMoncSKzR4zhPOWWz2ElmfHvgYP/wn2Fo=)
+      url:
+        login: https://kauth.kakao.com/oauth/authorize
+        token: https://kauth.kakao.com/oauth/token
+        profile: https://kapi.kakao.com/v2/user/me
+
+
+
+  url:
+    base: ENC(MW8wFwF3UMJulKx9rdX5btEsUPxVZs/aHnCk+Zs146o=)
+
+  messages:
+    basename: i18n/exception
+    encoding: UTF-8
+  jwt:
+    secret: ENC(F9Lj4bOY902USCatzTr6GmIAcR7Lj9XM)
+
+file:
+#  path: ENC(WmVfhwpi+DK/8LwMmb3JH+otf1+k0n7I)
+  path: ENC(BGTJOACnd+mHvk7cUjsNZCbdEtTU5jqmYgE15djVQqI=)
+  defaultImage: ENC(XlhuSnt0n6mUWfotvHMPxOwBz0L3dCPgOwYoZiIq59ee8/mYmN/T1w==)
+
+logging:
+  level:
+      com:
+        amazonaws:
+          util:
+            EC2MetadataUtils: error
+
+  slack:
+    webhook-uri:
+
+#    ENC(F8LR/QiB95Ri8iafTfE8vag8amq0WAvizA9dke/B/OP7NU4MPjepd9UjhATferW6gaykZiMziVzkT3NDGz2yXvPNZTmIj4d9hhQXJ1QedoqMsAI4uQCDO4HDja2WUx62)
+  config: classpath:logback-spring.xml
+
+
+
+
+  mvc:
+    view:
+      prefix: /templates/
+      suffix: .html
+
+
+jasypt:
+  encryptor:
+    bean: jasyptStringEncryptor
+
+cloud:
+  aws:
+    credentials:
+      accessKey: ENC(Eo5WgpF9C68LQghuoYjA0supkNBCCzj+kozsXonnqjc=)
+      secretKey: ENC(C25Kq1ebAtj/nJQLxoTIDWphssBvZDOokPCzluCmV9QQ6VWMTcXYEBqxgwPikzfp6ut1tq2bi5k=)
+    s3:
+      bucket: ENC(iy9q4ZtQORotlIQrRHTvQpKfdkYWmCn1)
+    region:
+      static: ap-northeast-2
+    stack:
+      auto: false

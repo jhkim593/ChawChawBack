@@ -1,6 +1,7 @@
 package com.project.chawchaw.service;
 
 import com.project.chawchaw.dto.user.UserDto;
+import com.project.chawchaw.dto.user.UserUpdateDto;
 import com.project.chawchaw.entity.*;
 import com.project.chawchaw.exception.UserNotFoundException;
 import com.project.chawchaw.repository.CountryRepository;
@@ -10,6 +11,7 @@ import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,24 +45,32 @@ class UserServiceTest {
     @Autowired
     LanguageRepository languageRepository;
 
+    @Value("${file.defaultImage}")
+    private String defaultImage;
+
     @BeforeEach
     public void beforeEach()throws Exception{
-//        Language language1=Language.createLanguage("한국어");
-//        Country country1=Country.createCountry("한국");
-//        em.persist(language1);
-//        em.persist(country1);
-//        Language language2=Language.createLanguage("일본어");
-//        Country country2=Country.createCountry("일본");
-//        em.persist(language2);
-//        em.persist(country2);
-//        Language language3=Language.createLanguage("영어");
-//        Country country3=Country.createCountry("미국");
-//        em.persist(country3);
-//        em.persist(language3);
-//        Language language4=Language.createLanguage("불어");
-//        Country country4=Country.createCountry("프랑스");
-//        em.persist(country4);
-//        em.persist(language4);
+        Language language1=Language.createLanguage("한국어","ko");
+        Country country1=Country.createCountry("한국");
+        em.persist(language1);
+        em.persist(country1);
+        Language language2=Language.createLanguage("일본어","jp");
+        Country country2=Country.createCountry("일본");
+        em.persist(language2);
+        em.persist(country2);
+        Language language3=Language.createLanguage("영어","en");
+        Country country3=Country.createCountry("미국");
+        em.persist(country3);
+        em.persist(language3);
+        Language language4=Language.createLanguage("불어","fr");
+        Country country4=Country.createCountry("프랑스");
+        em.persist(country4);
+        em.persist(language4);
+
+        User user1 = User.createUser("11", "11", "11", "11", "11", "11", "11");
+        User user2 = User.createUser("22", "22", "22", "22", "22", "22", "22");
+        User user3 = User.createUser("33", "33", "33", "33", "33", "33", "33");
+        User user4 = User.createUser("44", "44", "44", "44", "44", "44", "44");
 //
 //        List<UserCountry>user1c=new ArrayList<>();
 //        List<UserLanguage>user1l=new ArrayList<>();
@@ -131,8 +141,29 @@ class UserServiceTest {
     }
 
     @Test
+    public void userUpdate()throws Exception{
+       //given
+        User user1 = userRepository.findByEmail("11").orElseThrow(UserNotFoundException::new);
+
+        //when
+        List<String>user1c=new ArrayList<>();
+        user1c.add("미국");
+        List<String>user1l=new ArrayList<>();
+        user1l.add("jp");
+        List<String>user1h=new ArrayList<>();
+        user1h.add("fr");
+        UserUpdateDto userUpdateDto=new UserUpdateDto(user1c,user1l,user1h,"user1",
+                "facebook","insta",defaultImage,"한국","ko","en");
+
+        userService.userProfileUpdate(userUpdateDto,user1.getId());
+
+       //then
+//        assertThat()
+    }
+
+    @Test
     public void jasyptTest()throws Exception{
-        String huk = "https://hooks.slack.com/services/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";
+        String huk = "";
         String en=null;
 
 
@@ -146,11 +177,13 @@ class UserServiceTest {
         jasypt.setPassword(System.getProperty("jasypt.encryptor.password"));
         jasypt.setAlgorithm("PBEWithMD5AndDES");
 
-        String encryptedText1 = jasypt.encrypt(huk);
-        System.out.println("======================hook");
-        System.out.println(encryptedText1);
-        String decryptedText1 = jasypt.decrypt(encryptedText1);
-        assertThat(huk).isEqualTo(decryptedText1);
+//        String encryptedText1 = jasypt.encrypt(huk);
+//        System.out.println("======================hook");
+//        System.out.println(encryptedText1);
+        System.out.println("dataurl");
+        String decryptedText1 = jasypt.decrypt(huk);
+        System.out.println(decryptedText1);
+//        assertThat(huk).isEqualTo(decryptedText1);
 
         String encryptedText2 = jasypt.encrypt(en);
         System.out.println("======================slack");

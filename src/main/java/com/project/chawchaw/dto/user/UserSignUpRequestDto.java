@@ -2,8 +2,10 @@ package com.project.chawchaw.dto.user;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.validator.constraints.Length;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,16 +14,22 @@ import java.util.List;
 @Setter
 public class UserSignUpRequestDto {
 
-//  @Pattern(regexp = "/^0-9a-zA-Z@0-9a-zA-Z\\.[a-zA-Z]{2,3}$/i")
+    @NotBlank
+    @Pattern(regexp = "^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*\\.[a-zA-Z]{2,3}$")
     private String email;
-//  @Pattern(regexp = "/^.(?=^.{8,15}$)(?=.\\d)(?=.[a-zA-Z])(?=.[!@#$%^&+=]).*$/",message = "비밀번호 형식은 특수문자/문자/숫자 조합 8 ~ 15 글자 입니다.")
+    @Pattern(regexp = "^.*(?=^.{8,15}$)(?=.*\\d)(?=.*[a-zA-Z])(?=.*[!@#$%^&+=]).*$")
     private String password;
+    @Length(max = 20)
     private String name;
-//  @Pattern(regexp = "/^0-9a-zA-Z@([-_\\.]?[0-9a-zA-Z]).ac*.kr$/i")
+    @NotBlank
+    @Pattern(regexp = "^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@([-_.]?[0-9a-zA-Z])+\\.ac\\.kr$")
     private String web_email;
-
+    @NotBlank
+    @Length(max = 20)
     private String school;
     private String imageUrl;
+
+    @Length(max = 8)
     private String provider;
 //    private String content;
 //    private List<String> country=new ArrayList<>();

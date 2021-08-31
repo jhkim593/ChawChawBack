@@ -119,29 +119,39 @@ public class ChatService {
     }
     @Transactional
     public void deleteChatRoom(Long roomId,Long userId){
+//        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+//        List<ChatRoomUser> findChatRoomUser = chatRoomUserRepository.findByRoomId(roomId);
+//        System.out.println("채팅인원수");
+//        System.out.println(findChatRoomUser.size());
+//        if(findChatRoomUser.size()>=2){
+//            for(ChatRoomUser c:findChatRoomUser){
+//                if(c.getUser().getId().equals(userId)){
+//                    chatRoomUserRepository.delete(c);
+//                }
+//            }
+//            ChatMessageDto message = new ChatMessageDto(
+//                    MessageType.EXIT, roomId, userId, user.getName(),
+//                    user.getName() + "님이 퇴장하셨습니다.", LocalDateTime.now().withNano(0));
+//
+//            /** 한번 입장 후 지속?**/
+//            enterChatRoom(roomId);
+//           publish(getTopic(roomId), message);
+//
+//        }
+//        else{
+//            chatRoomRepository.delete(findChatRoomUser.get(0).getChatRoom());
+//            chatMessageRepository.deleteByRoomId(roomId);
+//        }
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
-        List<ChatRoomUser> findChatRoomUser = chatRoomUserRepository.findByRoomId(roomId);
-        System.out.println("채팅인원수");
-        System.out.println(findChatRoomUser.size());
-        if(findChatRoomUser.size()>=2){
-            for(ChatRoomUser c:findChatRoomUser){
-                if(c.getUser().getId().equals(userId)){
-                    chatRoomUserRepository.delete(c);
-                }
-            }
-            ChatMessageDto message = new ChatMessageDto(
-                    MessageType.EXIT, roomId, userId, user.getName(),
-                    user.getName() + "님이 퇴장하셨습니다.", LocalDateTime.now().withNano(0));
+        ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElseThrow(ChatRoomNotFoundException::new);
+        chatRoomRepository.delete(chatRoom);
+        chatMessageRepository.deleteByRoomId(roomId);
+        ChatMessageDto message = new ChatMessageDto(
+                MessageType.EXIT, roomId, user.getId(), user.getName(),
+                user.getName() + "님이 퇴장하셨습니다.", LocalDateTime.now().withNano(0));
 
-            /** 한번 입장 후 지속?**/
-            enterChatRoom(roomId);
-           publish(getTopic(roomId), message);
+        messagingTemplate.convertAndSend("/queue/chat/room/" + roomId, message);
 
-        }
-        else{
-            chatRoomRepository.delete(findChatRoomUser.get(0).getChatRoom());
-            chatMessageRepository.deleteByRoomId(roomId);
-        }
 
     }
 

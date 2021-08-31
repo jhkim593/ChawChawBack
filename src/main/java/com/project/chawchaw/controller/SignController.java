@@ -2,7 +2,7 @@ package com.project.chawchaw.controller;
 
 import com.project.chawchaw.config.response.DefaultResponseVo;
 import com.project.chawchaw.config.response.ResponseMessage;
-import com.project.chawchaw.dto.MailRequestDto;
+import com.project.chawchaw.dto.mail.MailRequestDto;
 import com.project.chawchaw.dto.social.FaceBookProfile;
 import com.project.chawchaw.dto.social.KakaoProfile;
 import com.project.chawchaw.dto.social.SocialLoginResponseDto;
@@ -11,7 +11,6 @@ import com.project.chawchaw.dto.user.UserLoginResponseDto;
 import com.project.chawchaw.dto.user.UserSignUpRequestDto;
 import com.project.chawchaw.config.auth.CustomUserDetails;
 import com.project.chawchaw.exception.LoginFailureException;
-import com.project.chawchaw.response.CommonResult;
 import com.project.chawchaw.service.*;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.swagger.annotations.*;
@@ -26,7 +25,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
-import java.nio.file.AccessDeniedException;
 
 
 @RequiredArgsConstructor
@@ -48,7 +46,7 @@ public class SignController {
 
 
     @PostMapping("/mail/send") // 이메일 인증 코드 보내기
-    public ResponseEntity emailAuth(@RequestBody MailRequestDto mailRequestDto, HttpServletRequest request) throws Exception {
+    public ResponseEntity emailAuth(@RequestBody @Valid MailRequestDto mailRequestDto, HttpServletRequest request) throws Exception {
         HttpSession session=request.getSession();
         String email=mailRequestDto.getEmail();
 
@@ -64,7 +62,7 @@ public class SignController {
 
 
     @PostMapping("/mail/verification") // 이메일 인증 코드 검증
-    public ResponseEntity verifyCode(@RequestBody MailRequestDto mailRequestDto, HttpServletRequest request) {
+    public ResponseEntity verifyCode(@RequestBody @Valid MailRequestDto mailRequestDto, HttpServletRequest request) {
 
         HttpSession session=request.getSession();
         Object attribute = session.getAttribute(mailRequestDto.getEmail());

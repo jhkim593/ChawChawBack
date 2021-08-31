@@ -21,6 +21,7 @@ import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -57,14 +58,14 @@ public class S3Service {
     }
 
     @Transactional
-    public String upload(MultipartFile file,Long id) throws IOException {
+    public String profileImageupload(MultipartFile file, Long id) throws IOException {
         User user = userRepository.findById(id).orElseThrow(UserNotFoundException::new);
-        String fileName =user.getImageUrl();
+        String fileName = user.getImageUrl().split("net/")[1];
         SimpleDateFormat date = new SimpleDateFormat("yyyymmddHHmmss");
-        String newFileName =  date.format(new Date())+"_"+file.getOriginalFilename();
+        String newFileName = date.format(new Date()) + "_" + file.getOriginalFilename();
 
 
-        if (!defaultImage.equals(fileName)&& fileName != null) {
+        if (!defaultImage.equals(fileName) && fileName != null) {
             boolean isExistObject = s3Client.doesObjectExist(bucket, fileName);
 
             if (isExistObject == true) {
@@ -76,11 +77,25 @@ public class S3Service {
         s3Client.putObject(new PutObjectRequest(bucket, newFileName, file.getInputStream(), null)
                 .withCannedAcl(CannedAccessControlList.PublicRead));
 
-        String imageUrl="https://"+CLOUD_FRONT_DOMAIN_NAME+"/"+newFileName;
+        String imageUrl = "https://" + CLOUD_FRONT_DOMAIN_NAME + "/" + newFileName;
 
-        user.changeImageUrl(newFileName);
+        user.changeImageUrl(imageUrl);
         return imageUrl;
     }
+
+    @Transactional
+    public String chatImageUpload(MultipartFile file) throws IOException {
+
+        SimpleDateFormat date = new SimpleDateFormat("yyyymmddHHmmss");
+        String newFileName = date.format(new Date()) + "_" + file.getOriginalFilename();
+
+        s3Client.putObject(new PutObjectRequest(bucket, newFileName, file.getInputStream(), null)
+                .withCannedAcl(CannedAccessControlList.PublicRead));
+
+        String imageUrl = "https://" + CLOUD_FRONT_DOMAIN_NAME + "/" + newFileName;
+        return imageUrl;
+    }
+
 
     //이미지 삭제
     @Transactional
@@ -94,7 +109,7 @@ public class S3Service {
 
             if (isExistObject == true) {
                 s3Client.deleteObject(bucket, fileName);
-                user.changeImageUrl(defaultImage);
+                user.changeImageUrl("https://" + CLOUD_FRONT_DOMAIN_NAME + "/" + defaultImage);
                 return true;
             } else
                 return false;
@@ -103,5 +118,22 @@ public class S3Service {
         }
 
 
+    }
+
+    //채팅방 삭제시 관련 사진 삭제
+    @Transactional
+    public void deleteChatImage(List<String> fileNameList) {
+
+
+        for (String fileName : fileNameList) {
+            boolean isExistObject = s3Client.doesObjectExist(bucket, fileName);
+
+            if (isExistObject == true) {
+                s3Client.deleteObject(bucket, fileName);
+
+            }
+
+
+        }
     }
 }

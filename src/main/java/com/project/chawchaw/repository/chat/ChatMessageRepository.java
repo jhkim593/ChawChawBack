@@ -8,6 +8,7 @@ import com.google.gson.JsonParser;
 import com.google.gson.internal.$Gson$Preconditions;
 import com.project.chawchaw.dto.chat.ChatMessageDto;
 import com.project.chawchaw.dto.chat.ChatRoomDto;
+import com.project.chawchaw.dto.chat.MessageType;
 import com.project.chawchaw.service.chat.ChatSubService;
 import lombok.RequiredArgsConstructor;
 import org.apache.tomcat.util.json.JSONParser;
@@ -43,7 +44,13 @@ public class ChatMessageRepository {
 
 
     public void createChatMessage(ChatMessageDto chatMessageDto){
-        String key = chatMessageDto.getRoomId().toString() + "_" + UUID.randomUUID().toString();
+       String  key = chatMessageDto.getRoomId().toString() + "_" + UUID.randomUUID().toString();
+        if(chatMessageDto.getType().equals(MessageType.IMAGE)){
+            String fileName=chatMessageDto.getMessage().split("/net")[1];
+           key = chatMessageDto.getRoomId().toString()+":image"+ "_" + UUID.randomUUID().toString();
+
+        }
+
         redisTemplate.opsForValue().set(key,chatMessageDto);
         redisTemplate.expire(key,7, TimeUnit.DAYS);
     }
@@ -71,6 +78,16 @@ public class ChatMessageRepository {
         Set<String> keys = redisTemplate.keys(roomId.toString()+"_"+"*");
         redisTemplate.delete(keys);
     }
+    public List<String> getImageByRoomId(Long roomId) {
+        Set<String> keys = redisTemplate.keys(roomId.toString()+":image"+"_"+"*");
+        List<String>fileNameList=new ArrayList<>();
+        for(String key:keys){
+            ChatMessageDto chatMessageDto = objectMapper.convertValue(redisTemplate.opsForValue().get(key), ChatMessageDto.class);
+            fileNameList.add(chatMessageDto.getMessage().split("/net")[1]);
+        }
+        return fileNameList;
+    }
+
 
 
 //    @PostConstruct

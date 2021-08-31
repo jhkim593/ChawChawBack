@@ -9,6 +9,7 @@ import com.project.chawchaw.dto.chat.ChatRoomRequestDto;
 import com.project.chawchaw.dto.chat.MessageType;
 import com.project.chawchaw.repository.chat.ChatMessageRepository;
 import com.project.chawchaw.repository.chat.ChatRoomUserRepository;
+import com.project.chawchaw.service.S3Service;
 import com.project.chawchaw.service.chat.ChatService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,7 +18,9 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.Valid;
 import java.time.LocalDateTime;
 
 @RequiredArgsConstructor
@@ -29,6 +32,8 @@ public class ChatController {
     private final ChatService chatService;
     private final JwtTokenProvider jwtTokenProvider;
     private final ChatRoomUserRepository chatRoomUserRepository;
+    private final S3Service s3Service;
+    private final ChatMessageRepository chatMessageRepository;
 
 //    //채팅 리스트 화면
 //    @GetMapping("/room")
@@ -38,7 +43,7 @@ public class ChatController {
 
 
     @MessageMapping("/message")
-    public void message(@RequestBody ChatMessageDto message) {
+    public void message(@RequestBody @Valid ChatMessageDto message) {
 
         if (message.getRegDate()==null) {
             message.setRegDate(LocalDateTime.now().withNano(0));
@@ -94,6 +99,7 @@ public class ChatController {
 
         Long userId = Long.valueOf(jwtTokenProvider.getUserPk(token));
 
+        s3Service.deleteChatImage(chatMessageRepository.getImageByRoomId(roomId));
         chatService.deleteChatRoom(roomId,userId);
 
 
@@ -102,5 +108,20 @@ public class ChatController {
                 true,chatService.getChat(userId)), HttpStatus.OK);
     }
 
+    @PostMapping("/chat/image")
+    @ResponseBody
+    public ResponseEntity chatImageUpload(@RequestBody MultipartFile file) {
+
+        try {
+            String imageUrl = s3Service.chatImageUpload(file);
+
+
+            return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.CHAT_IMAGE_UPLOAD_SUCCESS,
+                    true, imageUrl), HttpStatus.OK);
+        }catch (Exception e){
+            return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.CHAT_IMAGE_UPLOAD_FAIL,
+                    false), HttpStatus.OK);
+        }
+    }
 
 }

@@ -5,26 +5,21 @@ import com.project.chawchaw.config.jwt.JwtTokenProvider;
 import com.project.chawchaw.config.response.DefaultResponseVo;
 import com.project.chawchaw.config.response.ResponseMessage;
 import com.project.chawchaw.dto.user.*;
-import com.project.chawchaw.service.ResponseService;
 import com.project.chawchaw.service.S3Service;
 import com.project.chawchaw.service.UserService;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
-import java.io.File;
-import java.nio.file.Files;
+import javax.validation.Valid;
 
 @RestController
 @RequiredArgsConstructor
@@ -69,7 +64,7 @@ public class UserController {
     }
 
     @PostMapping(value = "/users/profile")
-    public ResponseEntity userProfileUpdate( @RequestBody UserUpdateDto userUpdateDto,
+    public ResponseEntity userProfileUpdate( @RequestBody @Valid UserUpdateDto userUpdateDto,
                                             @RequestHeader("Authorization")String token){
 
 
@@ -82,7 +77,7 @@ public class UserController {
 
     }
     @GetMapping(value = "/users")
-    public ResponseEntity users(@ModelAttribute UserSearch userSearch, @RequestHeader("Authorization")String token,HttpServletRequest request){
+    public ResponseEntity users(@ModelAttribute @Valid UserSearch userSearch, @RequestHeader("Authorization")String token, HttpServletRequest request){
 
         Cookie[] cookies = request.getCookies();
 
@@ -121,7 +116,7 @@ public class UserController {
         public ResponseEntity profileImageUpload(@RequestBody MultipartFile file,@RequestHeader("Authorization") String token){
 
         try {
-            String imageUrl = s3Service.upload(file,Long.valueOf(jwtTokenProvider.getUserPk(token)));
+            String imageUrl = s3Service.profileImageupload(file,Long.valueOf(jwtTokenProvider.getUserPk(token)));
             if (imageUrl.isEmpty()) {
 
                 return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.IMAGE_UPLOAD_FAIL, false), HttpStatus.OK);
