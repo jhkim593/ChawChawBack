@@ -44,7 +44,6 @@ spring:
 
 
 
-
   social:
     kakao:
       client_id: ENC(+u+95J5utk6myxTxjIe1AOE3IeOS/6b5lJOXQs++gyeEU0pI3Spd0It7jVF+J0Tg) # 앱생성시 받은 REST API 키
