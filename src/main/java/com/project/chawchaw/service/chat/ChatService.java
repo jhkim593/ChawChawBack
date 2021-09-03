@@ -61,7 +61,7 @@ public class ChatService {
         ChatRoom chatRoom = chatRoomRepository.save(ChatRoom.createChatRoom(UUID.randomUUID().toString()));
         chatRoomUserRepository.save(ChatRoomUser.createChatRoomUser(chatRoom,toUser));
         chatRoomUserRepository.save(ChatRoomUser.createChatRoomUser(chatRoom,fromUser));
-        ChatMessageDto chatMessageDto = new ChatMessageDto(MessageType.ENTER,chatRoom.getId(), fromUserId, fromUser.getName(), fromUser.getName() + "님이 입장하셨습니다.", LocalDateTime.now().withNano(0));
+        ChatMessageDto chatMessageDto = new ChatMessageDto(MessageType.ENTER,chatRoom.getId(), fromUserId, fromUser.getName(), fromUser.getName() + "님이 입장하셨습니다.",fromUser.getImageUrl(), LocalDateTime.now().withNano(0));
         chatMessageRepository.createChatMessage(chatMessageDto);
         messagingTemplate.convertAndSend("/queue/chat/room/wait/" + toUserId,chatMessageDto );
 //        ChatRoom chatRoom=null;
@@ -148,7 +148,7 @@ public class ChatService {
         chatMessageRepository.deleteByRoomId(roomId);
         ChatMessageDto message = new ChatMessageDto(
                 MessageType.EXIT, roomId, user.getId(), user.getName(),
-                user.getName() + "님이 퇴장하셨습니다.", LocalDateTime.now().withNano(0));
+                user.getName() + "님이 퇴장하셨습니다.", user.getImageUrl(),LocalDateTime.now().withNano(0));
 
         messagingTemplate.convertAndSend("/queue/chat/room/" + roomId, message);
 

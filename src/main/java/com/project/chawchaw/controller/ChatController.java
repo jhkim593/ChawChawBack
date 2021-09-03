@@ -48,6 +48,9 @@ public class ChatController {
         if (message.getRegDate()==null) {
             message.setRegDate(LocalDateTime.now().withNano(0));
         }
+        if (message.getMessageType().equals(MessageType.ENTER)) {
+            message.setMessage(message.getSender() + "님이 입장하셨습니다.");
+        }
         
 //        System.out.println(message.getRegDate());
         chatService.enterChatRoom(message.getRoomId());

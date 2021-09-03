@@ -17,7 +17,7 @@ public class ChatMessageDto implements Serializable {
 
 
     @NotNull
-    private MessageType type; // 메시지 타입
+    private MessageType messageType; // 메시지 타입
     @NotNull
     private Long roomId; // 방번호
     @NotNull
@@ -28,5 +28,7 @@ public class ChatMessageDto implements Serializable {
     @NotBlank
     @Length(max = 2000)
     private String message; // 메시지
+
+    private String imageUrl;
     private LocalDateTime regDate;
 }

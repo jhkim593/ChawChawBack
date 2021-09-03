@@ -69,7 +69,7 @@ public class UserRepositoryImpl implements  UserRepositoryCustom{
     @Override
     public List<UsersDto> usersList(UserSearch userSearch) {
 
-        System.out.println(userSearch.getSchool());
+
         int limit=3;
         if (userSearch.getIsFirst()){
             limit=6;

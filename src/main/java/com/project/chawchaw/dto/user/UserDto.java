@@ -30,6 +30,7 @@ public class UserDto {
     private String repHopeLanguage;
     private Long views;
     private int follows;
+    private Boolean isFollow;
     private LocalDateTime days;
 
  public UserDto(User user){

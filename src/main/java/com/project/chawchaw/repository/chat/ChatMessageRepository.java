@@ -45,14 +45,16 @@ public class ChatMessageRepository {
 
     public void createChatMessage(ChatMessageDto chatMessageDto){
        String  key = chatMessageDto.getRoomId().toString() + "_" + UUID.randomUUID().toString();
-        if(chatMessageDto.getType().equals(MessageType.IMAGE)){
+        if(chatMessageDto.getMessageType().equals(MessageType.IMAGE)){
             String fileName=chatMessageDto.getMessage().split("/net")[1];
            key = chatMessageDto.getRoomId().toString()+":image"+ "_" + UUID.randomUUID().toString();
 
         }
 
         redisTemplate.opsForValue().set(key,chatMessageDto);
-        redisTemplate.expire(key,7, TimeUnit.DAYS);
+        if(!chatMessageDto.getMessageType().equals(MessageType.ENTER)) {
+            redisTemplate.expire(key, 1, TimeUnit.DAYS);
+        }
     }
     //최근 20개조회
     public List<ChatMessageDto> findChatMessageByRoomId(Long roomId){
@@ -70,7 +72,9 @@ public class ChatMessageRepository {
           return c2.getRegDate().compareTo(c1.getRegDate());
        });
 
-        return chatMessageDtos.stream().limit(20).collect(Collectors.toList());
+        return chatMessageDtos.stream()
+//                .limit(20)
+                .collect(Collectors.toList());
 
     }
 

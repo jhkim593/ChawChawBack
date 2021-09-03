@@ -17,24 +17,19 @@ spring:
     port: 6379
 
 
+
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     password: ENC(3F1eltMp3xhu5T+HyPoTIg==)
-    url: jdbc:mysql://localhost:3308/chawchaw_test?useSSL=false&characterEncoding=UTF-8&serverTimezone=UTC
+    url: jdbc:mysql://localhost:3308/chawchawtest?useSSL=false&characterEncoding=UTF-8&serverTimezone=UTC
     username: ENC(XiRNju+2VhAm6XrJDOJ3zw==)
-
-#    password: ENC(6um9Qa+wMOGQq41hiFycTiRqRkkeiOGb)
-#    url: ENC(WYUFn5EHnDQSVM7rYX0zRWWJU5imcmWzQBPSFG93/nu0idnv5InXVXFZZF1L8rGZ5VaggOq2YBc56bq6NZ79sY2HD4xcsJyXJg2m5y+zW10DnV8MdRHKPjqWzEc2yz/hRYnwOphEwmCHtjSj4zcCkxXZYnplAjWDxBuHvp4DZAE0EIrgjEVwcw==)
-#    username: ENC(ifD0zstnaBqDxGwu4NlGfg==)
 
 
 
   jpa:
-    database: mysql
-    database-platform: org.hibernate.dialect.MySQL5Dialect
-    generate-ddl: false
 
-    show-sql: false
+
+
     hibernate:
       ddl-auto: create
     properties:

@@ -1,18 +1,23 @@
 package com.project.chawchaw.service;
 
 import com.project.chawchaw.dto.user.UserDto;
+import com.project.chawchaw.dto.user.UserSearch;
 import com.project.chawchaw.dto.user.UserUpdateDto;
+import com.project.chawchaw.dto.user.UsersDto;
 import com.project.chawchaw.entity.*;
 import com.project.chawchaw.exception.UserNotFoundException;
 import com.project.chawchaw.repository.CountryRepository;
+import com.project.chawchaw.repository.FollowRepository;
 import com.project.chawchaw.repository.LanguageRepository;
 import com.project.chawchaw.repository.user.UserRepository;
+import com.ulisesbocchio.jasyptspringboot.configuration.EnableEncryptablePropertiesConfiguration;
 import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,7 +30,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @Transactional
-@Rollback(false)
+
+
 
 class UserServiceTest {
 
@@ -44,9 +50,9 @@ class UserServiceTest {
 
     @Autowired
     LanguageRepository languageRepository;
+    @Autowired
+    FollowService followService;
 
-    @Value("${file.defaultImage}")
-    private String defaultImage;
 
     @BeforeEach
     public void beforeEach()throws Exception{
@@ -67,11 +73,27 @@ class UserServiceTest {
         em.persist(country4);
         em.persist(language4);
 
-        User user1 = User.createUser("11", "11", "11", "11", "11", "11", "11");
-        User user2 = User.createUser("22", "22", "22", "22", "22", "22", "22");
-        User user3 = User.createUser("33", "33", "33", "33", "33", "33", "33");
-        User user4 = User.createUser("44", "44", "44", "44", "44", "44", "44");
-//
+        User user1 = User.createUser("11", "11", "11", "11", "11", "서울시립대학교", "11");
+        User user2 = User.createUser("22", "22", "22", "22", "22", "서울시립대학교", "22");
+        User user3 = User.createUser("33", "33", "33", "33", "33", "서울시립대학교", "33");
+        User user4 = User.createUser("44", "44", "44", "44", "44", "서울시립대학교", "44");
+        User user5 = User.createUser("55", "55", "55", "55", "55", "서울시립대학교", "55");
+        User user6 = User.createUser("66", "66", "66", "66", "66", "서울시립대학교", "66");
+        User user7 = User.createUser("77", "77", "77", "77", "77", "서울시립대학교", "77");
+        User user8 = User.createUser("88", "88", "88", "88", "88", "서울시립대학교", "88");
+        User user9 = User.createUser("99", "99", "99", "99", "99", "서울시립대학교", "99");
+        User user10 = User.createUser("1010", "1010", "1010", "1010", "1010", "서울시립대학교", "1010");
+        em.persist(user1);
+        em.persist(user2);
+        em.persist(user3);
+        em.persist(user4);
+        em.persist(user5);
+        em.persist(user6);
+        em.persist(user7);
+        em.persist(user8);
+        em.persist(user9);
+        em.persist(user10);
+        //
 //        List<UserCountry>user1c=new ArrayList<>();
 //        List<UserLanguage>user1l=new ArrayList<>();
 //        List<UserHopeLanguage>user1h=new ArrayList<>();
@@ -116,28 +138,110 @@ class UserServiceTest {
 
 
     }
+    //전체 회원조회
+    @Test
+    public void users()throws Exception{
+        //given
+        User user1 = userRepository.findByEmail("11").orElseThrow(UserNotFoundException::new);
+        User user2 = userRepository.findByEmail("22").orElseThrow(UserNotFoundException::new);
+        User user3 = userRepository.findByEmail("33").orElseThrow(UserNotFoundException::new);
+        User user4 = userRepository.findByEmail("44").orElseThrow(UserNotFoundException::new);
+        User user5 = userRepository.findByEmail("55").orElseThrow(UserNotFoundException::new);
+        User user6 = userRepository.findByEmail("66").orElseThrow(UserNotFoundException::new);
+        User user7 = userRepository.findByEmail("77").orElseThrow(UserNotFoundException::new);
+        User user8 = userRepository.findByEmail("88").orElseThrow(UserNotFoundException::new);
+        User user9 = userRepository.findByEmail("99").orElseThrow(UserNotFoundException::new);
+        User user10 = userRepository.findByEmail("1010").orElseThrow(UserNotFoundException::new);
+        List<String>user1c=new ArrayList<>();
+        user1c.add("미국");
+        user1c.add("프랑스");
+        List<String>user1l=new ArrayList<>();
+        user1l.add("jp");
+        user1l.add("en");
+        List<String>user1h=new ArrayList<>();
+        user1h.add("fr");
+        UserUpdateDto userUpdateDto=new UserUpdateDto(user1c,user1l,user1h,"",
+                "facebook","insta","https://" + "d3t4l8y7wi01lo.cloudfront.net" + "/" + "defaultImage_233500392.png","한국","ko","en");
+
+        userService.userProfileUpdate(userUpdateDto, user1.getId());
+        userService.userProfileUpdate(userUpdateDto, user2.getId());
+        userService.userProfileUpdate(userUpdateDto, user3.getId());
+        userService.userProfileUpdate(userUpdateDto, user4.getId());
+        userService.userProfileUpdate(userUpdateDto, user5.getId());
+        userService.userProfileUpdate(userUpdateDto, user6.getId());
+        userService.userProfileUpdate(userUpdateDto, user7.getId());
+        userService.userProfileUpdate(userUpdateDto, user8.getId());
+        userService.userProfileUpdate(userUpdateDto, user9.getId());
+        userService.userProfileUpdate(userUpdateDto, user10.getId());
+        em.flush(); em.clear();
+        //when
+        UserSearch userSearch=new UserSearch();
+        userSearch.setSchool("서울시립대");
+        userSearch.setLanguage("jp");
+        userSearch.setIsFirst(true);
+        userSearch.setOrder("view");
+        userSearch.getExcludes().add(user2.getId());
+        userSearch.getExcludes().add(user3.getId());
+
+        //조회수
+        userService.detailUser(user7.getId(),user1.getId());
+
+        List<UsersDto> users = userService.users(userSearch, user1.getId());
+        List<Long>usersId=new ArrayList<>();
+        users.stream().forEach(u->usersId.add(u.getId()));
+        //then
+        assertThat(users.size()).isEqualTo(6);
+        assertThat(usersId.contains(user2.getId())).isFalse();
+        assertThat(usersId.contains(user3.getId())).isFalse();
+        assertThat(users.get(0).getId()).isEqualTo(user7.getId());
+
+    }
 
     @Test
     public void detail()throws Exception{
        //given
 
-        Language language1=Language.createLanguage("한국어","kor");
-        Country country1=Country.createCountry("한국");
-        countryRepository.save(country1);
-        languageRepository.save(language1);
+        User user1 = userRepository.findByEmail("11").orElseThrow(UserNotFoundException::new);
+        User user2 = userRepository.findByEmail("22").orElseThrow(UserNotFoundException::new);
+        List<String>user1c=new ArrayList<>();
+        user1c.add("미국");
+        user1c.add("프랑스");
+        List<String>user1l=new ArrayList<>();
+        user1l.add("jp");
+        user1l.add("en");
+        List<String>user1h=new ArrayList<>();
+        user1h.add("fr");
+        UserUpdateDto userUpdateDto=new UserUpdateDto(user1c,user1l,user1h,"user",
+                "facebook","insta","https://" + "d3t4l8y7wi01lo.cloudfront.net" + "/" + "defaultImage_233500392.png","한국","ko","en");
+
+        userService.userProfileUpdate(userUpdateDto, user1.getId());
+        userService.userProfileUpdate(userUpdateDto, user2.getId());
 
 
-       //when
-//        User user = userRepository.findByEmail("3").orElseThrow(UserNotFoundException::new);
-//        UserDto userDto = userService.detailUser(user.getId());
-//
-//        //then
-//        assertThat(userDto.getContent()).isEqualTo(user.getContent());
-////        assertThat(userDto.getCountry()).isEqualTo(user.getCountry());
-//        assertThat(userDto.getFacebookUrl()).isEqualTo(user.getFacebookUrl());
-//        assertThat(userDto.getInstagramUrl()).isEqualTo(user.getInstagramUrl());
-//        assertThat(userDto.getName()).isEqualTo(user.getName());
-//        assertThat(userDto.getFollows()).isEqualTo(user.getToFollows().size());
+        //when
+
+        //팔로우 여부 확인
+        followService.follow(user1.getId(), user2.getId());
+        em.flush(); em.clear();
+
+        //조회수 중복확인
+        UserDto userDto1 = userService.detailUser(user1.getId(), user2.getId());
+        UserDto userDto = userService.detailUser(user1.getId(), user2.getId());
+
+
+
+
+        //then
+
+        assertThat(userDto.getContent()).isEqualTo(user1.getContent());
+        assertThat(userDto.getCountry().get(0)).isEqualTo(user1.getCountry().get(0).getCountry().getName());
+        assertThat(userDto.getCountry().get(1)).isEqualTo(user1.getCountry().get(1).getCountry().getName());
+        assertThat(userDto.getFacebookUrl()).isEqualTo(user1.getFacebookUrl());
+        assertThat(userDto.getInstagramUrl()).isEqualTo(user1.getInstagramUrl());
+        assertThat(userDto.getName()).isEqualTo(user1.getName());
+        assertThat(userDto.getFollows()).isEqualTo(user1.getToFollows().size());
+        assertThat(userDto.getViews()).isEqualTo(1);
+        assertThat(userDto.getIsFollow()).isTrue();
     }
 
     @Test
@@ -148,22 +252,41 @@ class UserServiceTest {
         //when
         List<String>user1c=new ArrayList<>();
         user1c.add("미국");
+        user1c.add("프랑스");
         List<String>user1l=new ArrayList<>();
         user1l.add("jp");
+        user1l.add("en");
         List<String>user1h=new ArrayList<>();
         user1h.add("fr");
         UserUpdateDto userUpdateDto=new UserUpdateDto(user1c,user1l,user1h,"user1",
-                "facebook","insta",defaultImage,"한국","ko","en");
+                "facebook","insta","https://" + "d3t4l8y7wi01lo.cloudfront.net" + "/" + "defaultImage_233500392.png","한국","ko","en");
 
         userService.userProfileUpdate(userUpdateDto,user1.getId());
-
+        em.flush(); em.clear();
+        user1 = userRepository.findByEmail("11").orElseThrow(UserNotFoundException::new);
        //then
-//        assertThat()
+        assertThat(user1.getContent()).isEqualTo("user1");
+        assertThat(user1.getFacebookUrl()).isEqualTo("facebook");
+        assertThat(user1.getInstagramUrl()).isEqualTo("insta");
+        assertThat(user1.getRepCountry()).isEqualTo("한국");
+        assertThat(user1.getRepLanguage()).isEqualTo("ko");
+        assertThat(user1.getRepHopeLanguage()).isEqualTo("en");
+        assertThat(user1.getImageUrl()).isEqualTo("https://" + "d3t4l8y7wi01lo.cloudfront.net" + "/" + "defaultImage_233500392.png");
+        assertThat(user1.getCountry().size()).isEqualTo(3);
+        assertThat(user1.getCountry().get(0).getCountry().getName()).isEqualTo("미국");
+        assertThat(user1.getCountry().get(1).getCountry().getName()).isEqualTo("프랑스");
+        assertThat(user1.getLanguage().get(0).getLanguage().getAbbr()).isEqualTo("jp");
+        assertThat(user1.getLanguage().get(1).getLanguage().getAbbr()).isEqualTo("en");
+        assertThat(user1.getHopeLanguage().get(0).getHopeLanguage().getAbbr()).isEqualTo("fr");
+
+
+
     }
+
 
     @Test
     public void jasyptTest()throws Exception{
-        String huk = "";
+        String huk = "/pngs7V2Z7zRkPVPEwTPmVWb2cTBBa3HUP8OcDLuzxD4rDYKjb+r6wrlg+q0hKndBFaBB+YR3uVRCw54dskPPt55bfJ+6YEUCxRGJKr1JVBwdIHXvWoRAR1iJG4WHMOcI9DRembZDhg=";
         String en=null;
 
 
@@ -178,9 +301,9 @@ class UserServiceTest {
         jasypt.setAlgorithm("PBEWithMD5AndDES");
 
 //        String encryptedText1 = jasypt.encrypt(huk);
-//        System.out.println("======================hook");
+        System.out.println("======================de");
 //        System.out.println(encryptedText1);
-        System.out.println("dataurl");
+//        System.out.println("dataurl");
         String decryptedText1 = jasypt.decrypt(huk);
         System.out.println(decryptedText1);
 //        assertThat(huk).isEqualTo(decryptedText1);

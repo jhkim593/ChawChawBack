@@ -43,6 +43,7 @@ public class UserService {
     private final UserHopeLanguageRepository userHopeLanguageRepository;
     private final UserCountryRepository userCountryRepository;
     private final ViewRepository viewRepository;
+    private final FollowRepository followRepository;
 
     @Value("${file.path}")
     private String fileRealPath;
@@ -61,7 +62,18 @@ public class UserService {
             viewRepository.save(View.createView(toUser, fromUser));
         }
 
-       UserDto userDto= new UserDto(toUser);
+        UserDto userDto= new UserDto(toUser);
+
+        if (followRepository.findByFollow(fromUserId,toUserId).isPresent()){
+
+            userDto.setIsFollow(true);
+        }
+
+        else{
+            userDto.setIsFollow(false);
+        }
+
+
 
        return userDto;
 

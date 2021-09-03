@@ -1,19 +1,17 @@
 package com.project.chawchaw.controller;
 
+import com.project.chawchaw.config.jwt.JwtTokenProvider;
 import com.project.chawchaw.config.response.DefaultResponseVo;
 import com.project.chawchaw.config.response.ResponseMessage;
 import com.project.chawchaw.dto.mail.MailRequestDto;
 import com.project.chawchaw.dto.social.FaceBookProfile;
 import com.project.chawchaw.dto.social.KakaoProfile;
 import com.project.chawchaw.dto.social.SocialLoginResponseDto;
-import com.project.chawchaw.dto.user.UserLoginRequestDto;
-import com.project.chawchaw.dto.user.UserLoginResponseDto;
-import com.project.chawchaw.dto.user.UserSignUpRequestDto;
+import com.project.chawchaw.dto.user.*;
 import com.project.chawchaw.config.auth.CustomUserDetails;
 import com.project.chawchaw.exception.LoginFailureException;
 import com.project.chawchaw.service.*;
 import io.jsonwebtoken.ExpiredJwtException;
-import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,7 +27,6 @@ import javax.validation.Valid;
 
 @RequiredArgsConstructor
 @RestController
-@Api(tags = {"1.sign"})
 public class SignController {
 
 
@@ -38,6 +35,7 @@ public class SignController {
     private final KakaoService kakaoService;
     private final FaceBookService faceBookService;
     private final UserService userService;
+    private final JwtTokenProvider jwtTokenProvider;
 
 
 
@@ -86,28 +84,30 @@ public class SignController {
 
 
 
-    @ApiOperation(value = "회원가입",notes = "회원가입")
+
     @PostMapping(value = "/users/signup")
     public ResponseEntity signup(@RequestBody @Valid UserSignUpRequestDto requestDto){
-        if(requestDto.getProvider()!=null&&!requestDto.getProvider().isEmpty()){
+        if(requestDto.getProvider()==null&&requestDto.getProvider().isEmpty()){
+            return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.CREATED_USER_FAIL,true),HttpStatus.OK);
+        }
+
+
             if(requestDto.getProvider().equals("kakao")||requestDto.getProvider().equals("facebook")) {
                 requestDto.setPassword(requestDto.getEmail());
 
                 signService.signup(requestDto);
+                return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.CREATED_USER,true),HttpStatus.CREATED);
             }
             else{
-                return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.CREATED_USER_FAIL,true),HttpStatus.OK);
+                signService.signup(requestDto);
+                return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.CREATED_USER,true),HttpStatus.CREATED);
             }
-        }
-        else{
-            signService.signup(requestDto);
-        }
-       return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.CREATED_USER,true),HttpStatus.CREATED);
+
 
     }
 
 
-    @ApiOperation(value = "중복회원조회",notes = "중복회원조회")
+
     @GetMapping(value = "/users/email/duplicate/{email}")
     public ResponseEntity emailDuplicate(@PathVariable("email") String email){
        return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.EMAIL_DUPLICATE,signService.userCheck(email)),HttpStatus.OK);
@@ -131,13 +131,13 @@ public class SignController {
 //    }
 
 
-
     @PostMapping(value = "/login")
     public ResponseEntity login(
             @RequestBody UserLoginRequestDto requestDto,HttpServletResponse response) {
-
         try {
 
+            /**
+             * provider 있을때**/
             if (requestDto.getProvider() != null) {
 
                 if (requestDto.getProvider().equals("kakao") && requestDto.getKakaoToken() != null) {
@@ -145,28 +145,39 @@ public class SignController {
                     KakaoProfile kakaoProfile = kakaoService.getKakaoProfile(token);
                     String email = kakaoProfile.getEmail();
                     if (signService.validUserWithProvider(email, requestDto.getProvider())) {
-                        UserLoginResponseDto loginDto = signService.loginByProvider(email, requestDto.getProvider());
+                        UserTokenDto tokenDto = signService.loginByProvider(email, requestDto.getProvider());
 
-                        response.addHeader("Authorization", "Bearer " + loginDto.getToken());
-                        Cookie cookie = new Cookie("RefreshToken",loginDto.getRefreshToken());
+
+                        Cookie cookie = new Cookie("RefreshToken",tokenDto.getRefreshToken());
                         response.addCookie(cookie);
-                        return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.LOGIN_SUCCESS, true,userService.userProfile(loginDto.getId())), HttpStatus.OK);
-                    } else {
+                        UserTokenResponseDto userTokenResponseDto=new UserTokenResponseDto("JWT",tokenDto.getAccessToken(),
+                                jwtTokenProvider.getAccessTokenExpiration(),
+                                jwtTokenProvider.getRefreshTokenExpiration());
+                        return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.LOGIN_SUCCESS, true,new UserLoginResponseDto(userService.userProfile(tokenDto.getId()),userTokenResponseDto)), HttpStatus.OK);
+                    }
+                    else {
                         return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.SOCIAL_LOGIN_FAIL, false,
                                 new SocialLoginResponseDto(kakaoProfile.getEmail(), kakaoProfile.getName(), kakaoProfile.getImageUrl(), kakaoProfile.getProvider())), HttpStatus.OK);
                     }
-                } else if (requestDto.getProvider().equals("facebook") && requestDto.getFacebookId() != null
+                }
+
+                else if (requestDto.getProvider().equals("facebook") && requestDto.getFacebookId() != null
                         && requestDto.getFacebookToken() != null) {
 
                     FaceBookProfile faceBookProfile = faceBookService.getFaceBookProfile(requestDto.getFacebookToken(), requestDto.getFacebookId());
                     String email = faceBookProfile.getEmail();
                     if (signService.validUserWithProvider(email, requestDto.getProvider())) {
-                        UserLoginResponseDto loginDto = signService.loginByProvider(email, requestDto.getProvider());
-                        response.addHeader("Authorization", "Bearer " + loginDto.getToken());
-                        Cookie cookie = new Cookie("RefreshToken",loginDto.getRefreshToken());
+                        UserTokenDto tokenDto = signService.loginByProvider(email, requestDto.getProvider());
+
+
+                        Cookie cookie = new Cookie("RefreshToken",tokenDto.getRefreshToken());
                         response.addCookie(cookie);
-                        return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.LOGIN_SUCCESS, true,userService.userProfile(loginDto.getId())), HttpStatus.OK);
-                    } else {
+                        UserTokenResponseDto userTokenResponseDto=new UserTokenResponseDto("JWT",tokenDto.getAccessToken(),
+                                jwtTokenProvider.getAccessTokenExpiration(),
+                                jwtTokenProvider.getRefreshTokenExpiration());
+                        return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.LOGIN_SUCCESS, true,new UserLoginResponseDto(userService.userProfile(tokenDto.getId()),userTokenResponseDto)), HttpStatus.OK);
+                    }
+                    else {
                         return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.SOCIAL_LOGIN_FAIL, false,
                                 new SocialLoginResponseDto(faceBookProfile.getEmail(), faceBookProfile.getName(), faceBookProfile.getImageUrl(), faceBookProfile.getProvider())), HttpStatus.OK);
                     }
@@ -178,19 +189,25 @@ public class SignController {
                 }
 
             }
-            else{
+            else if(requestDto.getProvider().equals("basic")){
               if(requestDto.getEmail()!=null&&requestDto.getPassword()!=null){
 
-                  UserLoginResponseDto loginDto = signService.login(requestDto);
-                  response.addHeader("Authorization","Bearer "+loginDto.getToken());
-                  Cookie cookie = new Cookie("RefreshToken",loginDto.getRefreshToken());
-                  response.addCookie(cookie);
-                    return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.LOGIN_SUCCESS,true,userService.userProfile(loginDto.getId())),HttpStatus.OK);
+                  UserTokenDto tokenDto = signService.login(requestDto);
 
+
+                  Cookie cookie = new Cookie("RefreshToken",tokenDto.getRefreshToken());
+                  response.addCookie(cookie);
+                  UserTokenResponseDto userTokenResponseDto=new UserTokenResponseDto("JWT",tokenDto.getAccessToken(),
+                          jwtTokenProvider.getAccessTokenExpiration(),
+                         jwtTokenProvider.getRefreshTokenExpiration());
+                  return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.LOGIN_SUCCESS, true,new UserLoginResponseDto(userService.userProfile(tokenDto.getId()),userTokenResponseDto)), HttpStatus.OK);
                 }
               else{
                   return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.LOGIN_FAIL, false), HttpStatus.OK);
               }
+            }
+            else {
+                return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.SOCIAL_LOGIN_CONNECT_FAIL, false), HttpStatus.OK);
             }
         }
         catch(LoginFailureException e){
@@ -229,11 +246,11 @@ public class SignController {
 
         String refreshToken=null;
         Cookie[] cookies=request.getCookies();
-        Cookie refreshTokenCookie=null;
+//        Cookie refreshTokenCookie=null;
         if (cookies != null) {
             for (Cookie cookie : cookies) {
                 if (cookie.getName().equals("RefreshToken")&&!cookie.getValue().isEmpty()) {
-                    refreshTokenCookie=cookie;
+//                    refreshTokenCookie=cookie;
                     refreshToken = cookie.getValue();
                 }
             }
@@ -244,9 +261,11 @@ public class SignController {
 
 
         try{
-            UserLoginResponseDto userLoginResponseDto = signService.refreshToken(refreshToken);
-            response.addHeader("Authorization","Bearer "+userLoginResponseDto.getToken());
-            return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.REFRESH_TOKEN_SUCCESS,true),HttpStatus.OK);
+            UserTokenDto tokenDto = signService.refreshToken(refreshToken);
+            UserTokenResponseDto userTokenResponseDto=new UserTokenResponseDto("JWT",tokenDto.getAccessToken(),
+                    jwtTokenProvider.getAccessTokenExpiration(),
+                    jwtTokenProvider.getRefreshTokenExpiration());
+            return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.REFRESH_TOKEN_SUCCESS,true,userTokenResponseDto),HttpStatus.OK);
     }
         catch (ExpiredJwtException e){
             return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.EXPIRED_REFRESH_TOKEN,false),HttpStatus.UNAUTHORIZED);

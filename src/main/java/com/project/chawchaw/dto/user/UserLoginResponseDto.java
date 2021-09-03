@@ -4,10 +4,10 @@ import lombok.*;
 
 @Getter
 @Setter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class UserLoginResponseDto {
-    private Long id;
-    private String token;
-    private String refreshToken;
+
+    private UserProfileDto profile;
+    private UserTokenResponseDto token;
 }

@@ -5,7 +5,7 @@ import com.project.chawchaw.config.response.DefaultResponseVo;
 import com.project.chawchaw.config.response.ResponseMessage;
 import com.project.chawchaw.service.FollowService;
 
-import io.swagger.annotations.Api;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
-@Api(tags = {"2.follow"})
+
 public class FollowController {
 
     private final FollowService followService;

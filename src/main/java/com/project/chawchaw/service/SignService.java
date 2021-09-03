@@ -2,7 +2,6 @@ package com.project.chawchaw.service;
 
 
 
-import com.mysql.cj.exceptions.DataConversionException;
 import com.project.chawchaw.config.jwt.JwtTokenProvider;
 import com.project.chawchaw.dto.user.UserLoginRequestDto;
 import com.project.chawchaw.dto.user.UserSignUpRequestDto;
@@ -13,7 +12,7 @@ import com.project.chawchaw.repository.FollowRepository;
 import com.project.chawchaw.repository.LanguageRepository;
 import com.project.chawchaw.repository.ViewRepository;
 import com.project.chawchaw.repository.user.UserRepository;
-import com.project.chawchaw.dto.user.UserLoginResponseDto;
+import com.project.chawchaw.dto.user.UserTokenDto;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +29,6 @@ import javax.mail.Message;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.util.Random;
-import java.util.zip.DataFormatException;
 
 @Service
 @RequiredArgsConstructor
@@ -110,59 +108,7 @@ public class SignService {
 
 
 
-//        UUID uuid = UUID.randomUUID();
-//        String uuidFilename = uuid + "_" + file.getOriginalFilename();
-//        System.out.println("-=--------------------=======================");
-//        Path filePath = Paths.get(fileRealPath + uuidFilename);
-//        try {
-//            Files.write(filePath, file.getBytes());
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        Country repCountry = countryRepository.findByName(requestDto.getRepCountry()).orElseThrow(CountryNotFoundException::new);
-//        Language repLanguage = languageRepository.findByAbbr(requestDto.getRepLanguage()).orElseThrow(LanguageNotFoundException::new);
-//        Language repHopeLanguage = languageRepository.findByAbbr(requestDto.getRepHopeLanguage()).orElseThrow(LanguageNotFoundException::new);
 //
-//        UserHopeLanguage userRepHopeLanguage = UserHopeLanguage.createUserHopeLanguage(repHopeLanguage);
-//        userRepHopeLanguage.changeRep();
-//        UserLanguage userRepLanguage = UserLanguage.createUserLanguage(repLanguage);
-//        userRepLanguage.changeRep();
-//        UserCountry userRepCountry = UserCountry.createUserCountry(repCountry);
-//        userRepCountry.changeRep();
-//
-//
-//
-//
-//        List<UserHopeLanguage> hopeLanguageList=new ArrayList<>();
-//        for(int i=0;i<requestDto.getHopeLanguage().size();i++){
-//            String hopeLanguageName=requestDto.getHopeLanguage().get(i);
-//            Language language = languageRepository.findByAbbr(hopeLanguageName).orElseThrow(LanguageNotFoundException::new);
-//            UserHopeLanguage userHopeLanguage = UserHopeLanguage.createUserHopeLanguage(language);
-//            hopeLanguageList.add(userHopeLanguage);
-//
-//        }
-//       List<UserLanguage>languageList=new ArrayList<>();
-//        for(int i=0;i<requestDto.getLanguage().size();i++){
-//            String LanguageName=requestDto.getLanguage().get(i);
-//            Language language = languageRepository.findByAbbr(LanguageName).orElseThrow(LanguageNotFoundException::new);
-//            UserLanguage userLanguage = UserLanguage.createUserLanguage(language);
-//            languageList.add(userLanguage);
-//
-//        }
-//
-//        List<UserCountry>countryList=new ArrayList<>();
-//        for(int i=0;i<requestDto.getCountry().size();i++){
-//            String countryName=requestDto.getCountry().get(i);
-//            Country country = countryRepository.findByName(countryName).orElseThrow(CountryNotFoundException::new);
-//            UserCountry userCountry = UserCountry.createUserCountry(country);
-//            countryList.add(userCountry);
-//
-//        }
-
-
-
-//        validUser(requestDto.getEmail());
-
 
         if(validUserWithProvider(requestDto.getEmail(),requestDto.getProvider())){
 
@@ -182,34 +128,32 @@ public class SignService {
                 requestDto.getWeb_email(),requestDto.getSchool(),imageUrl
 //                ,requestDto.getContent(), countryList, languageList,hopeLanguageList,requestDto.getFacebookUrl(),requestDto.getInstagramUrl(),userRepCountry,userRepLanguage,userRepHopeLanguage
         ));
-
-
     }
 
 
 
 
     @Transactional
-    public UserLoginResponseDto login(UserLoginRequestDto requestDto){
+    public UserTokenDto login(UserLoginRequestDto requestDto){
 
         User user = userRepository.findByEmail(requestDto.getEmail()).orElseThrow(LoginFailureException::new);
         if(!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())){
             throw new LoginFailureException();
         }
         user.changeRefreshToken(jwtTokenProvider.createRefreshToken(String.valueOf(user.getId())));
-        return new UserLoginResponseDto(user.getId(), jwtTokenProvider.createToken(String.valueOf(user.getId())), user.getRefreshToken());
+        return new UserTokenDto(user.getId(), jwtTokenProvider.createToken(String.valueOf(user.getId())), user.getRefreshToken());
     }
 
 
     @Transactional
-    public UserLoginResponseDto loginByProvider(String email, String provider) {
+    public UserTokenDto loginByProvider(String email, String provider) {
 
 
         User user = userRepository.findUserByEmailAndProvider(email, provider).orElseThrow(UserNotFoundException::new);
 
 //
         user.changeRefreshToken(jwtTokenProvider.createRefreshToken(String.valueOf(user.getId())));
-        return new UserLoginResponseDto(user.getId(), jwtTokenProvider.createToken(String.valueOf(user.getId())), user.getRefreshToken() );
+        return new UserTokenDto(user.getId(), jwtTokenProvider.createToken(String.valueOf(user.getId())), user.getRefreshToken() );
 //
 
     }
@@ -226,10 +170,10 @@ public class SignService {
         return false;
     }
 
-    private void validUser(String email) {
-        if(userRepository.findByEmail(email).isPresent())
-            throw new UserAlreadyExistException();
-    }
+//    private void validUser(String email) {
+//        if(userRepository.findByEmail(email).isPresent())
+//            throw new UserAlreadyExistException();
+//    }
 
     public boolean userCheck(String email){
         if(userRepository.findByEmail(email).isPresent())
@@ -252,14 +196,17 @@ public class SignService {
 
     }
     @Transactional
-    public UserLoginResponseDto refreshToken(String refreshToken)throws Exception{
+    public UserTokenDto refreshToken(String refreshToken)throws Exception{
 
-        User user = userRepository.findById(Long.valueOf(jwtTokenProvider.getUserPkByRefreshToken(refreshToken))).orElseThrow(UserNotFoundException::new);
-
-        if(!jwtTokenProvider.validateToken(user.getRefreshToken())||!refreshToken.equals(user.getRefreshToken()))
+        if(!jwtTokenProvider.validateToken(refreshToken))
             throw new AccessDeniedException("");
+        User user = userRepository.findById(Long.valueOf(jwtTokenProvider.getUserPkByRefreshToken(refreshToken))).orElseThrow(UserNotFoundException::new);
+        if(!refreshToken.equals(user.getRefreshToken())){
+            throw new AccessDeniedException("");
+        }
+
 //        user.changeRefreshToken(jwtTokenProvider.createRefreshToken(String.valueOf(user.getId())));
-        return new UserLoginResponseDto(user.getId(),jwtTokenProvider.createToken(String.valueOf(user.getId())),user.getRefreshToken());
+        return new UserTokenDto(user.getId(),jwtTokenProvider.createToken(String.valueOf(user.getId())),user.getRefreshToken());
     }
 
 

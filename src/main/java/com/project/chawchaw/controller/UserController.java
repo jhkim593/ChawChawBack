@@ -7,7 +7,7 @@ import com.project.chawchaw.config.response.ResponseMessage;
 import com.project.chawchaw.dto.user.*;
 import com.project.chawchaw.service.S3Service;
 import com.project.chawchaw.service.UserService;
-import io.swagger.annotations.Api;
+
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +23,7 @@ import javax.validation.Valid;
 
 @RestController
 @RequiredArgsConstructor
-@Api(tags = {"3.user"})
+
 public class UserController {
 
     private final UserService userService;
