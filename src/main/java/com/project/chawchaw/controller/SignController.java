@@ -137,8 +137,8 @@ public class SignController {
         try {
 
             /**
-             * provider 있을때**/
-            if (requestDto.getProvider() != null) {
+             * provider basic이 아닐 때**/
+            if (requestDto.getProvider().equals("kakao")||requestDto.getProvider().equals("facebook")) {
 
                 if (requestDto.getProvider().equals("kakao") && requestDto.getKakaoToken() != null) {
                     String token = kakaoService.getKakaoTokenInfo(requestDto.getKakaoToken()).getAccess_token();
@@ -206,6 +206,7 @@ public class SignController {
                   return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.LOGIN_FAIL, false), HttpStatus.OK);
               }
             }
+
             else {
                 return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.SOCIAL_LOGIN_CONNECT_FAIL, false), HttpStatus.OK);
             }

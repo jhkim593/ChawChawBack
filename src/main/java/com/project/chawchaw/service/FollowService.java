@@ -1,17 +1,23 @@
 package com.project.chawchaw.service;
 
 import com.project.chawchaw.config.jwt.JwtTokenProvider;
+import com.project.chawchaw.dto.follow.FollowAlarmDto;
+import com.project.chawchaw.dto.follow.FollowType;
 import com.project.chawchaw.entity.Follow;
 import com.project.chawchaw.entity.User;
 import com.project.chawchaw.exception.FollowAlreadyException;
 import com.project.chawchaw.exception.FollwNotFoundException;
 import com.project.chawchaw.exception.UserNotFoundException;
-import com.project.chawchaw.repository.FollowRepository;
+import com.project.chawchaw.repository.follow.FollowAlarmRepository;
+import com.project.chawchaw.repository.follow.FollowRepository;
 import com.project.chawchaw.repository.chat.ChatMessageRepository;
 import com.project.chawchaw.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -20,8 +26,8 @@ public class FollowService {
 
     private final UserRepository userRepository;
     private final FollowRepository followRepository;
-    private final JwtTokenProvider jwtTokenProvider;
-    private final ChatMessageRepository chatMessageRepository;
+    private final FollowAlarmRepository followAlarmRepository;
+    private final SimpMessageSendingOperations messagingTemplate;
 
 
     public void follow(Long toUserId, Long fromUserId) {
@@ -32,7 +38,9 @@ public class FollowService {
         User fromUser = userRepository.findById(fromUserId).orElseThrow(UserNotFoundException::new);
         User toUser = userRepository.findById(toUserId).orElseThrow(UserNotFoundException::new);
         followRepository.save(Follow.createFollow(fromUser, toUser));
-
+        FollowAlarmDto followAlarmDto = new FollowAlarmDto(FollowType.FOLLOW, fromUser.getName(), LocalDateTime.now());
+        followAlarmRepository.createFollowAlarm(followAlarmDto,toUserId);
+        messagingTemplate.convertAndSend("/queue/alarm/follow/" + toUserId,followAlarmDto );
     }
 
     public void unFollow(Long toUserId, Long fromUserId) {

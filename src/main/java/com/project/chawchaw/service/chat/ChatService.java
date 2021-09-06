@@ -48,8 +48,6 @@ public class ChatService {
 
 
         redisTemplate.convertAndSend(topic.getTopic(), message);
-//        redisTemplate.getStringSerializer(topic.getTopic());
-//        System.out.println(topic.getTopic().);
         chatMessageRepository.createChatMessage(message);
     }
 
@@ -93,6 +91,30 @@ public class ChatService {
 //        }
 //        return chatDtos;
     }
+    public List<ChatMessageDto> getChatMessageByRegDate(Long id,LocalDateTime regDate){
+        List<ChatMessageDto> chatMessageDto=new ArrayList<>();
+
+        List<ChatRoomUser> chatRoomUserByUserId = chatRoomUserRepository.findByChatRoomUserByUserId(id);
+
+        for(int i=0;i<chatRoomUserByUserId.size();i++){
+            ChatRoomUser chatRoomUser1 = chatRoomUserByUserId.get(i);
+            List<ChatRoomUser> chatRoomUserByRoomId = chatRoomUserRepository.findByRoomId(chatRoomUser1.getChatRoom().getId());
+            for(int j=0;j<chatRoomUserByRoomId.size();j++){
+                ChatRoomUser chatRoomUser2 = chatRoomUserByRoomId.get(j);
+                if(!chatRoomUser2.getUser().getId().equals(id)){
+                    chatMessageRepository.findChatMessageByRoomId(chatRoomUser2.getChatRoom().getId()).stream().forEach(
+                            c->{
+                                if(c.getRegDate().isBefore(regDate))chatMessageDto.add(c);
+                            }
+                    );
+                }
+            }
+        }
+        return chatMessageDto;
+
+
+    }
+
     public List<ChatDto> getChat(Long id){
         List<ChatDto> chatDtos=new ArrayList<>();
 //       chatDtos.add(new ChatDto(chatRoom.getId(),toUser.getId(),toUser.getName(),toUser.getImageUrl(),

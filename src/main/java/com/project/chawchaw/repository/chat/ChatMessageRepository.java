@@ -56,7 +56,7 @@ public class ChatMessageRepository {
             redisTemplate.expire(key, 1, TimeUnit.DAYS);
         }
     }
-    //최근 20개조회
+
     public List<ChatMessageDto> findChatMessageByRoomId(Long roomId){
         Set<String> keys = redisTemplate.keys(roomId.toString()+"_"+"*");
 
@@ -94,29 +94,6 @@ public class ChatMessageRepository {
 
 
 
-//    @PostConstruct
-//    private void init() {
-//        opsHashChatRoom = redisTemplate.opsForHash();
-//        topics = new HashMap<>();
-//    }
 
-//    public List<ChatRoomDto> findAllRoom() {
-//        return opsHashChatRoom.values(CHAT_ROOMS);
-//
-//    }
-//
-//    public ChatRoomDto findRoomById(String id) {
-//        return opsHashChatRoom.get(CHAT_ROOMS, id);
-//    }
-
-
-    //채팅방 생성
-//    public ChatRoomDto createChatRoom(String name) {
-//        ChatRoomDto chatRoom = ChatRoomDto.create(name);
-//        opsHashChatRoom.put(CHAT_ROOMS, chatRoom.getRoomId(), chatRoom);
-//        return chatRoom;
-//    }
-
-   //채팅방 입장
 
 }

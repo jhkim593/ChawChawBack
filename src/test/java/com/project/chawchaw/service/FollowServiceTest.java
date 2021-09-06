@@ -3,9 +3,8 @@ package com.project.chawchaw.service;
 import com.project.chawchaw.entity.Follow;
 import com.project.chawchaw.entity.User;
 import com.project.chawchaw.exception.UserNotFoundException;
-import com.project.chawchaw.repository.FollowRepository;
+import com.project.chawchaw.repository.follow.FollowRepository;
 import com.project.chawchaw.repository.user.UserRepository;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +18,6 @@ import javax.persistence.EntityManager;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Transactional

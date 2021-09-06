@@ -1,4 +1,4 @@
-package com.project.chawchaw.repository;
+package com.project.chawchaw.repository.follow;
 
 import com.project.chawchaw.entity.Follow;
 import org.springframework.data.jpa.repository.JpaRepository;

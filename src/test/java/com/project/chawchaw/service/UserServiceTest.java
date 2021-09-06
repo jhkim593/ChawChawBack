@@ -7,18 +7,13 @@ import com.project.chawchaw.dto.user.UsersDto;
 import com.project.chawchaw.entity.*;
 import com.project.chawchaw.exception.UserNotFoundException;
 import com.project.chawchaw.repository.CountryRepository;
-import com.project.chawchaw.repository.FollowRepository;
 import com.project.chawchaw.repository.LanguageRepository;
 import com.project.chawchaw.repository.user.UserRepository;
-import com.ulisesbocchio.jasyptspringboot.configuration.EnableEncryptablePropertiesConfiguration;
 import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;

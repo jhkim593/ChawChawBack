@@ -8,7 +8,9 @@ import com.project.chawchaw.dto.user.UserSignUpRequestDto;
 import com.project.chawchaw.entity.*;
 import com.project.chawchaw.exception.*;
 import com.project.chawchaw.repository.CountryRepository;
-import com.project.chawchaw.repository.FollowRepository;
+import com.project.chawchaw.repository.chat.ChatMessageRepository;
+import com.project.chawchaw.repository.follow.FollowAlarmRepository;
+import com.project.chawchaw.repository.follow.FollowRepository;
 import com.project.chawchaw.repository.LanguageRepository;
 import com.project.chawchaw.repository.ViewRepository;
 import com.project.chawchaw.repository.user.UserRepository;
@@ -39,15 +41,15 @@ public class SignService {
 
     private final JavaMailSender emailSender;
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
-    private final KakaoService kakaoService;
+
     private final UserRepository userRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final PasswordEncoder passwordEncoder;
     private final RedisTemplate redisTemplate;
-    private final CountryRepository countryRepository;
-    private final LanguageRepository languageRepository;
     private final FollowRepository followRepository;
     private final ViewRepository viewRepository;
+    private final FollowAlarmRepository followAlarmRepository;
+    private final ChatMessageRepository chatMessageRepository;
 
     @Value("${file.defaultImage}")
     private String defaultImage;
@@ -188,13 +190,13 @@ public class SignService {
 
 
 
-        @Transactional
-        public void logoutMember(String token) {
-            redisTemplate.opsForValue().set( "token:" + token, "v", jwtTokenProvider.getRemainingSeconds(token));
-            User user = userRepository.findById(Long.valueOf(jwtTokenProvider.getUserPk(token))).orElseThrow(UserNotFoundException::new);
-            user.changeRefreshToken("invalidate");
+    @Transactional
+    public void logout(String token) {
+//        redisTemplate.opsForValue().set( "token:" + token, "v", jwtTokenProvider.getRemainingSeconds(token));
+        User user = userRepository.findById(Long.valueOf(jwtTokenProvider.getUserPk(token))).orElseThrow(UserNotFoundException::new);
+        user.changeRefreshToken("invalidate");
 
-    }
+}
     @Transactional
     public UserTokenDto refreshToken(String refreshToken)throws Exception{
 
