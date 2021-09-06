@@ -45,7 +45,6 @@ public class ChatSubService implements MessageListener {
             // Websocket 구독자에게 채팅 메시지 Send
             messagingTemplate.convertAndSend("/queue/chat/room/" +roomMessage.getRoomId(),roomMessage);
 
-
 //            for(ChatRoomUser c:chatRoomUser) {
 //                messagingTemplate.convertAndSend("/queue/chat/room/wait/" + c.getUser().getId(), roomMessage);
 //            }
