@@ -15,6 +15,7 @@ public interface UserHopeLanguageRepository extends JpaRepository<UserHopeLangua
 //    @Query("select hl.name from UserHopeLanguage uhl join fetch uhl.hopeLanguage hl where uhl.user.id=:userId")
 //    List<String> findUserHopeLanguage(@Param("userId")Long userId);
 
+
     @Query("select uhl from UserHopeLanguage uhl where uhl.user.id=:userId and uhl.hopeLanguage.name=:name")
     Optional<UserHopeLanguage> findUserHopeLanguageByUserIdAndCountry(@Param("userId")Long userId, @Param("name")String name);
 

@@ -104,7 +104,7 @@ public class ChatService {
                 if(!chatRoomUser2.getUser().getId().equals(id)){
                     chatMessageRepository.findChatMessageByRoomId(chatRoomUser2.getChatRoom().getId()).stream().forEach(
                             c->{
-                                if(c.getRegDate().isBefore(regDate))chatMessageDto.add(c);
+                                if(c.getRegDate().isAfter(regDate))chatMessageDto.add(c);
                             }
                     );
                 }
