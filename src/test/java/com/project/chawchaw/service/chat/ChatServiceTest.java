@@ -117,4 +117,5 @@ class ChatServiceTest {
         assertThat(chatRoomUserRepository.findByChatRoomUserByUserId(user2.getId()).get(0).getChatRoom().getId()).isEqualTo(room.get(0).getRoomId());
     }
 
+
 }

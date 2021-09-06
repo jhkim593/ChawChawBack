@@ -7,6 +7,7 @@ import com.project.chawchaw.exception.FollowAlreadyException;
 import com.project.chawchaw.exception.FollwNotFoundException;
 import com.project.chawchaw.exception.UserNotFoundException;
 import com.project.chawchaw.repository.FollowRepository;
+import com.project.chawchaw.repository.chat.ChatMessageRepository;
 import com.project.chawchaw.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,7 @@ public class FollowService {
     private final UserRepository userRepository;
     private final FollowRepository followRepository;
     private final JwtTokenProvider jwtTokenProvider;
+    private final ChatMessageRepository chatMessageRepository;
 
 
     public void follow(Long toUserId, Long fromUserId) {
