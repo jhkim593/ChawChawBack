@@ -83,7 +83,6 @@ public class UserService {
     public UserProfileDto userProfile(Long userId){
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
         return new UserProfileDto(user);
-
     }
 //    @Transactional
 //    public String userImageUpload(MultipartFile file,Long id) throws IOException {
