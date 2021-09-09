@@ -44,7 +44,7 @@ public class UserController {
     @Value("${file.defaultImage}")
     private String defaultImage;
 
-    private ChatService chatService;
+    private final ChatService chatService;
 
     public static final String CLOUD_FRONT_DOMAIN_NAME = "d3t4l8y7wi01lo.cloudfront.net";
 
@@ -194,9 +194,10 @@ public class UserController {
     @GetMapping("/users/alarm")
     public ResponseEntity getAlarm(@RequestHeader("Authorization")String token) {
         Long userId = Long.valueOf(jwtTokenProvider.getUserPk(token));
-        List<ChatMessageDto> messages = chatService.getChatMessageByRegDate(userId);
-        List<FollowAlarmDto> follows = followService.getFollowAlarm(userId);
-        return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.ALARM_FIND_SUCCESS, true,new AlarmDto(messages,follows)), HttpStatus.OK);
+
+        return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.ALARM_FIND_SUCCESS, true,
+                new AlarmDto(chatService.getChatMessageByRegDate(userId),
+                        followService.getFollowAlarm(userId))), HttpStatus.OK);
 
     }
 

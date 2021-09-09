@@ -93,11 +93,12 @@ public class ChatService {
 //        return chatDtos;
     }
     public List<ChatMessageDto> getChatMessageByRegDate(Long id){
+        List<ChatMessageDto> chatMessageDto=new ArrayList<>();
         User user = userRepository.findById(id).orElseThrow(UserNotFoundException::new);
         if(user.getLastLogOut()==null){
-            return null;
+            return chatMessageDto;
         }
-        List<ChatMessageDto> chatMessageDto=new ArrayList<>();
+
 
         List<ChatRoomUser> chatRoomUserByUserId = chatRoomUserRepository.findByChatRoomUserByUserId(id);
 

@@ -31,12 +31,13 @@ public class FollowAlarmRepository {
     }
 
     public List<FollowAlarmDto> getFollowAlarmByUserId(Long toUserId, LocalDateTime lastLogOut){
+        List<FollowAlarmDto>followAlarmDtos=new ArrayList<>();
         if(lastLogOut==null){
-            return null;
+            return followAlarmDtos;
         }
         Set<String> keys = redisTemplate.keys(toUserId.toString()+":follow"+"_"+"*");
 
-        List<FollowAlarmDto>followAlarmDtos=new ArrayList<>();
+
         for(String key:keys){
 
             FollowAlarmDto followAlarmDto = objectMapper.convertValue(redisTemplate.opsForValue().get(key), FollowAlarmDto.class);
