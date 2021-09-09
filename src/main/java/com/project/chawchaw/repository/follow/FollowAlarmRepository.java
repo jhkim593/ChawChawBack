@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -22,39 +23,36 @@ public class FollowAlarmRepository {
     private final ObjectMapper objectMapper;
 
     public void createFollowAlarm(FollowAlarmDto followAlarmDto,Long toUserId){
-       String key=null;
-        if(followAlarmDto.getFollowType().equals(FollowType.FOLLOW)){
+      String key =toUserId.toString()+":follow"+ "_" + UUID.randomUUID().toString();
 
-            key =toUserId.toString()+":follow"+ "_" + UUID.randomUUID().toString();
 
-        }
-        if(followAlarmDto.getFollowType().equals(FollowType.UNFOLLOW)){
-
-            key =toUserId.toString()+":unfollow"+ "_" + UUID.randomUUID().toString();
-
-        }
-        if(key!=null)
-        redisTemplate.opsForValue().set(key,followAlarmDto);
+      if(key!=null)
+          redisTemplate.opsForValue().set(key,followAlarmDto);
     }
-//    public List<ChatMessageDto> findChatMessageByRoomId(Long toUserId){
-//        Set<String> keys = redisTemplate.keys(roomId.toString()+"_"+"*");
-//
-//        List<ChatMessageDto>chatMessageDtos=new ArrayList<>();
-//        for(String key:keys){
-//
-//            ChatMessageDto chatMessageDto = objectMapper.convertValue(redisTemplate.opsForValue().get(key), ChatMessageDto.class);
-//            chatMessageDtos.add(chatMessageDto);
-//        }
-//
-//        Collections.sort(chatMessageDtos, (c1, c2)-> {
-//
-//            return c2.getRegDate().compareTo(c1.getRegDate());
-//        });
-//
-//        return chatMessageDtos.stream()
-////                .limit(20)
-//                .collect(Collectors.toList());
-//
-//    }
-//
+
+    public List<FollowAlarmDto> getFollowAlarmByUserId(Long toUserId, LocalDateTime lastLogOut){
+        if(lastLogOut==null){
+            return null;
+        }
+        Set<String> keys = redisTemplate.keys(toUserId.toString()+":follow"+"_"+"*");
+
+        List<FollowAlarmDto>followAlarmDtos=new ArrayList<>();
+        for(String key:keys){
+
+            FollowAlarmDto followAlarmDto = objectMapper.convertValue(redisTemplate.opsForValue().get(key), FollowAlarmDto.class);
+            if(followAlarmDto.getRegDate().isAfter(lastLogOut))
+                followAlarmDtos.add(followAlarmDto);
+        }
+
+        Collections.sort(followAlarmDtos, (c1, c2)-> {
+
+            return  c2.getRegDate().compareTo(c1.getRegDate());
+        });
+
+        return followAlarmDtos.stream()
+
+                .collect(Collectors.toList());
+
+    }
+
 }

@@ -62,6 +62,7 @@ public class ChatService {
         ChatMessageDto chatMessageDto = new ChatMessageDto(MessageType.ENTER,chatRoom.getId(), fromUserId, fromUser.getName(), fromUser.getName() + "님이 입장하셨습니다.",fromUser.getImageUrl(), LocalDateTime.now().withNano(0));
         chatMessageRepository.createChatMessage(chatMessageDto);
         messagingTemplate.convertAndSend("/queue/chat/room/wait/" + toUserId,chatMessageDto );
+        messagingTemplate.convertAndSend("/queue/alarm/chat/" + toUserId, chatMessageDto);
 //        ChatRoom chatRoom=null;
 ////        Optional<ChatRoomUser> findChatRoomUser = chatRoomUserRepository.findByToUserIdAndFromUserId(toUserId, fromUserId);
 //        if(!chatRoomUserRepository.isChatRoom(toUserId,fromUserId)) {
@@ -91,7 +92,11 @@ public class ChatService {
 //        }
 //        return chatDtos;
     }
-    public List<ChatMessageDto> getChatMessageByRegDate(Long id,LocalDateTime regDate){
+    public List<ChatMessageDto> getChatMessageByRegDate(Long id){
+        User user = userRepository.findById(id).orElseThrow(UserNotFoundException::new);
+        if(user.getLastLogOut()==null){
+            return null;
+        }
         List<ChatMessageDto> chatMessageDto=new ArrayList<>();
 
         List<ChatRoomUser> chatRoomUserByUserId = chatRoomUserRepository.findByChatRoomUserByUserId(id);
@@ -104,12 +109,16 @@ public class ChatService {
                 if(!chatRoomUser2.getUser().getId().equals(id)){
                     chatMessageRepository.findChatMessageByRoomId(chatRoomUser2.getChatRoom().getId()).stream().forEach(
                             c->{
-                                if(c.getRegDate().isAfter(regDate))chatMessageDto.add(c);
+                                if(c.getRegDate().isAfter(user.getLastLogOut()))chatMessageDto.add(c);
                             }
                     );
                 }
             }
         }
+        Collections.sort(chatMessageDto, (c1, c2)-> {
+
+            return  c2.getRegDate().compareTo(c1.getRegDate());
+        });
         return chatMessageDto;
 
 
@@ -135,6 +144,7 @@ public class ChatService {
                 }
             }
         }
+
         return chatDtos;
 
 
@@ -173,6 +183,7 @@ public class ChatService {
                 user.getName() + "님이 퇴장하셨습니다.", user.getImageUrl(),LocalDateTime.now().withNano(0));
 
         messagingTemplate.convertAndSend("/queue/chat/room/" + roomId, message);
+
 
 
     }

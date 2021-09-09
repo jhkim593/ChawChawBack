@@ -43,6 +43,8 @@ public class User{
 
     private String instagramUrl;
 
+    private LocalDateTime lastLogOut;
+
 
     @OneToMany(mappedBy = "user",cascade = CascadeType.ALL)
     private List<UserCountry> country = new ArrayList<>();
@@ -150,5 +152,10 @@ public class User{
 
     public void changeRole() {
         this.role=ROLE.USER;
+    }
+    public void changeLastLogOut(){
+         this.lastLogOut=LocalDateTime.now().withNano(0);
+
+
     }
 }

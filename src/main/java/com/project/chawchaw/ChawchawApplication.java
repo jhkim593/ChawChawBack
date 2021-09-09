@@ -12,10 +12,15 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.client.RestTemplate;
 
+import javax.annotation.PostConstruct;
+import java.util.TimeZone;
+
 @SpringBootApplication
 @EnableScheduling
 
 public class ChawchawApplication {
+
+
 
 	public static void main(String[] args) {
 
@@ -24,8 +29,8 @@ public class ChawchawApplication {
 
 
 
-		@Bean
-		public RestTemplate getRestTemplate() {
+	@Bean
+	public RestTemplate getRestTemplate() {
 			return new RestTemplate();
 		}
 

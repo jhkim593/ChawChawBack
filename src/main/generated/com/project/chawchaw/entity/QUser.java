@@ -38,6 +38,8 @@ public class QUser extends EntityPathBase<User> {
 
     public final ListPath<UserLanguage, QUserLanguage> language = this.<UserLanguage, QUserLanguage>createList("language", UserLanguage.class, QUserLanguage.class, PathInits.DIRECT2);
 
+    public final DateTimePath<java.time.LocalDateTime> lastLogOut = createDateTime("lastLogOut", java.time.LocalDateTime.class);
+
     public final StringPath name = createString("name");
 
     public final StringPath password = createString("password");

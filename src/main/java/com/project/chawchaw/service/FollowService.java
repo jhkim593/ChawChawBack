@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -46,7 +47,16 @@ public class FollowService {
     public void unFollow(Long toUserId, Long fromUserId) {
 
 
+        User fromUser = userRepository.findById(fromUserId).orElseThrow(UserNotFoundException::new);
         Follow follow = followRepository.findByFollow(fromUserId, toUserId).orElseThrow(FollwNotFoundException::new);
         followRepository.delete(follow);
+        FollowAlarmDto followAlarmDto = new FollowAlarmDto(FollowType.UNFOLLOW, fromUser.getName(), LocalDateTime.now());
+        followAlarmRepository.createFollowAlarm(followAlarmDto,toUserId);
+        messagingTemplate.convertAndSend("/queue/alarm/follow/" + toUserId,followAlarmDto );
+    }
+    public List<FollowAlarmDto> getFollowAlarm(Long toUserId){
+        User toUser = userRepository.findById(toUserId).orElseThrow(UserNotFoundException::new);
+        return followAlarmRepository.getFollowAlarmByUserId(toUserId,toUser.getLastLogOut());
+
     }
 }

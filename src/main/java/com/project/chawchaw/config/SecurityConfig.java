@@ -3,6 +3,8 @@ package com.project.chawchaw.config;
 
 import com.project.chawchaw.config.jwt.JwtAuthenticationFilter;
 import com.project.chawchaw.config.jwt.JwtTokenProvider;
+import com.project.chawchaw.repository.user.UserRepository;
+import com.project.chawchaw.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,6 +27,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final CorsConfig corsConfig;
 
+    private final UserService userService;
+
 
 
 
@@ -45,8 +49,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.
                 addFilter(corsConfig.corsFilter())
                 .httpBasic().disable() // rest api 이므로 기본설정 사용안함. 기본설정은 비인증시 로그인폼 화면으로 리다이렉트 된다.
-                .csrf().disable()//
+                .csrf().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) // jwt token으로 인증하므로 세션은 필요없으므로 생성안함.
+                .and()
+                .logout().logoutSuccessHandler(new LogoutHandler(userService,jwtTokenProvider))
                 .and()
                 .authorizeRequests() // 다음 리퀘스트에 대한 사용권한 체크
                 .antMatchers("/login","/users/signup","/mail/**","/users/email/**","/social/login","/users/auth/refresh",

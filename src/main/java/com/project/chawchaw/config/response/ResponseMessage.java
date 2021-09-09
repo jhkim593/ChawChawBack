@@ -39,6 +39,10 @@ public class ResponseMessage {
     public static final String REFRESH_TOKEN_SUCCESS="AccessToken 재발급 성공";
     public static final String REFRESH_TOKEN_FAIL="AccessToken 재발급 실패";
     public static final String EXPIRED_REFRESH_TOKEN="RefreshToken 만료";
+    public static final String LOGOUT_FAIL="logout에 실패했습니다.";
+    public static final String LOGOUT_SUCCESS="logout에 성공했습니다.";
+    public static final String ALARM_FIND_SUCCESS="알림 조회에 성공했습니다.";
+
 
 
     

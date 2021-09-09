@@ -128,13 +128,11 @@ public class JwtTokenProvider { // JWT 토큰을 생성 및 검증 모듈
     }
     // Jwt 토큰의 유효성 + 만료일자 확인
     public Boolean validateToken(String jwtToken) throws Exception{
-        try {
+
 //            if(isLoggedOut(jwtToken)) return false;
             Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(jwtToken);
             return !claims.getBody().getExpiration().before(new Date());
-        } catch (Exception e) {
-            return false;
-        }
+
 
     }
 

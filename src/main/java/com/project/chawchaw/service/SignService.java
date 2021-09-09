@@ -200,8 +200,8 @@ public class SignService {
     @Transactional
     public UserTokenDto refreshToken(String refreshToken)throws Exception{
 
-        if(!jwtTokenProvider.validateToken(refreshToken))
-            throw new AccessDeniedException("");
+        jwtTokenProvider.validateToken(refreshToken);
+
         User user = userRepository.findById(Long.valueOf(jwtTokenProvider.getUserPkByRefreshToken(refreshToken))).orElseThrow(UserNotFoundException::new);
         if(!refreshToken.equals(user.getRefreshToken())){
             throw new AccessDeniedException("");

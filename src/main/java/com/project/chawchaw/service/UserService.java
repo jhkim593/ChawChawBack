@@ -73,6 +73,12 @@ public class UserService {
         return userRepository.usersList(userSearch);
     }
 
+    @Transactional
+    public void changeLastLogOut(Long userId){
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+        user.changeLastLogOut();
+    }
+
 
     public UserProfileDto userProfile(Long userId){
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);

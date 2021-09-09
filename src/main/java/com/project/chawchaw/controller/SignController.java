@@ -87,7 +87,7 @@ public class SignController {
 
     @PostMapping(value = "/users/signup")
     public ResponseEntity signup(@RequestBody @Valid UserSignUpRequestDto requestDto){
-        if(requestDto.getProvider()==null&&requestDto.getProvider().isEmpty()){
+        if(requestDto.getProvider()==null||requestDto.getProvider().isEmpty()){
             return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.CREATED_USER_FAIL,true),HttpStatus.OK);
         }
 
@@ -235,12 +235,7 @@ public class SignController {
 
 
 
-//    @PostMapping(value = "/users/logout")
-//    public CommonResult logout(@RequestHeader(value="X-AUTH-TOKEN") String token) {
-//
-//        signService.logoutMember(token);
-//        return responseService.getSuccessResult();
-//    }
+
 
     @PostMapping(value = "/users/auth/refresh")
     public ResponseEntity refreshToken(HttpServletRequest request,HttpServletResponse response) {

@@ -4,10 +4,15 @@ package com.project.chawchaw.controller;
 import com.project.chawchaw.config.jwt.JwtTokenProvider;
 import com.project.chawchaw.config.response.DefaultResponseVo;
 import com.project.chawchaw.config.response.ResponseMessage;
+import com.project.chawchaw.dto.alarm.AlarmDto;
+import com.project.chawchaw.dto.chat.ChatMessageDto;
+import com.project.chawchaw.dto.follow.FollowAlarmDto;
 import com.project.chawchaw.dto.user.*;
+import com.project.chawchaw.service.FollowService;
 import com.project.chawchaw.service.S3Service;
 import com.project.chawchaw.service.UserService;
 
+import com.project.chawchaw.service.chat.ChatService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -30,12 +36,15 @@ public class UserController {
     private final JwtTokenProvider jwtTokenProvider;
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private final S3Service s3Service;
+    private final FollowService followService;
 
     @Value("${file.path}")
     private String fileRealPath;
 
     @Value("${file.defaultImage}")
     private String defaultImage;
+
+    private ChatService chatService;
 
     public static final String CLOUD_FRONT_DOMAIN_NAME = "d3t4l8y7wi01lo.cloudfront.net";
 
@@ -180,7 +189,14 @@ public class UserController {
                 return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.IMAGE_DELETE_FAIL, false), HttpStatus.OK);
 
             }
+    }
 
+    @GetMapping("/users/alarm")
+    public ResponseEntity getAlarm(@RequestHeader("Authorization")String token) {
+        Long userId = Long.valueOf(jwtTokenProvider.getUserPk(token));
+        List<ChatMessageDto> messages = chatService.getChatMessageByRegDate(userId);
+        List<FollowAlarmDto> follows = followService.getFollowAlarm(userId);
+        return new ResponseEntity(DefaultResponseVo.res(ResponseMessage.ALARM_FIND_SUCCESS, true,new AlarmDto(messages,follows)), HttpStatus.OK);
 
     }
 
